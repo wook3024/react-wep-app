@@ -1,19 +1,36 @@
-import React, { useState } from "react";
-import { Button, List, Card } from "antd";
-import Icon from "@ant-design/icons";
+import React from "react";
+import { Statistic, Row, Col } from "antd";
 
-import "./App.css";
+const { Countdown } = Statistic;
+const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30; // Moment is also OK
+
+function onFinish() {
+  console.log("finished!");
+}
 
 const Index = () => {
-  const [count, setCount] = useState(0);
-
   return (
-    <div>
-      <List>
-        <p>You clicked {count} times </p>
-        <button onClick={() => setCount(count + 1)}>Click me</button>
-      </List>
-    </div>
+    <>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Countdown title="Countdown" value={deadline} onFinish={onFinish} />
+        </Col>
+        <Col span={12}>
+          <Countdown
+            title="Million Seconds"
+            value={deadline}
+            format="HH:mm:ss:SSS"
+          />
+        </Col>
+        <Col span={24} style={{ marginTop: 32 }}>
+          <Countdown
+            title="Day Level"
+            value={deadline}
+            format="D 天 H 时 m 分 s 秒"
+          />
+        </Col>
+      </Row>
+    </>
   );
 };
 
