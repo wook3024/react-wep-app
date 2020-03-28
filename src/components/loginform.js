@@ -1,31 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Input, Button, Form, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 const Span = styled.span``;
 
-const tempUsername = "asdf";
-const tempPassword = "asdf";
+let loginInfo = {};
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
-  const [loginCheck, setLoginCheck] = useState(false);
   const [loginState, setloginState] = useState(true);
+  let { userInfo } = useSelector(state => state);
+
+  let history = useHistory();
+
+  useEffect(() => {
+    //쿠키로 로그인 여부 확인
+  }, [history, userInfo]);
 
   const onFinish = async values => {
-    values = await values;
-    console.log("Success:", values);
+    loginInfo = await values;
+    // console.log("Success:", loginInfo);
 
-    if (values.username === tempUsername && values.password === tempPassword) {
-      setLoginCheck(true);
-      setloginState(true);
-    } else {
-      setloginState(false);
-    }
-
-    if (loginCheck === true) {
-      //go to mainscreen
+    if (userInfo && userInfo.username) {
+      if (
+        loginInfo.username === userInfo.username &&
+        loginInfo.password === userInfo.password
+      ) {
+        // console.log("login Success!", userInfo);
+        setloginState(false);
+        alert("Log In Complete. Go to the main page");
+        return history.push("/");
+      } else {
+        setloginState(false);
+      }
     }
 
     setLoading(true);
@@ -33,10 +43,6 @@ const LoginForm = () => {
       setLoading(false);
     }, 1000);
   };
-
-  // const onFinishFailed = errorInfo => {
-  //   console.log("Failed:", errorInfo);
-  // };
 
   return (
     <Row>

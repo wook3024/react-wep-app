@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import { Col, Form, Input, Tooltip, Select, Checkbox, Button } from "antd";
+import React, { useState, useEffect } from "react";
+import { Form, Input, Tooltip, Select, Checkbox, Button } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { SIGN_UP_ACTION } from "../reducers/actions";
 
 const { Option } = Select;
 
@@ -30,16 +32,28 @@ const tailFormItemLayout = {
 
 const SignUp = () => {
   const [form] = Form.useForm();
-
   const [loading, setLoading] = useState(false);
-  const [signupCheck, setSignupCheck] = useState(false);
+  const { userInfo } = useSelector(state => state);
+
+  const dispatch = useDispatch();
+  let history = useHistory();
+
+  useEffect(() => {
+    if (userInfo.username) {
+      alert("Sign Up Complete. Go to the main page");
+      return history.push("/");
+    }
+  }, [history, userInfo]);
 
   const onFinish = async values => {
     values = await values;
     console.log("Received values of form: ", values);
 
     if (values.password === values.confirm) {
-      setSignupCheck(true);
+      return dispatch({
+        type: SIGN_UP_ACTION,
+        payload: values
+      });
     }
 
     setLoading(true);
@@ -60,7 +74,6 @@ const SignUp = () => {
 
   return (
     <>
-      {signupCheck && <Redirect to="/" />}
       <Form
         style={{ display: "inline-block" }}
         {...formItemLayout}
@@ -73,16 +86,16 @@ const SignUp = () => {
         scrollToFirstError
       >
         <Form.Item
-          name="email"
-          label="E-mail"
+          name="username"
+          label="username"
           rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail!"
-            },
+            // {
+            //   type: "email",
+            //   message: "The input is not valid E-mail!"
+            // },
             {
               required: true,
-              message: "Please input your E-mail!"
+              message: "Please input your name!"
             }
           ]}
         >

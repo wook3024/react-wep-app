@@ -10,7 +10,7 @@ const Span = styled.span``;
 
 const Navigation = () => {
   const handleClick = e => {
-    console.log("click ", e);
+    // console.log("click ", e);
   };
 
   return (
