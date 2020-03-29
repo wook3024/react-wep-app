@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Tooltip, Select, Checkbox, Button } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { SIGN_UP_ACTION } from "../reducers/actions";
+import { useDispatch, useSelector } from "react-redux";
+import { SIGN_UP_ACTION, SIGN_UP_CHECK } from "../reducers/actions";
+import axios from "axios";
 
 const { Option } = Select;
 
@@ -30,36 +31,58 @@ const tailFormItemLayout = {
   }
 };
 
+let formUserInfo = undefined;
+let getUserInfo = undefined;
+
 const SignUp = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const { userInfo } = useSelector(state => state);
+  const { signupCheck, userInfo } = useSelector(state => state);
 
   const dispatch = useDispatch();
   let history = useHistory();
 
   useEffect(() => {
-    if (userInfo.username) {
-      alert("Sign Up Complete. Go to the main page");
-      return history.push("/");
+    if (formUserInfo) {
+      if (signupCheck) {
+        formUserInfo = undefined;
+        dispatch({
+          type: SIGN_UP_ACTION,
+          payload: formUserInfo
+        });
+        alert("Sign Up Complete. Go to the main page");
+        history.push("/");
+      } else {
+        alert("This user already exists. Please re-enter username");
+      }
     }
-  }, [history, userInfo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formUserInfo]);
 
   const onFinish = async values => {
-    values = await values;
-    console.log("Received values of form: ", values);
+    formUserInfo = await values;
+    console.log("Received values of form: ", formUserInfo);
 
-    if (values.password === values.confirm) {
-      return dispatch({
-        type: SIGN_UP_ACTION,
-        payload: values
-      });
-    }
+    getUserInfo = await axios({
+      method: "get",
+      url: `http://localhost:8080/user/signin`,
+      params: {
+        ...formUserInfo
+      }
+    });
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    getUserInfo =
+      getUserInfo.data.users && getUserInfo.data.users.fulfillmentValue[0];
+    console.log("axios Check", getUserInfo);
+
+    return dispatch({
+      type: SIGN_UP_CHECK,
+      payload: getUserInfo
+    });
+    // setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
   };
 
   const prefixSelector = (

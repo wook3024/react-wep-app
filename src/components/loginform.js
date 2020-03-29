@@ -2,46 +2,70 @@ import React, { useState, useEffect } from "react";
 import { Row, Input, Button, Form, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { LOG_IN_ACTION } from "../reducers/actions";
+import axios from "axios";
 
 const Span = styled.span``;
 
 let loginInfo = {};
+let getLoginInfo = {};
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [loginState, setloginState] = useState(true);
-  let { userInfo } = useSelector(state => state);
+  let { loginCheck } = useSelector(state => state);
 
   let history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    //쿠키로 로그인 여부 확인
-  }, [history, userInfo]);
+    //쿠키로도 로그인 여부 확인
+    if (loginCheck) {
+      alert("Log In Complete. Go to the main page");
+      return history.push("/");
+    }
+  }, [history, loginCheck]);
 
   const onFinish = async values => {
     loginInfo = await values;
     // console.log("Success:", loginInfo);
 
-    if (userInfo && userInfo.username) {
-      if (
-        loginInfo.username === userInfo.username &&
-        loginInfo.password === userInfo.password
-      ) {
-        // console.log("login Success!", userInfo);
-        setloginState(false);
-        alert("Log In Complete. Go to the main page");
-        return history.push("/");
-      } else {
-        setloginState(false);
+    getLoginInfo = await axios({
+      method: "get",
+      url: `http://localhost:8080/user/signin`,
+      params: {
+        ...loginInfo
       }
+    });
+
+    getLoginInfo =
+      getLoginInfo.data.users && getLoginInfo.data.users.fulfillmentValue[0];
+    console.log("axios Check", getLoginInfo);
+
+    if (getLoginInfo !== null && !loginCheck) {
+      setloginState(false);
     }
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    return dispatch({
+      type: LOG_IN_ACTION,
+      payload: getLoginInfo
+    });
+    // if (
+    //   loginInfo.username === getLoginInfo.username &&
+    //   loginInfo.password === getLoginInfo.password
+    // ) {
+    //   alert("login Success!", getLoginInfo);
+    //   return history.push("/");
+    // } else {
+
+    // }
+
+    // setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
   };
 
   return (
