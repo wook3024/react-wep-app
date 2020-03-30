@@ -2,70 +2,60 @@ import React, { useState, useEffect } from "react";
 import { Row, Input, Button, Form, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { LOG_IN_ACTION } from "../reducers/actions";
 import axios from "axios";
 
 const Span = styled.span``;
 
-let loginInfo = {};
 let getLoginInfo = {};
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
-  const [loginState, setloginState] = useState(true);
-  let { loginCheck } = useSelector(state => state);
+  const [loginState, setLoginState] = useState(true);
 
   let history = useHistory();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    //쿠키로도 로그인 여부 확인
-    if (loginCheck) {
-      alert("Log In Complete. Go to the main page");
-      return history.push("/");
-    }
-  }, [history, loginCheck]);
+    const loginCheck = axios({
+      method: "post",
+      url: `http://localhost:8080/user/signincheck`
+    });
+    loginCheck.then(res => {
+      console.log("loginCheck", res);
+    });
+  }, []);
 
   const onFinish = async values => {
-    loginInfo = await values;
-    // console.log("Success:", loginInfo);
+    setLoading(true);
+    let loginInfo = await values;
+    console.log("Success:", loginInfo);
 
     getLoginInfo = await axios({
-      method: "get",
-      url: `http://localhost:8080/user/signin`,
+      method: "post",
+      url: "http://localhost:8080/user/signin",
       params: {
         ...loginInfo
-      }
+      },
+      credentials: "include",
+      withCredentials: true
     });
+    getLoginInfo = getLoginInfo.data;
 
-    getLoginInfo =
-      getLoginInfo.data.users && getLoginInfo.data.users.fulfillmentValue[0];
-    console.log("axios Check", getLoginInfo);
-
-    if (getLoginInfo !== null && !loginCheck) {
-      setloginState(false);
+    if (getLoginInfo && getLoginInfo.username) {
+      alert("Log In Complete. Go to the main page");
+      return history.push("/");
+    } else {
+      setLoginState(false);
     }
 
-    return dispatch({
-      type: LOG_IN_ACTION,
-      payload: getLoginInfo
-    });
-    // if (
-    //   loginInfo.username === getLoginInfo.username &&
-    //   loginInfo.password === getLoginInfo.password
-    // ) {
-    //   alert("login Success!", getLoginInfo);
-    //   return history.push("/");
-    // } else {
-
+    // if (getLoginInfo.username === undefined || !loginCheck) {
+    //   setLoginState(false);
     // }
 
-    // setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 1000);
+    // return dispatch({
+    //   type: LOG_IN_ACTION,
+    //   payload: loginInfo
+    // });
   };
 
   return (

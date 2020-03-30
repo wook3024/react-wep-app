@@ -45,15 +45,15 @@ const SignUp = () => {
   useEffect(() => {
     if (formUserInfo) {
       if (signupCheck) {
-        formUserInfo = undefined;
         dispatch({
           type: SIGN_UP_ACTION,
           payload: formUserInfo
         });
+        formUserInfo = undefined;
         alert("Sign Up Complete. Go to the main page");
         history.push("/");
       } else {
-        alert("This user already exists. Please re-enter username");
+        alert("This user already exists.");
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Connection from "../Route/index";
+import Connection from "../route/index";
 import { BrowserRouter } from "react-router-dom";
 import Navigation from "../components/navigation";
 

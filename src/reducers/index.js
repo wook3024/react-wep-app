@@ -1,24 +1,36 @@
-import { SIGN_UP_ACTION, LOG_IN_ACTION, SIGN_UP_CHECK } from "./actions";
+import {
+  SIGN_UP_ACTION,
+  LOG_IN_ACTION,
+  SIGN_UP_CHECK,
+  LOG_IN_CHECK
+} from "./actions";
 import axios from "axios";
 
 const initialState = {
-  userInfo: { username: undefined, password: undefined },
-  loginCheck: false,
-  signupCheck: false
+  userInfo: {},
+  signupCheck: false,
+  loginCheck: true
 };
 
+let info = {};
+
 const callAxios = async (type, address, payload) => {
-  return await axios({
+  const result = axios({
     method: type,
     url: `http://localhost:8080${address}`,
     params: {
       ...payload
-    }
+    },
+    credentials: "include",
+    withCredentials: true
   });
+  info = await result;
+  console.log(info);
+  return result;
 };
 
 const reducer = (state = initialState, action) => {
-  console.log("action", action);
+  // console.log("action", action);
   switch (action.type) {
     case SIGN_UP_ACTION: {
       callAxios("post", "/user/signup", action.payload);
@@ -34,9 +46,14 @@ const reducer = (state = initialState, action) => {
       };
     }
     case LOG_IN_ACTION: {
+      // callAxios("post", "/user/signin", action.payload);
       return {
-        ...state,
-        loginCheck: action.payload === undefined ? false : true
+        ...state
+      };
+    }
+    case LOG_IN_CHECK: {
+      return {
+        ...state
       };
     }
     default: {
