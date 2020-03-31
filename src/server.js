@@ -90,8 +90,9 @@ app.post("/user/signin", (req, res, next) => {
         });
         // console.log("fullUser", user);
         return res.json(fullUser);
-      } catch (e) {
-        next(e);
+      } catch (error) {
+        console.error(error);
+        next(error);
       }
     });
   })(req, res, next);
@@ -99,21 +100,52 @@ app.post("/user/signin", (req, res, next) => {
 
 app.post("/user/signincheck", async (req, res, next) => {
   if (req.isAuthenticated()) {
-    const user = Object.assign({}, req.user.toJSON());
-    delete user.password;
+    const user = req.user;
     return res.json(user);
   }
-  res.json("😡  Login is required.");
+  res.send("😡  Login is required.");
 });
 
 app.post("/user/logout", (req, res) => {
   req.logout();
   req.session.destroy();
-  res.send("logout success! 🐳");
+  res.send("Logout success! 🐳");
 });
 
-app.delete("/user/", (req, res) => {
-  res.send("Got a DELETE request at /user");
+app.post("/post/publish", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const user = req.user.dataValues;
+      const data = req.query;
+      console.log("create post", user, data);
+      db.Post.create({
+        userId: user.id,
+        title: data.title,
+        content: data.content
+      });
+
+      return res.send("Create Post Success! 🐳");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+app.get("/post", async (req, res, next) => {
+  try {
+    const posts = await db.Post.findAll({
+      where: {},
+      order: [["created_at", "DESC"]],
+      attributes: ["userId", "title", "content", "created_at"]
+    });
+
+    return res.json(posts);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 app.listen(port, () =>

@@ -1,35 +1,34 @@
+// import axios from "axios";
 import {
   SIGN_UP_ACTION,
   LOG_IN_ACTION,
   SIGN_UP_CHECK,
-  LOG_IN_CHECK,
   USER_INFO_REFRESH,
-  LOG_OUT_ACTION
+  LOG_OUT_ACTION,
+  GET_POST_DATA
 } from "./actions";
-import axios from "axios";
 
 const initialState = {
   userInfo: {},
+  post: [],
   signupCheck: false,
   loginCheck: true
 };
 
-let info = {};
-
-const callAxios = async (type, address, payload) => {
-  const result = axios({
-    method: type,
-    url: `http://localhost:8080${address}`,
-    params: {
-      ...payload
-    },
-    credentials: "include",
-    withCredentials: true
-  });
-  info = await result;
-  console.log(info);
-  return result;
-};
+// const callAxios = async (type, address, payload) => {
+//   const result = axios({
+//     method: type,
+//     url: `http://localhost:8080${address}`,
+//     params: {
+//       ...payload
+//     },
+//     credentials: "include",
+//     withCredentials: true
+//   });
+//   info = await result;
+//   console.log(info);
+//   return result;
+// };
 
 const reducer = (state = initialState, action) => {
   // console.log("action", action);
@@ -55,24 +54,25 @@ const reducer = (state = initialState, action) => {
       };
     }
     case LOG_OUT_ACTION: {
-      // callAxios("post", "/user/signin", action.payload);
       return {
         ...state,
         userInfo: {}
       };
     }
     case USER_INFO_REFRESH: {
-      // callAxios("post", "/user/signin", action.payload);
       return {
         ...state,
         userInfo: action.payload
       };
     }
-    case LOG_IN_CHECK: {
+    case GET_POST_DATA: {
+      console.log("check action ", action.payload.length);
       return {
-        ...state
+        ...state,
+        post: action.payload
       };
     }
+
     default: {
       return {
         ...state

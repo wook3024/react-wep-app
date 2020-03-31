@@ -22,13 +22,14 @@ const Navigation = () => {
       url: "http://localhost:8080/user/signincheck",
       withCredentials: true
     });
+
     loginCheck.then(res => {
-      dispatch({
+      return dispatch({
         type: USER_INFO_REFRESH,
         payload: res.data
       });
     });
-  }, [dispatch, userInfo.username]);
+  }, [dispatch]);
 
   const logOut = async () => {
     const result = axios({
@@ -58,7 +59,7 @@ const Navigation = () => {
         title={
           <Span className="submenu-title-wrapper">
             <SettingOutlined />
-            Navigation Three - Submenu
+            Submenu
           </Span>
         }
       >
@@ -75,10 +76,12 @@ const Navigation = () => {
         <AppstoreOutlined />
         <Link to={{ pathname: "/main", state: "flushDeal" }}>Home</Link>
       </Menu.Item>
-      <Menu.Item key="profile">
-        <AppstoreOutlined />
-        <Link to={{ pathname: "/profile", state: "flushDeal" }}>Profile</Link>
-      </Menu.Item>
+      {userInfo && userInfo.username && (
+        <Menu.Item key="profile">
+          <AppstoreOutlined />
+          <Link to={{ pathname: "/profile", state: "flushDeal" }}>Profile</Link>
+        </Menu.Item>
+      )}
       {userInfo && !userInfo.username && (
         <Menu.Item key="signin">
           <AppstoreOutlined />

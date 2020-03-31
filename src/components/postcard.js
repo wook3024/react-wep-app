@@ -44,8 +44,8 @@ const Postcard = ({ post }) => {
         avatar={
           <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
         }
-        title="Card title"
-        description="This is the description"
+        title={post.data.title}
+        description={post.data.content}
       />
     </Card>
   );

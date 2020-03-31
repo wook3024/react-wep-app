@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false
       },
+      postId: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: true,

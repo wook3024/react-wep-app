@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
     "post",
     {
-      username: {
+      userId: {
         type: DataTypes.STRING(20),
         allowNull: false
       },
@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
       content: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.TEXT,
         allowNull: false
       },
       created_at: {
