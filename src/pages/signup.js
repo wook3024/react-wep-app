@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Form, Input, Tooltip, Select, Checkbox, Button } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { SIGN_UP_ACTION, SIGN_UP_CHECK } from "../reducers/actions";
+import { Form, Input, Tooltip, Select, Checkbox, Button, message } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const { Option } = Select;
@@ -32,57 +30,31 @@ const tailFormItemLayout = {
 };
 
 let formUserInfo = undefined;
-let getUserInfo = undefined;
 
 const SignUp = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const { signupCheck, userInfo } = useSelector(state => state);
 
-  const dispatch = useDispatch();
   let history = useHistory();
 
-  useEffect(() => {
-    if (formUserInfo) {
-      if (signupCheck) {
-        dispatch({
-          type: SIGN_UP_ACTION,
-          payload: formUserInfo
-        });
-        formUserInfo = undefined;
-        alert("Sign Up Complete. Go to the main page");
-        history.push("/");
-      } else {
-        alert("This user already exists.");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formUserInfo]);
-
   const onFinish = async values => {
+    setLoading(true);
     formUserInfo = await values;
-    console.log("Received values of form: ", formUserInfo);
 
-    getUserInfo = await axios({
-      method: "get",
-      url: `http://localhost:8080/user/signin`,
-      params: {
-        ...formUserInfo
-      }
+    const user = await axios({
+      method: "post",
+      url: "http://localhost:8080/user/signup",
+      params: formUserInfo
     });
 
-    getUserInfo =
-      getUserInfo.data.users && getUserInfo.data.users.fulfillmentValue[0];
-    console.log("axios Check", getUserInfo);
-
-    return dispatch({
-      type: SIGN_UP_CHECK,
-      payload: getUserInfo
-    });
-    // setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 1000);
+    if (user && !user.data.fulfillmentValue) {
+      formUserInfo = undefined;
+      message.success("Sign Up Complete. Go to the main page! 🐳");
+      history.push("/");
+    } else {
+      message.warning("This user already exists. 😱");
+    }
+    setLoading(false);
   };
 
   const prefixSelector = (
@@ -96,124 +68,120 @@ const SignUp = () => {
   );
 
   return (
-    <>
-      <Form
-        style={{ display: "inline-block" }}
-        {...formItemLayout}
-        form={form}
-        name="register"
-        onFinish={onFinish}
-        initialValues={{
-          prefix: "82"
-        }}
-        scrollToFirstError
-      >
-        <Form.Item
-          name="username"
-          label="username"
-          rules={[
-            // {
-            //   type: "email",
-            //   message: "The input is not valid E-mail!"
-            // },
-            {
-              required: true,
-              message: "Please input your name!"
-            }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!"
-            }
-          ]}
-          hasFeedback
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="confirm"
-          label="Confirm Password"
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please confirm your password!"
-            },
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  "The two passwords that you entered do not match!"
-                );
-              }
-            })
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="nickname"
-          label={
-            <span>
-              Nickname&nbsp;
-              <Tooltip title="What do you want others to call you?">
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
+    <Form
+      style={{ display: "inline-block" }}
+      {...formItemLayout}
+      form={form}
+      name="register"
+      onFinish={onFinish}
+      initialValues={{
+        prefix: "82"
+      }}
+      scrollToFirstError
+    >
+      <Form.Item
+        name="username"
+        label="username"
+        rules={[
+          // {
+          //   type: "email",
+          //   message: "The input is not valid E-mail!"
+          // },
+          {
+            required: true,
+            message: "Please input your name!"
           }
-          rules={[
-            {
-              required: true,
-              message: "Please input your nickname!",
-              whitespace: true
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        label="Password"
+        rules={[
+          {
+            required: true,
+            message: "Please input your password!"
+          }
+        ]}
+        hasFeedback
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item
+        name="confirm"
+        label="Confirm Password"
+        dependencies={["password"]}
+        hasFeedback
+        rules={[
+          {
+            required: true,
+            message: "Please confirm your password!"
+          },
+          ({ getFieldValue }) => ({
+            validator(rule, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                "The two passwords that you entered do not match!"
+              );
             }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label="Phone Number"
-          rules={[
-            { required: true, message: "Please input your phone number!" }
-          ]}
-        >
-          <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
-        </Form.Item>
-        <Form.Item
-          name="agreement"
-          valuePropName="checked"
-          rules={[
-            {
-              validator: (_, value) =>
-                value
-                  ? Promise.resolve()
-                  : Promise.reject("Should accept agreement")
-            }
-          ]}
-          {...tailFormItemLayout}
-        >
-          <Checkbox>
-            I have read the <a href="/">agreement</a>
-          </Checkbox>
-        </Form.Item>
-        <Form.Item {...tailFormItemLayout}>
-          <Button loading={loading} type="primary" htmlType="submit">
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
-    </>
+          })
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item
+        name="nickname"
+        label={
+          <span>
+            Nickname&nbsp;
+            <Tooltip title="What do you want others to call you?">
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </span>
+        }
+        rules={[
+          {
+            required: true,
+            message: "Please input your nickname!",
+            whitespace: true
+          }
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="phone"
+        label="Phone Number"
+        rules={[{ required: true, message: "Please input your phone number!" }]}
+      >
+        <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        name="agreement"
+        valuePropName="checked"
+        rules={[
+          {
+            validator: (_, value) =>
+              value
+                ? Promise.resolve()
+                : Promise.reject("Should accept agreement")
+          }
+        ]}
+        {...tailFormItemLayout}
+      >
+        <Checkbox>
+          I have read the <a href="/">agreement</a>
+        </Checkbox>
+      </Form.Item>
+      <Form.Item {...tailFormItemLayout}>
+        <Button loading={loading} type="primary" htmlType="submit">
+          Register
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

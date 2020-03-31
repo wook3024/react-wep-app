@@ -9,7 +9,6 @@ const db = require("./models");
 const passportConfig = require("./passport/index");
 
 const sequelize = db.sequelize;
-const User = db.User;
 const app = express();
 const port = 8080;
 
@@ -50,13 +49,20 @@ app.use(passport.session());
 app.post("/user/signup", async (req, res, next) => {
   try {
     const userInfo = req.query;
-    console.log("User create", userInfo);
-    User.create({
+    const user = db.User.findOne({
+      where: { username: userInfo.username },
+      attributes: ["username"]
+    });
+    console.log("User create", userInfo, await user);
+    if ((await user) !== null) {
+      return res.send(user);
+    }
+    db.User.create({
       username: userInfo.username,
       password: userInfo.password,
       nickname: userInfo.nickname
     });
-    res.send("Sign Up Success!");
+    res.send("Sign Up Success! 🐳");
   } catch (error) {
     console.error("😡 ", error);
     next(error);
@@ -82,7 +88,7 @@ app.post("/user/signin", (req, res, next) => {
           where: { username: user.username },
           attributes: ["username", "nickname"]
         });
-        console.log("fullUser", user);
+        // console.log("fullUser", user);
         return res.json(fullUser);
       } catch (e) {
         next(e);
@@ -100,15 +106,16 @@ app.post("/user/signincheck", async (req, res, next) => {
   res.json("😡  Login is required.");
 });
 
-app.post("/logout", (req, res) => {
-  // /api/user/logout
+app.post("/user/logout", (req, res) => {
   req.logout();
   req.session.destroy();
-  res.send("logout 성공");
+  res.send("logout success! 🐳");
 });
 
-app.delete("/user", (req, res) => {
+app.delete("/user/", (req, res) => {
   res.send("Got a DELETE request at /user");
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () =>
+  console.log(`Example app listening on port ${port}! 🐳`)
+);

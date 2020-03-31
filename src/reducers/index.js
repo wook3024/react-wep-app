@@ -3,7 +3,8 @@ import {
   LOG_IN_ACTION,
   SIGN_UP_CHECK,
   LOG_IN_CHECK,
-  USER_INFO_REFRESH
+  USER_INFO_REFRESH,
+  LOG_OUT_ACTION
 } from "./actions";
 import axios from "axios";
 
@@ -34,7 +35,7 @@ const reducer = (state = initialState, action) => {
   // console.log("action", action);
   switch (action.type) {
     case SIGN_UP_ACTION: {
-      callAxios("post", "/user/signup", action.payload);
+      // callAxios("post", "/user/signup", action.payload);
       return {
         ...state
       };
@@ -51,6 +52,13 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         userInfo: action.payload
+      };
+    }
+    case LOG_OUT_ACTION: {
+      // callAxios("post", "/user/signin", action.payload);
+      return {
+        ...state,
+        userInfo: {}
       };
     }
     case USER_INFO_REFRESH: {
