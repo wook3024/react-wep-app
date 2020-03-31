@@ -1,7 +1,7 @@
 import React from "react";
 import LoginForm from "../components/loginform";
 
-const Profile = () => {
+const SignIn = () => {
   return (
     <>
       <LoginForm />
@@ -9,4 +9,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default SignIn;

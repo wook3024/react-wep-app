@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Row, Input, Button, Form, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { LOG_IN_ACTION } from "../reducers/actions";
 
 const Span = styled.span``;
 
@@ -12,18 +14,18 @@ let getLoginInfo = {};
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [loginState, setLoginState] = useState(true);
+  const { userInfo } = useSelector(state => state);
 
   let history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const loginCheck = axios({
-      method: "post",
-      url: `http://localhost:8080/user/signincheck`
-    });
-    loginCheck.then(res => {
-      console.log("loginCheck", res);
-    });
-  }, []);
+    console.log("signincheck");
+    if (userInfo.username) {
+      alert("Log In Complete. Go to the main page");
+      return history.push("/");
+    }
+  }, [history, userInfo.username]);
 
   const onFinish = async values => {
     setLoading(true);
@@ -36,26 +38,18 @@ const LoginForm = () => {
       params: {
         ...loginInfo
       },
-      credentials: "include",
       withCredentials: true
     });
     getLoginInfo = getLoginInfo.data;
 
     if (getLoginInfo && getLoginInfo.username) {
-      alert("Log In Complete. Go to the main page");
-      return history.push("/");
+      return dispatch({
+        type: LOG_IN_ACTION,
+        payload: getLoginInfo
+      });
     } else {
       setLoginState(false);
     }
-
-    // if (getLoginInfo.username === undefined || !loginCheck) {
-    //   setLoginState(false);
-    // }
-
-    // return dispatch({
-    //   type: LOG_IN_ACTION,
-    //   payload: loginInfo
-    // });
   };
 
   return (
@@ -111,7 +105,7 @@ const LoginForm = () => {
           >
             Log in
           </Button>{" "}
-          Or <a href="/">register now!</a>
+          Or <Link to="/signup">register now!</Link>
         </Form.Item>
       </Form>
     </Row>

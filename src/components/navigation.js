@@ -1,14 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { USER_INFO_REFRESH } from "../reducers/actions";
 
 const { SubMenu } = Menu;
 
 const Span = styled.span``;
 
 const Navigation = () => {
+  const { userInfo } = useSelector(state => state);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loginCheck = axios({
+      method: "post",
+      url: `http://localhost:8080/user/signincheck`,
+      withCredentials: true
+    });
+    loginCheck.then(res => {
+      dispatch({
+        type: USER_INFO_REFRESH,
+        payload: res.data
+      });
+    });
+  }, [dispatch, userInfo.username]);
+
   const handleClick = e => {
     // console.log("click ", e);
   };
@@ -41,15 +62,31 @@ const Navigation = () => {
         </SubMenu>
         <Menu.Item key="home">
           <AppstoreOutlined />
-          <Link to={{ pathname: "/home", state: "flushDeal" }}>Home</Link>
+          <Link to={{ pathname: "/", state: "flushDeal" }}>Home</Link>
         </Menu.Item>
         <Menu.Item key="profile">
           <AppstoreOutlined />
           <Link to={{ pathname: "/profile", state: "flushDeal" }}>Profile</Link>
         </Menu.Item>
-        <Menu.Item key="signup">
+        {userInfo && !userInfo.username && (
+          <Menu.Item key="signin">
+            <AppstoreOutlined />
+            <Link to={{ pathname: "/signin", state: "flushDeal" }}>
+              Sign In
+            </Link>
+          </Menu.Item>
+        )}
+        {userInfo && !userInfo.username && (
+          <Menu.Item key="signup">
+            <AppstoreOutlined />
+            <Link to={{ pathname: "/signup", state: "flushDeal" }}>
+              Sign Up
+            </Link>
+          </Menu.Item>
+        )}
+        <Menu.Item key="index">
           <AppstoreOutlined />
-          <Link to={{ pathname: "/signup", state: "flushDeal" }}>Sign Up</Link>
+          <Link to={{ pathname: "/index", state: "flushDeal" }}>Index</Link>
         </Menu.Item>
       </Menu>
     </>

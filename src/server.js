@@ -92,9 +92,12 @@ app.post("/user/signin", (req, res, next) => {
 });
 
 app.post("/user/signincheck", async (req, res, next) => {
-  const user = Object.assign({}, req.user.toJSON());
-  delete user.password;
-  return res.json(user);
+  if (req.isAuthenticated()) {
+    const user = Object.assign({}, req.user.toJSON());
+    delete user.password;
+    return res.json(user);
+  }
+  res.json("😡  Login is required.");
 });
 
 app.post("/logout", (req, res) => {

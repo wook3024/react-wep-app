@@ -3,7 +3,7 @@ import { Descriptions, Badge } from "antd";
 
 import "./App.css";
 
-const Index = () => {
+const Profile = () => {
   return (
     <>
       <Descriptions
@@ -45,4 +45,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Profile;
