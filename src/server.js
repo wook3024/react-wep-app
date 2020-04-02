@@ -62,7 +62,7 @@ app.post("/user/signup", async (req, res, next) => {
       password: userInfo.password,
       nickname: userInfo.nickname
     });
-    res.send("Sign Up Success! 🐳");
+    res.status(200).send("Sign Up Success! 🐳");
   } catch (error) {
     console.error("😡 ", error);
     next(error);
@@ -109,7 +109,7 @@ app.post("/user/signincheck", async (req, res, next) => {
 app.post("/user/logout", (req, res) => {
   req.logout();
   req.session.destroy();
-  res.send("Logout success! 🐳");
+  res.status(200).send("Logout success! 🐳");
 });
 
 app.post("/post/publish", async (req, res, next) => {
@@ -124,7 +124,47 @@ app.post("/post/publish", async (req, res, next) => {
         content: data.content
       });
 
-      return res.send("Create Post Success! 🐳");
+      return res.status(201).send("Create Post Success! 🐳");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+app.post("/post/remove", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const post = db.Post.destroy({
+        where: { id: req.query.id }
+      });
+      console.log("remove post", await post);
+      if (await post) {
+        return res.status(201).send("Remove Post Success! 🐳");
+      }
+      return res.send("This post has already been removed. 😱");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+app.post("/post/update", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      console.log("update check", req.query);
+      const post = db.Post.update(
+        { title: req.query.title, content: req.query.content },
+        { where: { id: req.query.id } }
+      );
+      console.log("update post", await post);
+      if (await post) {
+        return res.status(201).send("update Post Success! 🐳");
+      }
+      return res.send("This post has already been removed. 😱");
     }
     res.send("Login Please! 😱");
   } catch (error) {
@@ -138,7 +178,7 @@ app.get("/post", async (req, res, next) => {
     const posts = await db.Post.findAll({
       where: {},
       order: [["created_at", "DESC"]],
-      attributes: ["userId", "title", "content", "created_at"]
+      attributes: ["id", "userId", "title", "content", "created_at"]
     });
 
     return res.json(posts);

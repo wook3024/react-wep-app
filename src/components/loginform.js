@@ -23,7 +23,7 @@ const LoginForm = () => {
   useEffect(() => {
     if (userInfo.username) {
       message.success("Log In Complete. Go to the main page");
-      return history.push("/");
+      return history.push("/main");
     }
   }, [history, userInfo.username]);
 

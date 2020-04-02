@@ -5,7 +5,9 @@ import {
   SIGN_UP_CHECK,
   USER_INFO_REFRESH,
   LOG_OUT_ACTION,
-  GET_POST_DATA
+  GET_POST_DATA,
+  REMOVE_POST_ACTION,
+  UPDATE_POST_ACTION
 } from "./actions";
 
 const initialState = {
@@ -70,6 +72,25 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         post: action.payload
+      };
+    }
+    case REMOVE_POST_ACTION: {
+      // console.log("post id, info id", action.payload.id);
+      return {
+        ...state,
+        post: state.post.filter(post => post.id !== action.payload.id)
+      };
+    }
+    case UPDATE_POST_ACTION: {
+      // console.log("post id, info id", action.payload.id);
+      return {
+        ...state,
+        post: state.post.map(post => {
+          if (post.id === action.payload.id) {
+            return (post = action.payload);
+          }
+          return post;
+        })
       };
     }
 
