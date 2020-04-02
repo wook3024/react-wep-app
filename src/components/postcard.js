@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Card, Avatar, Button, Popover, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Card, Avatar, Button, Popover, message, Tooltip } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -10,15 +10,35 @@ import axios from "axios";
 
 import { REMOVE_POST_ACTION } from "../reducers/actions";
 import PostForm from "./postForm";
+import Commentform from "./commentform";
+import ButtonGroup from "antd/lib/button/button-group";
 
 const { Meta } = Card;
 
 const Postcard = ({ post }) => {
-  const [changeValue, setChangeValue] = useState(false);
+  const [revisePost, setRevisePost] = useState(false);
+  const [addComment, setAddComment] = useState(false);
+  const { userInfo } = useSelector(state => state);
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setRevisePost(false);
+    setAddComment(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo && userInfo.username]);
+
+  const loginCheck = () => {
+    if (!(userInfo && userInfo.username)) {
+      message.warning("Login Please! 😱");
+      return false;
+    }
+    return true;
+  };
+
   const postRemove = () => {
+    if (!loginCheck()) return;
+
     axios({
       method: "post",
       url: "http://localhost:3000/post/remove",
@@ -41,7 +61,13 @@ const Postcard = ({ post }) => {
   };
 
   const postChange = () => {
-    setChangeValue(changeValue === true ? false : true);
+    if (!loginCheck()) return;
+    setRevisePost(revisePost === true ? false : true);
+  };
+
+  const commentChange = () => {
+    if (!loginCheck()) return;
+    setAddComment(addComment === true ? false : true);
   };
 
   return (
@@ -55,28 +81,33 @@ const Postcard = ({ post }) => {
           />
         }
         actions={[
-          <Popover
-            key="edit"
-            content={
-              <Button.Group>
-                <Button type="primary" ghost onClick={postChange}>
-                  change
-                </Button>
-                <Button danger onClick={postRemove}>
-                  remove
-                </Button>
-              </Button.Group>
-            }
+          <Tooltip
+            placement="topLeft"
+            title="change"
+            arrowPointAtCenter
+            onClick={postChange}
           >
             <EditOutlined key="edit" />
-          </Popover>,
-          <MessageOutlined />,
+          </Tooltip>,
+          <Tooltip
+            placement="topLeft"
+            title="comment"
+            arrowPointAtCenter
+            onClick={commentChange}
+          >
+            <MessageOutlined key="comment" />
+          </Tooltip>,
           <Popover
             key="ellipsis"
             content={
-              <Button Button type="primary" ghost>
-                in detail
-              </Button>
+              <ButtonGroup>
+                <Button Button danger onClick={postRemove}>
+                  remove
+                </Button>
+                <Button Button type="primary" ghost>
+                  in detail
+                </Button>
+              </ButtonGroup>
             }
           >
             <EllipsisOutlined key="ellipsis" />
@@ -91,7 +122,8 @@ const Postcard = ({ post }) => {
           description={post.data.content}
         />
       </Card>
-      {changeValue && <PostForm postId={post.data.id} />}
+      {addComment && <Commentform postId={post.data.id} />}
+      {revisePost && <PostForm postId={post.data.id} />}
     </Card>
   );
 };

@@ -8,7 +8,7 @@ import {
   LikeFilled
 } from "@ant-design/icons";
 
-const Reply = () => {
+const Reply = ({ post }) => {
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
   const [action, setAction] = useState(null);

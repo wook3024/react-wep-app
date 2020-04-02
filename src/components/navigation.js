@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Menu, Button, message } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import styled from "styled-components";
@@ -15,6 +15,7 @@ const Navigation = () => {
   const { userInfo } = useSelector(state => state);
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     const loginCheck = axios({
@@ -41,6 +42,8 @@ const Navigation = () => {
     dispatch({
       type: LOG_OUT_ACTION
     });
+
+    history.push("/main");
   };
 
   const handleClick = e => {
