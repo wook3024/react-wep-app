@@ -11,7 +11,7 @@ import "./App.css";
 const Div = styled.div``;
 
 const Profile = () => {
-  const { post } = useSelector(state => state);
+  const { post, userInfo } = useSelector(state => state);
   const dispatch = useDispatch();
 
   // console.log("Post.js", post);
@@ -34,7 +34,7 @@ const Profile = () => {
 
   return (
     <Div>
-      <PostForm />
+      {userInfo && userInfo.username && <PostForm />}
       {post.map(data => {
         return <Postcard key={data.created_at} post={{ data }} />;
       })}

@@ -1,6 +1,8 @@
 const express = require("express");
+const multer = require("multer");
 
 const db = require("../../models");
+const upload = require("./fileupload");
 
 const router = express.Router();
 
@@ -31,6 +33,24 @@ router.get("", async (req, res, next) => {
     console.error("😡 ", error);
     next(error);
   }
+});
+
+router.post("/upload", (req, res, next) => {
+  upload(req, res, err => {
+    console.log("update check", req);
+    if (err instanceof multer.MulterError) {
+      return next(err);
+    } else if (err) {
+      return next(err);
+    }
+
+    //일반적인 방법으로 저장하는 이미지의 정보를 열람하기는 불가능해 보인다.
+    req.files.forEach(async file => {
+      console.log("file info: " + (await res));
+    });
+
+    return res.json({ success: 1 });
+  });
 });
 
 router.get("/comment", async (req, res, next) => {
@@ -155,7 +175,7 @@ router.post("/publish", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      console.log("create post", user, data);
+      //   console.log("create post", user, data);
       db.Post.create({
         userId: user.id,
         title: data.title,

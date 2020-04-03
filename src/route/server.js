@@ -5,10 +5,10 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const session = require("express-session");
 
-const db = require("./models");
-const passportConfig = require("./passport/index");
-const user = require("./route/back/user");
-const post = require("./route/back/post");
+const db = require("../models");
+const passportConfig = require("../passport/index");
+const user = require("./back/user");
+const post = require("./back/post");
 
 const sequelize = db.sequelize;
 const app = express();
