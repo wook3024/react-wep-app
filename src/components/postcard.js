@@ -8,10 +8,11 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 
+import ButtonGroup from "antd/lib/button/button-group";
 import { REMOVE_POST_ACTION } from "../reducers/actions";
 import PostForm from "./postForm";
 import Commentform from "./commentform";
-import ButtonGroup from "antd/lib/button/button-group";
+import Comment from "./comment";
 
 const { Meta } = Card;
 
@@ -41,23 +42,25 @@ const Postcard = ({ post }) => {
 
     axios({
       method: "post",
-      url: "http://localhost:3000/post/remove",
-      params: { id: post.data.id },
+      url: "http://localhost:8080/post/remove",
+      params: { postId: post.data.id, userId: userInfo.id },
       withCredentials: true
-    }).then(res => {
-      console.log("postRemove result", res);
-
-      dispatch({
-        type: REMOVE_POST_ACTION,
-        payload: { id: post.data.id }
+    })
+      .then(res => {
+        console.log("postRemove result", res);
+        if (res.status === 201) {
+          message.success(res.data);
+          dispatch({
+            type: REMOVE_POST_ACTION,
+            payload: { id: post.data.id, userId: userInfo.id }
+          });
+        } else {
+          message.warning(res.data);
+        }
+      })
+      .catch(error => {
+        console.error("😡 ", error);
       });
-
-      if (res.status === 201) {
-        message.success(res.data);
-      } else {
-        message.warning(res.data);
-      }
-    });
   };
 
   const postChange = () => {
@@ -77,7 +80,7 @@ const Postcard = ({ post }) => {
         cover={
           <img
             alt="example"
-            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+            src="https://i.pinimg.com/originals/75/b4/1f/75b41f385a28c3bd06aee521269e5779.jpg"
           />
         }
         actions={[
@@ -116,7 +119,7 @@ const Postcard = ({ post }) => {
       >
         <Meta
           avatar={
-            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+            <Avatar src="https://mblogthumb-phinf.pstatic.net/MjAxODA2MjZfMjg3/MDAxNTMwMDE5ODgyNDY5.xUK3HyMnSuvUkq4tjOyh14UNteoKwMYiTn_dlVomh8Mg.xH9q9sPqhG7qnNAGPs6oxyiODpsECynytEfwikDmoIsg.JPEG.raviefille/%EB%92%B9%EA%B5%B4%ED%95%91%ED%81%AC_%281%29.jpg?type=w2" />
           }
           title={post.data.title}
           description={post.data.content}
@@ -124,6 +127,10 @@ const Postcard = ({ post }) => {
       </Card>
       {addComment && <Commentform postId={post.data.id} />}
       {revisePost && <PostForm postId={post.data.id} />}
+      {post.data.comments[0] &&
+        post.data.comments.map(comment => {
+          return <Comment comment={comment} />;
+        })}
     </Card>
   );
 };

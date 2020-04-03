@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, Button, message } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import styled from "styled-components";
@@ -15,35 +15,39 @@ const Navigation = () => {
   const { userInfo } = useSelector(state => state);
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   useEffect(() => {
-    const loginCheck = axios({
+    axios({
       method: "post",
       url: "http://localhost:8080/user/signincheck",
       withCredentials: true
-    });
-
-    loginCheck.then(res => {
-      return dispatch({
-        type: USER_INFO_REFRESH,
-        payload: res.data
+    })
+      .then(res => {
+        return dispatch({
+          type: USER_INFO_REFRESH,
+          payload: res.data
+        });
+      })
+      .catch(error => {
+        console.error("😡 ", error);
       });
-    });
   }, [dispatch]);
 
-  const logOut = async () => {
-    const result = axios({
+  const logOut = () => {
+    axios({
       method: "post",
       url: "http://localhost:8080/user/logout",
       withCredentials: true
-    });
-    message.success((await result).data);
-    dispatch({
-      type: LOG_OUT_ACTION
-    });
-
-    history.push("/main");
+    })
+      .then(res => {
+        message.success(res.data);
+        dispatch({
+          type: LOG_OUT_ACTION
+        });
+      })
+      .catch(error => {
+        console.error("😡 ", error);
+      });
   };
 
   const handleClick = e => {

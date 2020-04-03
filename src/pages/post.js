@@ -14,16 +14,22 @@ const Profile = () => {
   const { post } = useSelector(state => state);
   const dispatch = useDispatch();
 
+  // console.log("Post.js", post);
+
   useEffect(() => {
     axios({
       method: "get",
       url: "http://localhost:8080/post"
-    }).then(postData => {
-      dispatch({
-        type: GET_POST_DATA,
-        payload: postData.data
+    })
+      .then(postData => {
+        dispatch({
+          type: GET_POST_DATA,
+          payload: postData.data
+        });
+      })
+      .catch(error => {
+        console.error("😡 ", error);
       });
-    });
   }, [dispatch, post.length]);
 
   return (

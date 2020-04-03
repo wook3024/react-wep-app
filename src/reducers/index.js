@@ -1,13 +1,11 @@
-// import axios from "axios";
 import {
-  SIGN_UP_ACTION,
   LOG_IN_ACTION,
-  SIGN_UP_CHECK,
-  USER_INFO_REFRESH,
   LOG_OUT_ACTION,
+  USER_INFO_REFRESH,
   GET_POST_DATA,
   REMOVE_POST_ACTION,
-  UPDATE_POST_ACTION
+  UPDATE_POST_ACTION,
+  ADD_COMMENT_ACTION
 } from "./actions";
 
 const initialState = {
@@ -33,21 +31,7 @@ const initialState = {
 // };
 
 const reducer = (state = initialState, action) => {
-  // console.log("action", action);
   switch (action.type) {
-    case SIGN_UP_ACTION: {
-      // callAxios("post", "/user/signup", action.payload);
-      return {
-        ...state
-      };
-    }
-    case SIGN_UP_CHECK: {
-      return {
-        ...state,
-        signupCheck: action.payload === undefined ? true : false,
-        userInfo: action.payload
-      };
-    }
     case LOG_IN_ACTION: {
       // callAxios("post", "/user/signin", action.payload);
       return {
@@ -68,7 +52,6 @@ const reducer = (state = initialState, action) => {
       };
     }
     case GET_POST_DATA: {
-      console.log("check action ", action.payload.length);
       return {
         ...state,
         post: action.payload
@@ -91,6 +74,16 @@ const reducer = (state = initialState, action) => {
           }
           return post;
         })
+      };
+    }
+    case ADD_COMMENT_ACTION: {
+      let postIndex = state.post.findIndex(
+        post => post.id === action.payload.postId
+      );
+      // console.log("ADD_COMMENT CHECK", postIndex, action.payload);
+      state.post[postIndex].comments.push(action.payload);
+      return {
+        ...state
       };
     }
 

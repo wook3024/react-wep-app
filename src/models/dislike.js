@@ -1,13 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
-    "comment",
+    "dislike",
     {
-      comment: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-      },
-      username: {
-        type: DataTypes.STRING(100),
+      userId: {
+        type: DataTypes.INTEGER,
         allowNull: false
       },
       created_at: {

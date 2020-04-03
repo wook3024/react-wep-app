@@ -45,7 +45,7 @@ router.post("/signin", (req, res, next) => {
         }
         const fullUser = await db.User.findOne({
           where: { username: user.username },
-          attributes: ["username", "nickname"]
+          attributes: ["username", "nickname", "id"]
         });
         // console.log("fullUser", user);
         return res.json(fullUser);
@@ -65,7 +65,7 @@ router.post("/signincheck", async (req, res, next) => {
   res.send("😡  Login is required.");
 });
 
-router.post("/user/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(200).send("Logout success! 🐳");

@@ -20,10 +20,20 @@ db.Sequelize = Sequelize;
 db.User = require("./user")(sequelize, Sequelize);
 db.Comment = require("./comment")(sequelize, Sequelize);
 db.Post = require("./post")(sequelize, Sequelize);
+db.Like = require("./like")(sequelize, Sequelize);
+db.Dislike = require("./dislike")(sequelize, Sequelize);
 
-db.User.hasMany(db.Post, { foreignKey: "poster", sourceKey: "id" });
-db.Post.belongsTo(db.User, { foreignKey: "poster", targetKey: "id" });
-db.Post.hasMany(db.Comment, { foreignKey: "commenter", sourceKey: "id" });
-db.Comment.belongsTo(db.Post, { foreignKey: "commenter", targetKey: "id" });
+//database association
+db.User.hasMany(db.Post);
+db.Post.belongsTo(db.User, { foreignKey: "userId" });
+/*--------------------------------------------------*/
+db.Post.hasMany(db.Comment);
+db.Comment.belongsTo(db.Post, { foreignKey: "postId" });
+/*--------------------------------------------------*/
+db.Comment.hasMany(db.Like);
+db.Like.belongsTo(db.Comment, { foreignKey: "commentId" });
+/*--------------------------------------------------*/
+db.Comment.hasMany(db.Dislike);
+db.Dislike.belongsTo(db.Comment, { foreignKey: "commentId" });
 
 module.exports = db;

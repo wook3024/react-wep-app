@@ -44,11 +44,11 @@ const PostForm = ({ postId }) => {
           payload: { content, title, id: postId }
         });
 
-        inputTitle.current.state.value = "";
-        inputContent.current.state.value = "";
+        inputTitle.current.state.value = null;
+        inputContent.current.state.value = null;
       })
       .catch(error => {
-        console.error(error);
+        console.error("😡 ", error);
       });
   }, [content, dispatch, postId, title]);
 
@@ -58,8 +58,8 @@ const PostForm = ({ postId }) => {
       return;
     }
 
-    inputTitle.current.state.value = "";
-    inputContent.current.state.value = "";
+    inputTitle.current.state.value = null;
+    inputContent.current.state.value = null;
 
     if (!(userInfo && userInfo.username)) {
       message.warning("Login Please! 😱");
@@ -86,7 +86,7 @@ const PostForm = ({ postId }) => {
           });
         })
         .catch(error => {
-          console.error(error);
+          console.error("😡 ", error);
         });
     });
   }, [content, dispatch, postId, title, updatePost, userInfo]);
