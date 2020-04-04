@@ -57,8 +57,9 @@ const LoginForm = () => {
   return (
     <Form
       style={{
-        display: "inline-block",
-        margin: "1.5rem 0 0 1.5rem"
+        float: "none",
+        margin: "15rem auto",
+        width: 300
       }}
       name="normal_login"
       className="login-form"

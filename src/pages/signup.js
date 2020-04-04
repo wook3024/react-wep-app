@@ -69,7 +69,11 @@ const SignUp = () => {
 
   return (
     <Form
-      style={{ display: "inline-block" }}
+      style={{
+        float: "none",
+        margin: "15rem auto",
+        width: 450
+      }}
       {...formItemLayout}
       form={form}
       name="register"

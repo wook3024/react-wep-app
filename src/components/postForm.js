@@ -19,10 +19,10 @@ const PostForm = ({ postId }) => {
 
   const { userInfo } = useSelector(state => state);
 
-  const dispatch = useDispatch();
-
   const inputTitle = useRef(null);
   const inputContent = useRef(null);
+
+  const dispatch = useDispatch();
 
   const getBase64 = file => {
     return new Promise((resolve, reject) => {
@@ -45,8 +45,6 @@ const PostForm = ({ postId }) => {
   };
 
   const handleChange = ({ fileList }) => {
-    formData.append("file", fileList[0].originFileObj);
-    // console.log("files", e.target.files[0]);
     setFileList(fileList);
   };
 
@@ -93,26 +91,13 @@ const PostForm = ({ postId }) => {
   }, [content, dispatch, postId, title]);
 
   const onSubmit = useCallback(async () => {
-    if (postId !== undefined) {
-      updatePost();
+    if (!(userInfo && userInfo.username)) {
+      message.warning("Login Please! 😱");
       return;
     }
 
-    //axios({ }) 형태롤 사용하려고 했으나 쿼리 전달을 실패해 현재 형태로 사용
-    axios
-      .post("http://localhost:8080/post/upload", formData)
-      .then(res => {
-        alert("성공");
-      })
-      .catch(error => {
-        alert("실패");
-      });
-
-    inputTitle.current.state.value = null;
-    inputContent.current.state.value = null;
-
-    if (!(userInfo && userInfo.username)) {
-      message.warning("Login Please! 😱");
+    if (postId !== undefined) {
+      updatePost();
       return;
     }
 
@@ -124,25 +109,56 @@ const PostForm = ({ postId }) => {
         content
       },
       withCredentials: true
-    }).then(async () => {
-      axios({
-        method: "get",
-        url: "http://localhost:8080/post"
-      })
-        .then(postData => {
-          dispatch({
-            type: GET_POST_DATA,
-            payload: postData.data
-          });
-        })
-        .catch(error => {
-          console.error("😡 ", error);
+    })
+      .then(res => {
+        fileList.forEach(file => {
+          formData.append("file", file.originFileObj);
         });
-    });
-  }, [content, dispatch, postId, title, updatePost, userInfo]);
+        console.log("res", res);
+        axios({
+          method: "post",
+          url: "http://localhost:8080/post/upload",
+          data: formData,
+          params: { postId: res.data.id }
+        })
+          .then(res => {
+            console.log("upload", res);
+            message.success("Upload success");
+          })
+          .catch(error => {
+            message.warning("Upload failed");
+          });
+
+        axios({
+          method: "get",
+          url: "http://localhost:8080/post"
+        })
+          .then(res => {
+            dispatch({
+              type: GET_POST_DATA,
+              payload: res.data
+            });
+          })
+          .catch(error => {
+            console.error("😡 ", error);
+          });
+      })
+      .catch(error => {
+        console.error("😡 ", error);
+      });
+
+    inputTitle.current.state.value = null;
+    inputContent.current.state.value = null;
+    setFileList([]);
+  }, [content, dispatch, fileList, postId, title, updatePost, userInfo]);
 
   return (
-    <Form style={{ width: 300 }}>
+    <Form
+      style={{
+        margin: " 0 auto",
+        width: 350
+      }}
+    >
       <Input
         placeholder="title"
         ref={inputTitle}
@@ -174,13 +190,24 @@ const PostForm = ({ postId }) => {
         </Modal>
       </div>
       {/* <input type="file" name="file" onChange={handleChange} /> */}
-      <br />
-      <br />
-      <Button type="primary" htmlType="submit" onClick={onSubmit}>
-        Submit
+      <Button
+        type="default"
+        value="large"
+        htmlType="submit"
+        onClick={onSubmit}
+        style={{
+          display: "flex",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto",
+          width: 350
+        }}
+      >
+        publish
       </Button>
     </Form>
   );
 };
 
-export default PostForm;
+export default React.memo(PostForm);

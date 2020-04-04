@@ -14,7 +14,7 @@ const Profile = () => {
   const { post, userInfo } = useSelector(state => state);
   const dispatch = useDispatch();
 
-  // console.log("Post.js", post);
+  console.log("Post.js", post);
 
   useEffect(() => {
     axios({

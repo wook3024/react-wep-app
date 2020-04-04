@@ -23,6 +23,8 @@ const Postcard = ({ post }) => {
 
   const dispatch = useDispatch();
 
+  const imageUrl = "20200404144126_cat-4223305_1920.jpg";
+
   useEffect(() => {
     setRevisePost(false);
     setAddComment(false);
@@ -74,14 +76,21 @@ const Postcard = ({ post }) => {
   };
 
   return (
-    <Card>
+    <Card
+      style={{
+        display: "flex",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
       <Card
-        style={{ width: 300 }}
+        style={{ width: 400 }}
         cover={
-          <img
-            alt="example"
-            src="https://i.pinimg.com/originals/75/b4/1f/75b41f385a28c3bd06aee521269e5779.jpg"
-          />
+          post.data.images[0] &&
+          post.data.images.map(image => {
+            return <img alt="example" src={require(`../images/${image.filename}`)} />;
+          })
         }
         actions={[
           <Tooltip

@@ -57,7 +57,11 @@ const Navigation = () => {
   return (
     <Menu
       style={{
-        margin: "0 0 2rem 0"
+        margin: "0 0 2rem 0",
+        display: "flex",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center"
       }}
       onClick={handleClick}
       mode="horizontal"
