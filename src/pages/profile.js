@@ -1,45 +1,32 @@
 import React from "react";
-import { Descriptions, Badge } from "antd";
+import { Descriptions } from "antd";
 
 import "./App.css";
 
 const Profile = () => {
   return (
-    <Descriptions
-      style={{ display: "inline-block" }}
-      title="User Info"
-      layout="vertical"
-      bordered
-    >
-      <Descriptions.Item label="Product">Cloud Database</Descriptions.Item>
-      <Descriptions.Item label="Billing Mode">Prepaid</Descriptions.Item>
-      <Descriptions.Item label="Automatic Renewal">YES</Descriptions.Item>
-      <Descriptions.Item label="Order time">
-        2018-04-24 18:00:00
-      </Descriptions.Item>
-      <Descriptions.Item label="Usage Time" span={2}>
-        2019-04-24 18:00:00
-      </Descriptions.Item>
-      <Descriptions.Item label="Status" span={3}>
-        <Badge status="processing" text="Running" />
-      </Descriptions.Item>
-      <Descriptions.Item label="Negotiated Amount">$80.00</Descriptions.Item>
-      <Descriptions.Item label="Discount">$20.00</Descriptions.Item>
-      <Descriptions.Item label="Official Receipts">$60.00</Descriptions.Item>
+    <Descriptions style={{ margin: "7rem auto", maxWidth: 600 }} bordered title="User Info" size={"small"}>
+      <Descriptions.Item label="UserName">swook</Descriptions.Item>
+      <Descriptions.Item label="NickName">swook</Descriptions.Item>
+      <Descriptions.Item label="Created_At">2019-04-24 18:00:00</Descriptions.Item>
+      <Descriptions.Item label="ProfileImage">empty</Descriptions.Item>
+      <Descriptions.Item label="Address">No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China</Descriptions.Item>
+      <Descriptions.Item label="Telephone">+82 010-2848-9145</Descriptions.Item>
+      <Descriptions.Item label="Description">empty</Descriptions.Item>
       <Descriptions.Item label="Config Info">
         Data disk type: MongoDB
-        <br />
+            <br />
         Database version: 3.4
-        <br />
+            <br />
         Package: dds.mongo.mid
-        <br />
+            <br />
         Storage space: 10 GB
-        <br />
+            <br />
         Replication factor: 3
-        <br />
+            <br />
         Region: East China 1<br />
       </Descriptions.Item>
-    </Descriptions>
+    </Descriptions >
   );
 };
 

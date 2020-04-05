@@ -13,7 +13,6 @@ router.get("", async (req, res, next) => {
       include: [
         {
           model: db.Comment,
-          order: [["created_at", "DESC"]],
           include: [
             {
               model: db.Like
@@ -21,13 +20,13 @@ router.get("", async (req, res, next) => {
             {
               model: db.Dislike
             }
-          ]
+          ],
         },
         {
           model: db.Image
-        }
+        },
       ],
-      order: [["created_at", "DESC"]],
+      order: [["created_at", "DESC"], [db.Comment, "created_at", "ASC"]],
       attributes: ["id", "userId", "title", "content", "created_at"]
     });
 
@@ -40,26 +39,38 @@ router.get("", async (req, res, next) => {
 
 router.post("/upload", (req, res, next) => {
   try {
-    upload(req, res, err => {
-      // console.log("update check", req);
-      if (err instanceof multer.MulterError) {
-        return next(err);
-      } else if (err) {
-        return next(err);
-      }
+    if (req.isAuthenticated()) {
+      try {
+        upload(req, res, err => {
+          // console.log("user check", req);
+          if (err instanceof multer.MulterError) {
+            return next(err);
+          } else if (err) {
+            return next(err);
+          }
 
-      return (async () => {
-        (await req).files.forEach(file => {
-          console.log("file info", file.filename);
-          console.log("file.path", file);
-          db.Image.create({
-            postId: req.query.postId,
-            filename: file.filename
-          });
+          return (async () => {
+            if (!(await req).files[0]) {
+              return res.send("Upload Complete! 🐳")
+            }
+            (await req).files.forEach(file => {
+              console.log("file info", file.filename);
+              console.log("file.path", file);
+              db.Image.create({
+                postId: req.query.postId,
+                filename: file.filename
+              });
+            });
+            return res.status(201).send("Upload Complete With Images! 🐳");
+          })();
         });
-        return res.status(201).send("Image Upload Complete! 🐳");
-      })();
-    });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    } else {
+      res.send("Login Please! 😱");
+    }
   } catch (error) {
     console.error("😡 ", error);
     next(error);
@@ -78,6 +89,29 @@ router.get("/comment", async (req, res, next) => {
     return res.json(comments);
   } catch (error) {
     console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/comment/add", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      // console.log("commnet add query check", req.query);
+      const data = req.query;
+      const post = db.Comment.create({
+        comment: data.comment,
+        postId: data.postId,
+        username: data.username
+      });
+      // console.log("commnet add check", await post);
+      if (await post) {
+        return res.status(201).send("Comment add Complete! 🐳");
+      }
+      return res.send("Comment add failure. 😱");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 });
@@ -116,6 +150,7 @@ router.post("/comment/likeState", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
+      console.log("data Info! 😱", data);
       const userInfo = req.user.dataValues;
       const checkStatus = db.Like.findOne({
         where: { userId: userInfo.id, commentId: data.commentId }
@@ -184,9 +219,9 @@ router.post("/comment/dislikeState", async (req, res, next) => {
 });
 
 router.post("/publish", async (req, res, next) => {
-  const user = req.user.dataValues;
   try {
     if (req.isAuthenticated()) {
+      const user = req.user.dataValues;
       const data = req.query;
 
       //비동기 작업을 위해 작성한 구문
@@ -244,29 +279,6 @@ router.post("/update", async (req, res, next) => {
         return res.status(201).send("Post Update Complete! 🐳");
       }
       return res.send("This post has already been removed. 😱");
-    }
-    res.send("Login Please! 😱");
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.post("/comment/add", async (req, res, next) => {
-  try {
-    if (req.isAuthenticated()) {
-      // console.log("commnet add query check", req.query);
-      const data = req.query;
-      const post = db.Comment.create({
-        comment: data.comment,
-        postId: data.postId,
-        username: data.username
-      });
-      // console.log("commnet add check", await post);
-      if (await post) {
-        return res.status(201).send("Comment add Complete! 🐳");
-      }
-      return res.send("Comment add failure. 😱");
     }
     res.send("Login Please! 😱");
   } catch (error) {

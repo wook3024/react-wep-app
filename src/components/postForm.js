@@ -119,11 +119,12 @@ const PostForm = ({ postId }) => {
           method: "post",
           url: "http://localhost:8080/post/upload",
           data: formData,
-          params: { postId: res.data.id }
+          params: { postId: res.data.id },
+          withCredentials: true,
         })
           .then(res => {
             console.log("upload", res);
-            message.success("Upload success");
+            message.success(res.data);
           })
           .catch(error => {
             message.warning("Upload failed");
