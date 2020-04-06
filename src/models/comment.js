@@ -4,20 +4,24 @@ module.exports = (sequelize, DataTypes) => {
     {
       comment: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        allowNull: false,
       },
       username: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        allowNull: false,
+      },
+      nickname: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: sequelize.literal("now()")
-      }
+        defaultValue: sequelize.literal("now()"),
+      },
     },
     {
-      timestamps: false
+      timestamps: false,
     }
   );
 };

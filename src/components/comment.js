@@ -6,7 +6,7 @@ import {
   DislikeOutlined,
   LikeOutlined,
   DislikeFilled,
-  LikeFilled
+  LikeFilled,
 } from "@ant-design/icons";
 import axios from "axios";
 
@@ -15,7 +15,7 @@ const Reply = ({ comment }) => {
   const [likeState, setLikeState] = useState(false);
   const [dislikeVal, setDislikes] = useState(0);
   const [dislikeState, setDislikeState] = useState(false);
-  const { userInfo } = useSelector(state => state);
+  const { userInfo } = useSelector((state) => state);
 
   // console.log("comment Reply", comment);
   let likeCount = comment.likes.length + likeVal;
@@ -29,14 +29,14 @@ const Reply = ({ comment }) => {
       method: "post",
       url: "http://localhost:8080/post/comment/likeState",
       params: { userId: userInfo.id, commentId: comment.id },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         if (res.data === true) {
           setLikeState(true);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
 
@@ -44,20 +44,20 @@ const Reply = ({ comment }) => {
       method: "post",
       url: "http://localhost:8080/post/comment/dislikeState",
       params: { userId: userInfo.id, commentId: comment.id },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         if (res.data === true) {
           setDislikeState(true);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const likeCheck = res => {
+  const likeCheck = (res) => {
     if (res.status !== 201) {
       message.warning(res.data);
       return false;
@@ -73,15 +73,15 @@ const Reply = ({ comment }) => {
       method: "post",
       url: "http://localhost:8080/post/comment/like",
       params: { commentId: comment.id },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         if (likeCheck(res)) {
           setLikes(likeVal === 0 ? pluelikeOrUnlikeVal : 0);
           setLikeState(likeState ? false : true);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -91,15 +91,15 @@ const Reply = ({ comment }) => {
       method: "post",
       url: "http://localhost:8080/post/comment/dislike",
       params: { commentId: comment.id },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         if (likeCheck(res)) {
           setDislikes(dislikeVal === 0 ? pluelikeOrUnlikeVal : 0);
           setDislikeState(dislikeState ? false : true);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -108,7 +108,7 @@ const Reply = ({ comment }) => {
     <span key="comment-basic-like">
       <Tooltip title="Like">
         {createElement(likeState === true ? LikeFilled : LikeOutlined, {
-          onClick: like
+          onClick: like,
         })}
       </Tooltip>
       <span className="comment-action">{likeCount}</span>
@@ -118,12 +118,12 @@ const Reply = ({ comment }) => {
         {React.createElement(
           dislikeState === true ? DislikeFilled : DislikeOutlined,
           {
-            onClick: dislike
+            onClick: dislike,
           }
         )}
       </Tooltip>
       <span className="comment-action">{dislikeCount}</span>
-    </span>
+    </span>,
     // <span key="comment-basic-reply-to">Reply to</span>
   ];
 
@@ -131,7 +131,7 @@ const Reply = ({ comment }) => {
     <Comment
       style={{ width: "300px" }}
       actions={actions}
-      author={comment.username}
+      author={comment.nickname}
       avatar={
         <Avatar
           src="https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"

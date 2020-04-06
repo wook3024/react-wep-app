@@ -15,19 +15,22 @@ router.get("", async (req, res, next) => {
           model: db.Comment,
           include: [
             {
-              model: db.Like
+              model: db.Like,
             },
             {
-              model: db.Dislike
-            }
+              model: db.Dislike,
+            },
           ],
         },
         {
-          model: db.Image
+          model: db.Image,
         },
       ],
-      order: [["created_at", "DESC"], [db.Comment, "created_at", "ASC"]],
-      attributes: ["id", "userId", "title", "content", "created_at"]
+      order: [
+        ["created_at", "DESC"],
+        [db.Comment, "created_at", "ASC"],
+      ],
+      attributes: ["id", "userId", "title", "content", "created_at"],
     });
 
     return res.json(posts);
@@ -41,7 +44,7 @@ router.post("/upload", (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       try {
-        upload(req, res, err => {
+        upload(req, res, (err) => {
           // console.log("user check", req);
           if (err instanceof multer.MulterError) {
             return next(err);
@@ -51,14 +54,14 @@ router.post("/upload", (req, res, next) => {
 
           return (async () => {
             if (!(await req).files[0]) {
-              return res.send("Upload Complete! 🐳")
+              return res.send("Upload Complete! 🐳");
             }
-            (await req).files.forEach(file => {
+            (await req).files.forEach((file) => {
               console.log("file info", file.filename);
               console.log("file.path", file);
               db.Image.create({
                 postId: req.query.postId,
-                filename: file.filename
+                filename: file.filename,
               });
             });
             return res.status(201).send("Upload Complete With Images! 🐳");
@@ -84,7 +87,6 @@ router.get("/comment", async (req, res, next) => {
     const comments = await db.Comment.findAll({
       where: { postId: data.postId },
       order: [["created_at", "DESC"]],
-      attributes: ["id", "comment", "username", "created_at"]
     });
     return res.json(comments);
   } catch (error) {
@@ -101,7 +103,8 @@ router.post("/comment/add", async (req, res, next) => {
       const post = db.Comment.create({
         comment: data.comment,
         postId: data.postId,
-        username: data.username
+        username: data.username,
+        nickname: data.nickname,
       });
       // console.log("commnet add check", await post);
       if (await post) {
@@ -123,19 +126,19 @@ router.post("/comment/like", async (req, res, next) => {
       const userInfo = req.user.dataValues;
       // console.log("Like post", userInfo);
       const checkStatus = db.Like.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
 
       console.log("Like post user check", await checkStatus);
       if ((await checkStatus) === null) {
         db.Like.create({
           userId: userInfo.id,
-          commentId: data.commentId
+          commentId: data.commentId,
         });
         return res.status(201).send("like");
       }
       db.Like.destroy({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
       return res.status(201).send("unLike");
     }
@@ -150,10 +153,11 @@ router.post("/comment/likeState", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
+      if (!data.commentId) return res.status(201).send("false");
       console.log("data Info! 😱", data);
       const userInfo = req.user.dataValues;
       const checkStatus = db.Like.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
 
       // console.log("Like post user check", await checkStatus);
@@ -176,18 +180,18 @@ router.post("/comment/dislike", async (req, res, next) => {
       const userInfo = req.user.dataValues;
       // console.log("Dislike post", userInfo);
       const checkStatus = db.Dislike.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
 
       if ((await checkStatus) === null) {
         db.Dislike.create({
           userId: userInfo.id,
-          commentId: data.commentId
+          commentId: data.commentId,
         });
         return res.status(201).send("like");
       }
       db.Dislike.destroy({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
       return res.status(201).send("unLike");
     }
@@ -203,8 +207,9 @@ router.post("/comment/dislikeState", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       const userInfo = req.user.dataValues;
+      if (!data.commentId) return res.status(201).send("false");
       const checkStatus = db.Dislike.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId }
+        where: { userId: userInfo.id, commentId: data.commentId },
       });
       if ((await checkStatus) === null) {
         return res.status(201).send("false");
@@ -228,19 +233,19 @@ router.post("/publish", async (req, res, next) => {
       return db.Post.create({
         userId: user.id,
         title: data.title,
-        content: data.content
+        content: data.content,
       }).then(async () => {
         return res.json(
           await db.Post.findOne({
             attributes: ["id"],
-            order: [["id", "DESC"]]
+            order: [["id", "DESC"]],
           })
         );
       });
     }
     res.send("Login Please! 😱");
   } catch (error) {
-    console.error(error);
+    console.error("😡 ", error);
     next(error);
   }
 });
@@ -251,7 +256,7 @@ router.post("/remove", async (req, res, next) => {
       const data = req.query;
       // console.log("remove proccessiong", data);
       const post = db.Post.destroy({
-        where: { userId: data.userId, id: data.postId }
+        where: { userId: data.userId, id: data.postId },
       });
       // console.log("remove post", await post);
       if (await post) {
@@ -261,7 +266,7 @@ router.post("/remove", async (req, res, next) => {
     }
     res.send("Login Please! 😱");
   } catch (error) {
-    console.error(error);
+    console.error("😡 ", error);
     next(error);
   }
 });
@@ -282,7 +287,55 @@ router.post("/update", async (req, res, next) => {
     }
     res.send("Login Please! 😱");
   } catch (error) {
-    console.error(error);
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/user/nicknameChange", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      console.log("update check", req.query);
+      return db.User.update(
+        { nickname: req.query.changeToNickname },
+        { where: { id: req.query.id } }
+      )
+        .then(async () => {
+          const user = await db.User.findOne({ where: { id: req.query.id } });
+          return res.json(user);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+          next(error);
+        });
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/user/descriptionChange", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      console.log("update check", req.query);
+      return db.User.update(
+        { description: req.query.description },
+        { where: { id: req.query.id } }
+      )
+        .then(async () => {
+          const user = await db.User.findOne({ where: { id: req.query.id } });
+          return res.json(user);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+          next(error);
+        });
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
     next(error);
   }
 });

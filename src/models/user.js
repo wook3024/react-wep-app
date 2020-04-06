@@ -5,24 +5,28 @@ module.exports = (sequelize, DataTypes) => {
       username: {
         type: DataTypes.STRING(20),
         allowNull: false,
-        unique: true
+        unique: true,
       },
       password: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
       },
       nickname: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("now()")
-      }
+        defaultValue: sequelize.literal("now()"),
+      },
     },
     {
-      timestamps: false
+      timestamps: false,
     }
   );
 };

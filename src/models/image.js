@@ -2,26 +2,18 @@ module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
     "image",
     {
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-      },
-      postId: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-      },
       filename: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: false,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: sequelize.literal("now()")
-      }
+        defaultValue: sequelize.literal("now()"),
+      },
     },
     {
-      timestamps: false
+      timestamps: false,
     }
   );
 };

@@ -10,7 +10,7 @@ router.post("/signup", async (req, res, next) => {
     const userInfo = req.query;
     const user = db.User.findOne({
       where: { username: userInfo.username },
-      attributes: ["username"]
+      attributes: ["username"],
     });
     console.log("User create", userInfo, await user);
     if ((await user) !== null) {
@@ -19,7 +19,7 @@ router.post("/signup", async (req, res, next) => {
     db.User.create({
       username: userInfo.username,
       password: userInfo.password,
-      nickname: userInfo.nickname
+      nickname: userInfo.nickname,
     });
     res.status(200).send("Sign Up Success! 🐳");
   } catch (error) {
@@ -38,16 +38,29 @@ router.post("/signin", (req, res, next) => {
       console.log("message", message);
       return res.json(message);
     }
-    return req.login(user, async loginError => {
+    return req.login(user, async (loginError) => {
       try {
         if (loginError) {
           return next(loginError);
         }
+
         const fullUser = await db.User.findOne({
           where: { username: user.username },
-          attributes: ["username", "nickname", "id"]
+          attributes: [
+            "username",
+            "nickname",
+            "id",
+            "description",
+            "created_at",
+          ],
         });
-        // console.log("fullUser", user);
+        const profileImage = await db.Image.findOne({
+          where: { userId: user.id },
+        });
+
+        if (profileImage !== null) {
+          fullUser.dataValues.profileImage = profileImage.dataValues.filename;
+        }
         return res.json(fullUser);
       } catch (error) {
         console.error(error);
@@ -60,6 +73,14 @@ router.post("/signin", (req, res, next) => {
 router.post("/signincheck", async (req, res, next) => {
   if (req.isAuthenticated()) {
     const user = req.user;
+
+    const profileImage = await db.Image.findOne({
+      where: { userId: user.dataValues.id },
+    });
+
+    if (profileImage !== null) {
+      user.dataValues.profileImage = profileImage.dataValues.filename;
+    }
     return res.json(user);
   }
   res.send("😡  Login is required.");

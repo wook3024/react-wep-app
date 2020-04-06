@@ -9,12 +9,12 @@ const { TextArea } = Input;
 
 const Commentform = ({ postId }) => {
   const [comment, setComment] = useState("");
-  const { username } = useSelector(state => state.userInfo);
+  const { userInfo } = useSelector((state) => state);
   const commentForm = useRef(null);
 
   const dispatch = useDispatch();
 
-  const changeComment = e => {
+  const changeComment = (e) => {
     setComment(e.target.value);
   };
 
@@ -22,23 +22,27 @@ const Commentform = ({ postId }) => {
     axios({
       method: "post",
       url: "http://localhost:8080/post/comment/add",
-      params: { postId, username, comment },
-      withCredentials: true
-    }).then(res => {
+      params: {
+        postId,
+        username: userInfo && userInfo.username,
+        nickname: userInfo && userInfo.nickname,
+        comment,
+      },
+      withCredentials: true,
+    }).then((res) => {
       console.log("comment add", res);
 
       dispatch({
         type: ADD_COMMENT_ACTION,
         payload: {
           postId,
-          username,
+          username: userInfo && userInfo.username,
+          nickname: userInfo && userInfo.nickname,
           comment,
           likes: [],
           dislikes: [],
-          created_at: Date()
-        }
-      }).catch(error => {
-        console.error("😡 ", error);
+          created_at: Date(),
+        },
       });
 
       if (res.status === 201) {
@@ -59,7 +63,7 @@ const Commentform = ({ postId }) => {
         style={{
           margin: "0 0 0.5rem 0",
           width: "300px",
-          display: "block"
+          display: "block",
         }}
         onChange={changeComment}
         ref={commentForm}

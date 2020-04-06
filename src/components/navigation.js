@@ -12,45 +12,47 @@ const { SubMenu } = Menu;
 const Span = styled.span``;
 
 const Navigation = () => {
-  const { userInfo } = useSelector(state => state);
+  const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("reload check");
     axios({
       method: "post",
       url: "http://localhost:8080/user/signincheck",
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
+        console.log("login check", res);
         return dispatch({
           type: USER_INFO_REFRESH,
-          payload: res.data
+          payload: res.data,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [dispatch]);
+  }, [dispatch, userInfo && userInfo.prolileImage]);
 
   const logOut = () => {
     axios({
       method: "post",
       url: "http://localhost:8080/user/logout",
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         message.success(res.data);
         dispatch({
-          type: LOG_OUT_ACTION
+          type: LOG_OUT_ACTION,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
   };
 
-  const handleClick = e => {
+  const handleClick = (e) => {
     // console.log("click ", e);
   };
 
@@ -61,7 +63,7 @@ const Navigation = () => {
         display: "flex",
         flex: 1,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
       }}
       onClick={handleClick}
       mode="horizontal"
