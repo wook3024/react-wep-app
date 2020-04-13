@@ -17,25 +17,25 @@ const PostForm = ({ postId }) => {
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
 
-  const { userInfo } = useSelector(state => state);
+  const { userInfo } = useSelector((state) => state);
 
   const inputTitle = useRef(null);
   const inputContent = useRef(null);
 
   const dispatch = useDispatch();
 
-  const getBase64 = file => {
+  const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
   const handleCancel = () => setPreviewVisible(false);
 
-  const handlePreview = async file => {
+  const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -55,10 +55,10 @@ const PostForm = ({ postId }) => {
     </div>
   );
 
-  const onChangeTitle = e => {
+  const onChangeTitle = (e) => {
     setContent(e.target.value);
   };
-  const onChangeContent = e => {
+  const onChangeContent = (e) => {
     setTitle(e.target.value);
     console.log("postId", postId);
   };
@@ -70,22 +70,22 @@ const PostForm = ({ postId }) => {
       params: {
         id: postId,
         title,
-        content
+        content,
       },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         console.log(res);
 
         dispatch({
           type: UPDATE_POST_ACTION,
-          payload: { content, title, id: postId }
+          payload: { content, title, id: postId },
         });
 
         inputTitle.current.state.value = null;
         inputContent.current.state.value = null;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
   }, [content, dispatch, postId, title]);
@@ -106,45 +106,45 @@ const PostForm = ({ postId }) => {
       url: "http://localhost:8080/post/publish",
       params: {
         title,
-        content
+        content,
       },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
-        fileList.forEach(file => {
+      .then((res) => {
+        fileList.forEach((file) => {
           formData.append("file", file.originFileObj);
         });
         console.log("res", res);
         axios({
           method: "post",
-          url: "http://localhost:8080/post/upload",
+          url: "http://localhost:8080/post/uploadPostImage",
           data: formData,
           params: { postId: res.data.id },
           withCredentials: true,
         })
-          .then(res => {
+          .then((res) => {
             console.log("upload", res);
             message.success(res.data);
           })
-          .catch(error => {
+          .catch((error) => {
             message.warning("Upload failed");
           });
 
         axios({
           method: "get",
-          url: "http://localhost:8080/post"
+          url: "http://localhost:8080/post",
         })
-          .then(res => {
+          .then((res) => {
             dispatch({
               type: GET_POST_DATA,
-              payload: res.data
+              payload: res.data,
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("😡 ", error);
           });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
 
@@ -157,7 +157,7 @@ const PostForm = ({ postId }) => {
     <Form
       style={{
         margin: " 0 auto",
-        width: 350
+        width: 350,
       }}
     >
       <Input
@@ -202,7 +202,7 @@ const PostForm = ({ postId }) => {
           alignItems: "center",
           justifyContent: "center",
           margin: "0 auto",
-          width: 350
+          width: 350,
         }}
       >
         publish

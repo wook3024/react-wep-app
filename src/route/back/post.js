@@ -47,7 +47,7 @@ router.get("", async (req, res, next) => {
   }
 });
 
-router.post("/upload", (req, res, next) => {
+router.post("/uploadPostImage", (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       try {
@@ -67,11 +67,64 @@ router.post("/upload", (req, res, next) => {
               console.log("file info", file.filename);
               console.log("file.path", file);
               db.Image.create({
-                postId: req.query.postId,
+                postId: req.query.postId ? req.query.postId : null,
                 filename: file.filename,
+                userId: req.query.userId ? req.query.userId : null,
               });
             });
             return res.status(201).send("Upload Complete With Images! 🐳");
+          })();
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    } else {
+      res.send("Login Please! 😱");
+    }
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/uploadProfileImage", (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        upload(req, res, (err) => {
+          // console.log("user check", req);
+          if (err instanceof multer.MulterError) {
+            return next(err);
+          } else if (err) {
+            return next(err);
+          }
+
+          return (async () => {
+            if (!(await req).files[0]) {
+              return res.send("Upload failed! 😡");
+            }
+            const imageCheck = db.Image.findOne({
+              where: { userId: req.query.userId },
+            });
+            console.log("imageCheck", await imageCheck);
+            if ((await imageCheck) === null) {
+              db.Image.create({
+                postId: req.query.postId ? req.query.postId : null,
+                filename: (await req).files[0].filename,
+                userId: req.query.userId ? req.query.userId : null,
+              });
+            } else {
+              db.Image.update(
+                {
+                  filename: (await req).files[0].filename,
+                },
+                {
+                  where: { userId: req.query.userId ? req.query.userId : null },
+                }
+              );
+            }
+            return res.status(201).send("Udate Complete With Images! 🐳");
           })();
         });
       } catch (error) {
