@@ -130,7 +130,13 @@ const Postcard = ({ post }) => {
       >
         <Meta
           avatar={
-            <Avatar src="https://mblogthumb-phinf.pstatic.net/MjAxODA2MjZfMjg3/MDAxNTMwMDE5ODgyNDY5.xUK3HyMnSuvUkq4tjOyh14UNteoKwMYiTn_dlVomh8Mg.xH9q9sPqhG7qnNAGPs6oxyiODpsECynytEfwikDmoIsg.JPEG.raviefille/%EB%92%B9%EA%B5%B4%ED%95%91%ED%81%AC_%281%29.jpg?type=w2" />
+            <Avatar
+              src={
+                post.data.user.images[0]
+                  ? require(`../images/${post.data.user.images[0].filename}`)
+                  : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
+              }
+            />
           }
           title={post.data.title}
           description={post.data.content}

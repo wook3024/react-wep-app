@@ -110,6 +110,7 @@ const Profile = () => {
       })
       .catch((error) => {
         message.warning("Upload failed");
+        console.error("😡 ", error);
       });
   };
 

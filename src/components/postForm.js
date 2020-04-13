@@ -77,10 +77,11 @@ const PostForm = ({ postId }) => {
       .then((res) => {
         console.log(res);
 
-        dispatch({
-          type: UPDATE_POST_ACTION,
-          payload: { content, title, id: postId },
-        });
+        //안해도 되는건가?
+        // dispatch({
+        //   type: UPDATE_POST_ACTION,
+        //   payload: { content, title, id: postId },
+        // });
 
         inputTitle.current.state.value = null;
         inputContent.current.state.value = null;
@@ -88,7 +89,7 @@ const PostForm = ({ postId }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [content, dispatch, postId, title]);
+  }, [content, postId, title]);
 
   const onSubmit = useCallback(async () => {
     if (!(userInfo && userInfo.username)) {
@@ -128,6 +129,7 @@ const PostForm = ({ postId }) => {
           })
           .catch((error) => {
             message.warning("Upload failed");
+            console.error("😡 ", error);
           });
 
         axios({

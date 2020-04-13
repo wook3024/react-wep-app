@@ -49,7 +49,7 @@ const Reply = ({ comment }) => {
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("😡 ", error);
       });
 
     axios({
@@ -64,7 +64,7 @@ const Reply = ({ comment }) => {
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("😡 ", error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,7 +94,7 @@ const Reply = ({ comment }) => {
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("😡 ", error);
       });
   };
 
@@ -112,7 +112,7 @@ const Reply = ({ comment }) => {
         }
       })
       .catch((error) => {
-        console.error(error);
+        console.error("😡 ", error);
       });
   };
 
@@ -126,22 +126,26 @@ const Reply = ({ comment }) => {
         userId: userInfo && userInfo.id,
       },
       withCredentials: true,
-    }).then((res) => {
-      console.log("commentRemove response", res, comment.id, comment.postId);
-      if (res.status === 201) {
-        message.success(res.data);
-      } else {
-        message.warning(res.data);
-      }
+    })
+      .then((res) => {
+        console.log("commentRemove response", res, comment.id, comment.postId);
+        if (res.status === 201) {
+          message.success(res.data);
+        } else {
+          message.warning(res.data);
+        }
 
-      dispatch({
-        type: COMMENT_REMOVE_ACTION,
-        payload: {
-          commentId: comment.id,
-          postId: comment.postId,
-        },
+        dispatch({
+          type: COMMENT_REMOVE_ACTION,
+          payload: {
+            commentId: comment.id,
+            postId: comment.postId,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
       });
-    });
   };
 
   const commentChangeToggle = () => {
@@ -164,23 +168,27 @@ const Reply = ({ comment }) => {
         commentId: comment.id,
         comment: commentValue,
       },
-    }).then((res) => {
-      console.log("commnetUpdateResponse", res);
+    })
+      .then((res) => {
+        console.log("commnetUpdateResponse", res);
 
-      if (res.status !== 201) {
-        return message.warning(res.data);
-      }
-      message.success(res.data);
+        if (res.status !== 201) {
+          return message.warning(res.data);
+        }
+        message.success(res.data);
 
-      dispatch({
-        type: COMMENT_UPDATE_ACTION,
-        payload: {
-          commentId: comment.id,
-          postId: comment.postId,
-          comment: commentValue,
-        },
+        dispatch({
+          type: COMMENT_UPDATE_ACTION,
+          payload: {
+            commentId: comment.id,
+            postId: comment.postId,
+            comment: commentValue,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
       });
-    });
 
     console.log("commentChangeSubmit");
   };
@@ -223,7 +231,11 @@ const Reply = ({ comment }) => {
       author={comment.user ? comment.user.nickname : "not found"}
       avatar={
         <Avatar
-          src="https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
+          src={
+            comment.user.images[0]
+              ? require(`../images/${comment.user.images[0].filename}`)
+              : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
+          }
           alt="Han Solo"
         />
       }

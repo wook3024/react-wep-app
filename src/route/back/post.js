@@ -23,6 +23,11 @@ router.get("", async (req, res, next) => {
             },
             {
               model: db.User,
+              include: [
+                {
+                  model: db.Image,
+                },
+              ],
             },
           ],
         },
@@ -31,6 +36,11 @@ router.get("", async (req, res, next) => {
         },
         {
           model: db.User,
+          include: [
+            {
+              model: db.Image,
+            },
+          ],
           attributes: ["username", "id"],
         },
       ],
