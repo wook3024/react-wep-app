@@ -44,5 +44,8 @@ db.Image.belongsTo(db.Post, { foreignKey: "postId" });
 /*--------------------------------------------------*/
 db.User.hasMany(db.Image);
 db.Image.belongsTo(db.User, { foreignKey: "userId" });
+/*--------------------------------------------------*/
+db.User.hasMany(db.Comment);
+db.Comment.belongsTo(db.User, { foreignKey: "userId" });
 
 module.exports = db;

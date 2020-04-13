@@ -11,7 +11,7 @@ import "./App.css";
 const Div = styled.div``;
 
 const Profile = () => {
-  const { post, userInfo } = useSelector(state => state);
+  const { post, userInfo } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   console.log("Post.js", post);
@@ -19,15 +19,15 @@ const Profile = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8080/post"
+      url: "http://localhost:8080/post",
     })
-      .then(postData => {
+      .then((postData) => {
         dispatch({
           type: GET_POST_DATA,
-          payload: postData.data
+          payload: postData.data,
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
   }, [dispatch, post.length]);
@@ -35,7 +35,7 @@ const Profile = () => {
   return (
     <Div>
       {userInfo && userInfo.username && <PostForm />}
-      {post.map(data => {
+      {post.map((data) => {
         return <Postcard key={data.created_at} post={{ data }} />;
       })}
     </Div>

@@ -24,36 +24,42 @@ const Commentform = ({ postId }) => {
       url: "http://localhost:8080/post/comment/add",
       params: {
         postId,
-        username: userInfo && userInfo.username,
-        nickname: userInfo && userInfo.nickname,
+        userId: userInfo && userInfo.id,
         comment,
       },
       withCredentials: true,
     }).then((res) => {
-      console.log("comment add", res);
+      commentForm.current.state.value = null;
+      setComment(null);
 
+      console.log("comment add", res);
+      if (!res.data.fulfillmentValue) {
+        return message.warning(res.data);
+      }
       dispatch({
         type: ADD_COMMENT_ACTION,
         payload: {
+          id: res.data.fulfillmentValue.id,
           postId,
-          username: userInfo && userInfo.username,
-          nickname: userInfo && userInfo.nickname,
+          userId: userInfo && userInfo.id,
           comment,
           likes: [],
           dislikes: [],
           created_at: Date(),
+          user: {
+            username: userInfo && userInfo.username,
+            nickname: userInfo && userInfo.nickname,
+            id: userInfo && userInfo.id,
+          },
         },
       });
-
-      if (res.status === 201) {
-        message.success(res.data);
-      } else {
-        message.warning(res.data);
-      }
+      message.success("Comment add Complete! 🐳");
+      // if (res.status === 201) {
+      //   message.success(res.data);
+      // } else {
+      //   message.warning(res.data);
+      // }
     });
-
-    commentForm.current.state.value = null;
-    setComment(null);
   };
 
   return (

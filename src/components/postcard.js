@@ -4,7 +4,7 @@ import { Card, Avatar, Button, Popover, message, Tooltip } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
-  MessageOutlined
+  MessageOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 
@@ -19,7 +19,7 @@ const { Meta } = Card;
 const Postcard = ({ post }) => {
   const [revisePost, setRevisePost] = useState(false);
   const [addComment, setAddComment] = useState(false);
-  const { userInfo } = useSelector(state => state);
+  const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
@@ -46,21 +46,21 @@ const Postcard = ({ post }) => {
       method: "post",
       url: "http://localhost:8080/post/remove",
       params: { postId: post.data.id, userId: userInfo.id },
-      withCredentials: true
+      withCredentials: true,
     })
-      .then(res => {
+      .then((res) => {
         console.log("postRemove result", res);
         if (res.status === 201) {
           message.success(res.data);
           dispatch({
             type: REMOVE_POST_ACTION,
-            payload: { id: post.data.id, userId: userInfo.id }
+            payload: { id: post.data.id, userId: userInfo.id },
           });
         } else {
           message.warning(res.data);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("😡 ", error);
       });
   };
@@ -81,15 +81,17 @@ const Postcard = ({ post }) => {
         display: "flex",
         flex: 1,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
       }}
     >
       <Card
         style={{ width: 400 }}
         cover={
           post.data.images[0] &&
-          post.data.images.map(image => {
-            return <img alt="example" src={require(`../images/${image.filename}`)} />;
+          post.data.images.map((image) => {
+            return (
+              <img alt="example" src={require(`../images/${image.filename}`)} />
+            );
           })
         }
         actions={[
@@ -123,7 +125,7 @@ const Postcard = ({ post }) => {
             }
           >
             <EllipsisOutlined key="ellipsis" />
-          </Popover>
+          </Popover>,
         ]}
       >
         <Meta
@@ -137,7 +139,7 @@ const Postcard = ({ post }) => {
       {addComment && <Commentform postId={post.data.id} />}
       {revisePost && <PostForm postId={post.data.id} />}
       {post.data.comments[0] &&
-        post.data.comments.map(comment => {
+        post.data.comments.map((comment) => {
           return <Comment comment={comment} />;
         })}
     </Card>

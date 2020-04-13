@@ -6,7 +6,7 @@ import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 import "./App.css";
-import { USER_INFO_REFRESH, GET_POST_DATA } from "../reducers/actions";
+import { USER_INFO_REFRESH } from "../reducers/actions";
 
 const Div = styled.div``;
 const { TextArea } = Input;
@@ -68,7 +68,7 @@ const Profile = () => {
     })
       .then((res) => {
         console.log("changeToNickname result", res);
-        return dispatch({
+        dispatch({
           type: USER_INFO_REFRESH,
           payload: res.data,
         });

@@ -1,6 +1,6 @@
-import React, { createElement, useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { Comment, Tooltip, Avatar, message } from "antd";
+import React, { createElement, useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
 import moment from "moment";
 import {
   DislikeOutlined,
@@ -10,14 +10,26 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 
+import {
+  COMMENT_REMOVE_ACTION,
+  COMMENT_UPDATE_ACTION,
+} from "../reducers/actions";
+
+const { TextArea } = Input;
+
 const Reply = ({ comment }) => {
   const [likeVal, setLikes] = useState(0);
   const [likeState, setLikeState] = useState(false);
   const [dislikeVal, setDislikes] = useState(0);
   const [dislikeState, setDislikeState] = useState(false);
+  const [changeState, setChangeState] = useState(false);
+  const [commentValue, setCommentValue] = useState("");
+  const commentForm = useRef(null);
   const { userInfo } = useSelector((state) => state);
 
-  // console.log("comment Reply", comment);
+  const dispatch = useDispatch();
+
+  // console.log("comment Info", comment);
   let likeCount = comment.likes.length + likeVal;
   let dislikeCount = comment.dislikes.length + dislikeVal;
 
@@ -104,6 +116,75 @@ const Reply = ({ comment }) => {
       });
   };
 
+  const commentRemove = () => {
+    console.log("commentRemoveCheck");
+    axios({
+      method: "post",
+      url: "http://localhost:8080/post/comment/remove",
+      params: {
+        commentId: comment.id,
+        userId: userInfo && userInfo.id,
+      },
+      withCredentials: true,
+    }).then((res) => {
+      console.log("commentRemove response", res, comment.id, comment.postId);
+      if (res.status === 201) {
+        message.success(res.data);
+      } else {
+        message.warning(res.data);
+      }
+
+      dispatch({
+        type: COMMENT_REMOVE_ACTION,
+        payload: {
+          commentId: comment.id,
+          postId: comment.postId,
+        },
+      });
+    });
+  };
+
+  const commentChangeToggle = () => {
+    setChangeState(changeState ? false : true);
+  };
+
+  const commentValueChange = (e) => {
+    setCommentValue(e.target.value);
+    console.log(commentValue);
+  };
+
+  const commentChangeSubmit = () => {
+    setChangeState(changeState ? false : true);
+
+    axios({
+      method: "post",
+      url: "http://localhost:8080/post/comment/change",
+      withCredentials: true,
+      params: {
+        commentId: comment.id,
+        comment: commentValue,
+      },
+    }).then((res) => {
+      console.log("commnetUpdateResponse", res);
+
+      if (res.status !== 201) {
+        return message.warning(res.data);
+      }
+      message.success(res.data);
+
+      dispatch({
+        type: COMMENT_UPDATE_ACTION,
+        payload: {
+          commentId: comment.id,
+          postId: comment.postId,
+          comment: commentValue,
+        },
+      });
+    });
+
+    console.log("commentChangeSubmit");
+  };
+
   const actions = [
     <span key="comment-basic-like">
       <Tooltip title="Like">
@@ -124,27 +205,56 @@ const Reply = ({ comment }) => {
       </Tooltip>
       <span className="comment-action">{dislikeCount}</span>
     </span>,
-    // <span key="comment-basic-reply-to">Reply to</span>
+    <span key="comment-basic-reply-to">
+      {userInfo && userInfo.id === comment.user.id ? "Reply to" : ""}
+    </span>,
+    <span key="comment-basic-change" onClick={commentChangeToggle}>
+      {userInfo && userInfo.id === comment.user.id ? "Change" : ""}
+    </span>,
+    <span key="comment-basic-remove" onClick={commentRemove}>
+      {userInfo && userInfo.id === comment.user.id ? "Remove" : ""}
+    </span>,
   ];
 
   return (
     <Comment
       style={{ width: "300px" }}
       actions={actions}
-      author={comment.nickname}
+      author={comment.user ? comment.user.nickname : "not found"}
       avatar={
         <Avatar
           src="https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
           alt="Han Solo"
         />
       }
-      content={comment.comment}
+      content={
+        changeState ? (
+          <Form>
+            <TextArea
+              rows={4}
+              style={{
+                margin: "0 0 0.5rem 0",
+                width: "300px",
+                display: "block",
+              }}
+              onChange={commentValueChange}
+              ref={commentForm}
+              defaultValue={comment.comment}
+            />
+            <Button type="primary" onClick={commentChangeSubmit}>
+              submit
+            </Button>
+          </Form>
+        ) : (
+          comment.comment
+        )
+      }
       datetime={
         <Tooltip title={moment().format("YYYY-MM-DD HH:mm:ss")}>
           <span>{moment(comment.created_at).fromNow()}</span>
         </Tooltip>
       }
-    />
+    ></Comment>
   );
 };
 

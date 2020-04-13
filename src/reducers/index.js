@@ -6,6 +6,8 @@ import {
   REMOVE_POST_ACTION,
   UPDATE_POST_ACTION,
   ADD_COMMENT_ACTION,
+  COMMENT_REMOVE_ACTION,
+  COMMENT_UPDATE_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -58,6 +60,24 @@ const reducer = (state = initialState, action) => {
         },
       };
     }
+    // case USER_NICKNAME_REFRESH: {
+    //   return {
+    //     ...state,
+    //     userInfo: {
+    //       ...action.payload,
+    //       created_at: moment(action.payload.created_at).format("LL"),
+    //     },
+    //     post: state.post.map((post) => {
+    //       post.comments.map((comment) => {
+    //         if (comment.id === action.payload.id) {
+    //           comment.nickname = action.payload.nickname;
+    //         }
+    //         return comment;
+    //       });
+    //       return post;
+    //     }),
+    //   };
+    // }
     case GET_POST_DATA: {
       return {
         ...state,
@@ -89,6 +109,35 @@ const reducer = (state = initialState, action) => {
       );
       // console.log("ADD_COMMENT CHECK", postIndex, action.payload);
       state.post[postIndex].comments.push(action.payload);
+      return {
+        ...state,
+      };
+    }
+    case COMMENT_REMOVE_ACTION: {
+      let postIndex = state.post.findIndex(
+        (post) => post.id === action.payload.postId
+      );
+      state.post[postIndex].comments = state.post[postIndex].comments.filter(
+        (comment) => {
+          return comment.id !== action.payload.commentId;
+        }
+      );
+      return {
+        ...state,
+      };
+    }
+    case COMMENT_UPDATE_ACTION: {
+      let postIndex = state.post.findIndex(
+        (post) => post.id === action.payload.postId
+      );
+      state.post[postIndex].comments = state.post[postIndex].comments.map(
+        (comment) => {
+          if (comment.id === action.payload.commentId) {
+            comment.comment = action.payload.comment;
+          }
+          return comment;
+        }
+      );
       return {
         ...state,
       };

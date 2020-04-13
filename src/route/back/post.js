@@ -13,6 +13,7 @@ router.get("", async (req, res, next) => {
       include: [
         {
           model: db.Comment,
+          attributes: ["id", "comment", "postId", "userId", "created_at"],
           include: [
             {
               model: db.Like,
@@ -20,17 +21,23 @@ router.get("", async (req, res, next) => {
             {
               model: db.Dislike,
             },
+            {
+              model: db.User,
+            },
           ],
         },
         {
           model: db.Image,
+        },
+        {
+          model: db.User,
+          attributes: ["username", "id"],
         },
       ],
       order: [
         ["created_at", "DESC"],
         [db.Comment, "created_at", "ASC"],
       ],
-      attributes: ["id", "userId", "title", "content", "created_at"],
     });
 
     return res.json(posts);
@@ -100,15 +107,15 @@ router.post("/comment/add", async (req, res, next) => {
     if (req.isAuthenticated()) {
       // console.log("commnet add query check", req.query);
       const data = req.query;
+      console.log("data check", data);
       const post = db.Comment.create({
         comment: data.comment,
         postId: data.postId,
-        username: data.username,
-        nickname: data.nickname,
+        userId: data.userId,
       });
       // console.log("commnet add check", await post);
       if (await post) {
-        return res.status(201).send("Comment add Complete! 🐳");
+        return res.json(post);
       }
       return res.send("Comment add failure. 😱");
     }
@@ -215,6 +222,56 @@ router.post("/comment/dislikeState", async (req, res, next) => {
         return res.status(201).send("false");
       }
       return res.status(201).send("true");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/comment/remove", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const data = req.query;
+      const userInfo = req.user.dataValues;
+      if (!data.commentId) return res.send("not found! 😱");
+      const removeStatus = db.Comment.destroy({
+        where: { userId: userInfo.id, id: data.commentId },
+      });
+      console.log("removeStatus", await removeStatus);
+      if ((await removeStatus) === 0) {
+        return res.send(
+          "It's not your comment! or The comment has already been removed.😱"
+        );
+      }
+      return res.status(201).send("Remove comment success! 🐳");
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/comment/change", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const data = req.query;
+      const userInfo = req.user.dataValues;
+      if (!data.commentId) return res.send("not found! 😱");
+      console.log("check data", userInfo.id, data.commentId, data.comment);
+      const updateStatus = db.Comment.update(
+        { comment: data.comment },
+        { where: { userId: userInfo.id, id: data.commentId } }
+      );
+      console.log("updateStatus", await updateStatus);
+      if ((await updateStatus) === 0) {
+        return res.send(
+          "It's not your comment! or The comment has already been updated.😱"
+        );
+      }
+      return res.status(201).send("Update comment success! 🐳");
     }
     res.send("Login Please! 😱");
   } catch (error) {
