@@ -165,13 +165,12 @@ const Profile = () => {
         label={
           <Div>
             ProfileImage&nbsp;
-            {selectedFile === null ? (
-              <Upload {...props}>
-                <Button type="primary" size={"small"}>
-                  select
-                </Button>
-              </Upload>
-            ) : (
+            <Upload {...props}>
+              <Button type="primary" size={"small"}>
+                select
+              </Button>
+            </Upload>
+            {selectedFile !== null && (
               <Button type="primary" size={"small"} onClick={handlePost}>
                 modify
               </Button>

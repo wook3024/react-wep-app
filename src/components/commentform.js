@@ -5,10 +5,13 @@ import axios from "axios";
 
 import { ADD_COMMENT_ACTION } from "../reducers/actions";
 
+const moment = require("moment");
+const { now } = moment;
+
 const { TextArea } = Input;
 
-const Commentform = ({ postId }) => {
-  const [comment, setComment] = useState("");
+const Commentform = ({ post, comment }) => {
+  const [commentContent, setComment] = useState("");
   const { userInfo } = useSelector((state) => state);
   const commentForm = useRef(null);
 
@@ -19,13 +22,17 @@ const Commentform = ({ postId }) => {
   };
 
   const addCommnet = () => {
+    console.log("comment addComment", comment);
     axios({
       method: "post",
       url: "http://localhost:8080/post/comment/add",
       params: {
-        postId,
+        postId: post.id,
         userId: userInfo && userInfo.id,
-        comment,
+        comment: commentContent,
+        depth: comment ? comment.depth + 1 : 1,
+        group: comment ? comment.group : moment(now()).format("YYYYMMDDhmmss"),
+        sort: comment ? comment.sort : 1,
       },
       withCredentials: true,
     })
@@ -41,9 +48,10 @@ const Commentform = ({ postId }) => {
           type: ADD_COMMENT_ACTION,
           payload: {
             id: res.data.fulfillmentValue.id,
-            postId,
+            postId: post.id,
             userId: userInfo && userInfo.id,
-            comment,
+            comment: commentContent,
+            comments: [],
             likes: [],
             dislikes: [],
             created_at: Date(),

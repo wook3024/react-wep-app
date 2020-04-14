@@ -15,7 +15,7 @@ let getLoginInfo = {};
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [loginState, setLoginState] = useState(true);
-  const { userInfo } = useSelector(state => state);
+  const { userInfo } = useSelector((state) => state);
 
   let history = useHistory();
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const LoginForm = () => {
     }
   }, [history, userInfo.username]);
 
-  const onFinish = async values => {
+  const onFinish = async (values) => {
     setLoading(true);
 
     let loginInfo = await values;
@@ -37,16 +37,16 @@ const LoginForm = () => {
       method: "post",
       url: "http://localhost:8080/user/signin",
       params: {
-        ...loginInfo
+        ...loginInfo,
       },
-      withCredentials: true
+      withCredentials: true,
     });
     getLoginInfo = getLoginInfo.data;
 
     if (getLoginInfo && getLoginInfo.username) {
       return dispatch({
         type: LOG_IN_ACTION,
-        payload: getLoginInfo
+        payload: getLoginInfo,
       });
     } else {
       setLoginState(false);
@@ -59,7 +59,7 @@ const LoginForm = () => {
       style={{
         float: "none",
         margin: "15rem auto",
-        width: 300
+        width: 300,
       }}
       name="normal_login"
       className="login-form"

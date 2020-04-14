@@ -1,4 +1,10 @@
-import React, { createElement, useState, useEffect, useRef } from "react";
+import React, {
+  createElement,
+  useState,
+  useEffect,
+  useRef,
+  Children,
+} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
 import moment from "moment";
@@ -10,6 +16,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 
+import Commentform from "./commentform";
 import {
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
@@ -17,19 +24,23 @@ import {
 
 const { TextArea } = Input;
 
-const Reply = ({ comment }) => {
+const Reply = ({ post, comment }) => {
   const [likeVal, setLikes] = useState(0);
   const [likeState, setLikeState] = useState(false);
   const [dislikeVal, setDislikes] = useState(0);
   const [dislikeState, setDislikeState] = useState(false);
   const [changeState, setChangeState] = useState(false);
   const [commentValue, setCommentValue] = useState("");
+  const [replyCommentState, setReplyCommentState] = useState(false);
   const commentForm = useRef(null);
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
-  // console.log("comment Info", comment);
+  let subCommentList = null;
+  let subCommentStore = [];
+
+  // console.log("comment Info", post, comment);
   let likeCount = comment.likes.length + likeVal;
   let dislikeCount = comment.dislikes.length + dislikeVal;
 
@@ -193,6 +204,11 @@ const Reply = ({ comment }) => {
     console.log("commentChangeSubmit");
   };
 
+  const replyComment = () => {
+    setReplyCommentState(replyCommentState ? false : true);
+    console.log("comment Info", comment);
+  };
+
   const actions = [
     <span key="comment-basic-like">
       <Tooltip title="Like">
@@ -213,7 +229,7 @@ const Reply = ({ comment }) => {
       </Tooltip>
       <span className="comment-action">{dislikeCount}</span>
     </span>,
-    <span key="comment-basic-reply-to">
+    <span key="comment-basic-reply-to" onClick={replyComment}>
       {userInfo && userInfo.id === comment.user.id ? "Reply to" : ""}
     </span>,
     <span key="comment-basic-change" onClick={commentChangeToggle}>
@@ -232,7 +248,8 @@ const Reply = ({ comment }) => {
       avatar={
         <Avatar
           src={
-            comment.user.images[0]
+            comment.user.images[0] &&
+            comment.user.images[0].filename !== undefined
               ? require(`../images/${comment.user.images[0].filename}`)
               : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
           }
@@ -266,7 +283,49 @@ const Reply = ({ comment }) => {
           <span>{moment(comment.created_at).fromNow()}</span>
         </Tooltip>
       }
-    ></Comment>
+    >
+      {replyCommentState && <Commentform post={post} comment={comment} />}
+      {(comment.comments[0] &&
+        comment.comments.forEach((childComment) => {
+          // console.log(
+          //   "comment sub commnet",
+          //   childComment.comment,
+          //   childComment.depth,
+          //   comment.depth + 1
+          // );
+          if (
+            subCommentList !== null &&
+            childComment.depth === comment.depth + 1
+          ) {
+            if (subCommentList.comments.length > 0) {
+              //이전값을 기준으로 출력할 값을 정하기 때문에
+              //순회가 끝나도 하나의  값이 처리되지 못해 끝에 더미값을 푸쉬한다.
+              subCommentList.comments.push({
+                ...subCommentList.comments[subCommentList.comments.length - 1],
+                depth: subCommentList.comments[0].depth,
+              });
+              subCommentStore.push(subCommentList);
+              subCommentList = null;
+              // console.log("subCommentStore", subCommentStore);
+            } else {
+              subCommentStore.push(subCommentList);
+            }
+            //데이더 변질을 막기 위해 스프레드 연산자 사용
+            subCommentList = { ...childComment };
+            subCommentList.comments = [];
+          } else if (subCommentList === null) {
+            subCommentList = { ...childComment };
+            subCommentList.comments = [];
+            // return <Reply comment={subCommentList} />;
+          } else {
+            subCommentList.comments.push(childComment);
+          }
+        })) ||
+        subCommentStore.map((comment) => {
+          console.log("subCommentCheck", comment);
+          return <Reply post={post} comment={comment} />;
+        })}
+    </Comment>
   );
 };
 

@@ -1,10 +1,13 @@
 const express = require("express");
 const multer = require("multer");
+const Sequelize = require("sequelize");
 
 const db = require("../../models");
 const upload = require("./fileupload");
 
 const router = express.Router();
+const sequlize = db.sequelize;
+const Op = Sequelize.Op;
 
 router.get("", async (req, res, next) => {
   try {
@@ -13,7 +16,6 @@ router.get("", async (req, res, next) => {
       include: [
         {
           model: db.Comment,
-          attributes: ["id", "comment", "postId", "userId", "created_at"],
           include: [
             {
               model: db.Like,
@@ -46,7 +48,8 @@ router.get("", async (req, res, next) => {
       ],
       order: [
         ["created_at", "DESC"],
-        [db.Comment, "created_at", "ASC"],
+        [db.Comment, "group", "ASC"],
+        [db.Comment, "sort", "ASC"],
       ],
     });
 
@@ -171,10 +174,56 @@ router.post("/comment/add", async (req, res, next) => {
       // console.log("commnet add query check", req.query);
       const data = req.query;
       console.log("data check", data);
+
+      let findLocation = db.Comment.findOne({
+        where: {
+          postId: data.postId,
+          depth: data.depth,
+          group: data.group,
+        },
+        order: [["sort", "DESC"]],
+      });
+
+      if (data.sort > 1) {
+        if ((await findLocation) != null) {
+          console.log(
+            "findLocation 🐳🐳🐳🐳\n",
+            await findLocation,
+            (await findLocation).sort
+          );
+        } else {
+          console.log("depth 🐳🐳🐳🐳\n", data.depth);
+        }
+
+        const updateCheck = db.Comment.update(
+          { sort: sequlize.literal("sort +1") },
+          {
+            where: {
+              postId: data.postId,
+              sort: {
+                [Op.gte]:
+                  (await findLocation) !== null
+                    ? parseInt(
+                        parseInt((await findLocation).sort) + parseInt(1)
+                      )
+                    : parseInt(parseInt(data.sort) + parseInt(1)),
+              },
+            },
+          }
+        );
+        // console.log("updateCheck", updateCheck);
+      }
+
       const post = db.Comment.create({
         comment: data.comment,
         postId: data.postId,
         userId: data.userId,
+        depth: data.depth,
+        sort:
+          (await findLocation) !== null
+            ? parseInt(parseInt((await findLocation).sort) + parseInt(1))
+            : parseInt(parseInt(data.sort) + parseInt(1)),
+        group: data.group,
       });
       // console.log("commnet add check", await post);
       if (await post) {
