@@ -40,29 +40,34 @@ const Commentform = ({ post, comment }) => {
         commentForm.current.state.value = null;
         setComment(null);
 
-        console.log("comment add", res);
         if (!res.data.fulfillmentValue) {
           return message.warning(res.data);
         }
 
+        console.log("comment add", res.data.fulfillmentValue);
         const commentsData = res.data.fulfillmentValue.map((comment) => {
           comment = {
             ...comment,
-            likes: [],
-            dislikes: [],
             user: {
-              username: userInfo && userInfo.username,
-              nickname: userInfo && userInfo.nickname,
-              id: userInfo && userInfo.id,
-              images: [{ filename: userInfo.profileImage }],
+              ...comment.user,
+              images: [
+                {
+                  filename: comment.user.images[0]
+                    ? comment.user.images[0].filename
+                    : undefined,
+                },
+              ],
             },
           };
           return comment;
         });
+        console.log("commentsData", ...commentsData);
         dispatch({
           type: ADD_COMMENT_ACTION,
-          payload: { comments: commentsData, postId: post.id },
+          //payload를 이용해 commentData를 전송할 때 키명을 comments로 하면 리덕스에서 받지 못한다. 왜?
+          payload: { comments: [...commentsData], postId: post.id },
         });
+        console.log("commentsData", [...commentsData]);
         message.success("Comment add Complete! 🐳");
         // if (res.status === 201) {
         //   message.success(res.data);

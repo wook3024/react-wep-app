@@ -165,7 +165,10 @@ const Postcard = ({ post }) => {
               // console.log("commentList", commentList, comment);
               //이전값을 기준으로 출력할 값을 정하기 때문에
               //순회가 끝나도 하나의  값이 처리되지 못해 끝에 더미값을 푸쉬한다.
-              if (comment.id === post.data.comments[commentsSize].id) {
+              if (
+                comment.id === post.data.comments[commentsSize].id &&
+                comment.group === commentList.group
+              ) {
                 commentList.comments.push(comment);
               }
               commentList.comments.push({
@@ -173,6 +176,9 @@ const Postcard = ({ post }) => {
                 depth: commentList.comments[0].depth,
               });
               commentStore.push(commentList);
+              if (comment.id === post.data.comments[commentsSize].id) {
+                commentStore.push({ ...comment, comments: [] });
+              }
             } else if (comment.id === post.data.comments[commentsSize].id) {
               if (comment.group === commentList.group) {
                 commentList.comments.push(comment);

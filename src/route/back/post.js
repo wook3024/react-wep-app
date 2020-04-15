@@ -214,6 +214,19 @@ router.post("/comment/add", async (req, res, next) => {
       if (await post) {
         const commentGroup = db.Comment.findAll({
           where: { group: data.group },
+          include: [
+            {
+              model: db.User,
+              attributes: ["username", "id", "nickname"],
+              include: [{ model: db.Image }],
+            },
+            { model: db.Like },
+            { model: db.Dislike },
+          ],
+          order: [
+            ["group", "ASC"],
+            ["sort", "DESC"],
+          ],
         });
         console.log("commentGroup", await commentGroup);
 
@@ -338,15 +351,36 @@ router.post("/comment/remove", async (req, res, next) => {
       const data = req.query;
       const userInfo = req.user.dataValues;
       if (!data.commentId) return res.send("not found! 😱");
-      const removeStatus = db.Comment.destroy({
-        where: { userId: userInfo.id, id: data.commentId },
-      });
+      let removeStatus = null;
+      if (!data.force) {
+        removeStatus = db.Comment.destroy({
+          where: { userId: userInfo.id, id: data.commentId },
+        });
+      } else if (data.force) {
+        removeStatus = db.Comment.destroy({
+          where: { id: data.commentId },
+        });
+      }
       console.log("removeStatus", await removeStatus);
       if ((await removeStatus) === 0) {
         return res.send(
           "It's not your comment! or The comment has already been removed.😱"
         );
       }
+      const updateCheck = db.Comment.update(
+        { sort: sequlize.literal("sort -1") },
+        {
+          where: {
+            postId: data.postId,
+            group: data.group,
+            sort: {
+              [Op.gte]: parseInt(parseInt(data.sort)),
+            },
+          },
+        }
+      );
+
+      console.log("updateCheck 🐳🐳🐳🐳", await updateCheck);
       return res.status(201).send("Remove comment success! 🐳");
     }
     res.send("Login Please! 😱");

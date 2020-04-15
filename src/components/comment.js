@@ -128,13 +128,17 @@ const Reply = ({ post, comment }) => {
   };
 
   const commentRemove = () => {
+    console.log("comment Set check", comment);
     console.log("commentRemoveCheck");
     axios({
       method: "post",
       url: "http://localhost:8080/post/comment/remove",
       params: {
         commentId: comment.id,
-        userId: userInfo && userInfo.id,
+        postId: post.id,
+        group: comment.group,
+        sort: comment.sort,
+        force: false,
       },
       withCredentials: true,
     })
@@ -145,6 +149,42 @@ const Reply = ({ post, comment }) => {
         } else {
           message.warning(res.data);
         }
+
+        comment.comments.forEach((comment) => {
+          axios({
+            method: "post",
+            url: "http://localhost:8080/post/comment/remove",
+            params: {
+              commentId: comment.id,
+              postId: post.id,
+              group: comment.group,
+              sort: comment.sort,
+              force: true,
+            },
+            withCredentials: true,
+          })
+            .then((res) => {
+              console.log(
+                "commentRemove response",
+                res,
+                comment.id,
+                comment.postId
+              );
+              dispatch({
+                type: COMMENT_REMOVE_ACTION,
+                payload: {
+                  commentId: comment.id,
+                  postId: comment.postId,
+                },
+              });
+            })
+            .catch((error) => {
+              console.error("😡 ", error);
+            });
+        });
+      })
+      .then((res) => {
+        console.log("res check", res);
 
         dispatch({
           type: COMMENT_REMOVE_ACTION,
