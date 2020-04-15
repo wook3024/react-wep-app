@@ -49,7 +49,7 @@ router.get("", async (req, res, next) => {
       order: [
         ["created_at", "DESC"],
         [db.Comment, "group", "ASC"],
-        [db.Comment, "sort", "ASC"],
+        [db.Comment, "sort", "DESC"],
       ],
     });
 
@@ -184,50 +184,40 @@ router.post("/comment/add", async (req, res, next) => {
         order: [["sort", "DESC"]],
       });
 
-      if (data.sort > 1) {
-        if ((await findLocation) != null) {
-          console.log(
-            "findLocation 🐳🐳🐳🐳\n",
-            await findLocation,
-            (await findLocation).sort
-          );
-        } else {
-          console.log("depth 🐳🐳🐳🐳\n", data.depth);
-        }
+      console.log("findLocation 🐳🐳🐳🐳\n", await findLocation);
+      console.log("depth 🐳🐳🐳🐳\n", data.depth);
 
-        const updateCheck = db.Comment.update(
-          { sort: sequlize.literal("sort +1") },
-          {
-            where: {
-              postId: data.postId,
-              sort: {
-                [Op.gte]:
-                  (await findLocation) !== null
-                    ? parseInt(
-                        parseInt((await findLocation).sort) + parseInt(1)
-                      )
-                    : parseInt(parseInt(data.sort) + parseInt(1)),
-              },
+      const updateCheck = db.Comment.update(
+        { sort: sequlize.literal("sort +1") },
+        {
+          where: {
+            postId: data.postId,
+            group: data.group,
+            sort: {
+              [Op.gte]: parseInt(parseInt(data.sort)),
             },
-          }
-        );
-        // console.log("updateCheck", updateCheck);
-      }
+          },
+        }
+      );
 
+      const sort = parseInt(parseInt(data.sort));
+      console.log("updateCheck 🐳🐳🐳🐳", await updateCheck, sort);
       const post = db.Comment.create({
         comment: data.comment,
         postId: data.postId,
         userId: data.userId,
         depth: data.depth,
-        sort:
-          (await findLocation) !== null
-            ? parseInt(parseInt((await findLocation).sort) + parseInt(1))
-            : parseInt(parseInt(data.sort) + parseInt(1)),
+        sort: sort,
         group: data.group,
       });
       // console.log("commnet add check", await post);
       if (await post) {
-        return res.json(post);
+        const commentGroup = db.Comment.findAll({
+          where: { group: data.group },
+        });
+        console.log("commentGroup", await commentGroup);
+
+        return res.json(commentGroup);
       }
       return res.send("Comment add failure. 😱");
     }
@@ -424,10 +414,18 @@ router.post("/remove", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       // console.log("remove proccessiong", data);
+      const comment = db.Comment.destroy({
+        where: { postId: data.postId },
+      });
+      console.log("remove comment 🐳🐳🐳🐳\n", await comment);
+      const image = db.Image.destroy({
+        where: { postId: data.postId },
+      });
+      console.log("remove image 🐳🐳🐳🐳\n", await image);
       const post = db.Post.destroy({
         where: { userId: data.userId, id: data.postId },
       });
-      // console.log("remove post", await post);
+      console.log("remove post 🐳🐳🐳🐳\n", await post);
       if (await post) {
         return res.status(201).send("Post Remove Complete! 🐳");
       }

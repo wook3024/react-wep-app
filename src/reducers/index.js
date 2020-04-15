@@ -104,11 +104,24 @@ const reducer = (state = initialState, action) => {
       };
     }
     case ADD_COMMENT_ACTION: {
-      let postIndex = state.post.findIndex(
-        (post) => post.id === action.payload.postId
+      const data = action.payload;
+      const postIndex = state.post.findIndex((post) => post.id === data.postId);
+      console.log("ADD_COMMENT CHECK", state.post[postIndex], action.payload);
+      let tempPostComments = state.post[postIndex].comments.filter(
+        (comment) => {
+          return comment.group !== data.comments[0].group;
+        }
       );
-      // console.log("ADD_COMMENT CHECK", postIndex, action.payload);
-      state.post[postIndex].comments.push(action.payload);
+      const newPostComment = [];
+      tempPostComments.forEach((comment) => {
+        if (comment.group > data.comments[0].group && data.comments !== null) {
+          newPostComment.push(...data.comments);
+          data.comments = null;
+        }
+        newPostComment.push(comment);
+      });
+      state.post[postIndex].comments = newPostComment;
+      console.log("ADD_COMMENT CHECK", state.post[postIndex].comments);
       return {
         ...state,
       };

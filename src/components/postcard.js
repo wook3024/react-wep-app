@@ -25,7 +25,7 @@ const Postcard = ({ post }) => {
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
-  console.log("post.comments", post.data.comments);
+  // console.log("post.comments", post.data.comments);
   const imageUrl = "20200404144126_cat-4223305_1920.jpg";
 
   let commentList = null;
@@ -153,37 +153,57 @@ const Postcard = ({ post }) => {
       {revisePost && <PostForm postId={post.data.id} />}
       {post.data.comments[0] &&
         post.data.comments.forEach((comment) => {
+          const commentsSize = post.data.comments.length - 1;
           if (
             commentList !== null &&
             (comment.group !== commentList.group ||
-              comment.sort === commentList.sort)
+              comment.id === post.data.comments[commentsSize].id)
           ) {
             //반복되는 리렌더링에 의해 무결성 요구됨
+            //데이더 변질을 막기 위해 스프레드 연산자 사용
             if (commentList.comments.length > 0) {
+              // console.log("commentList", commentList, comment);
               //이전값을 기준으로 출력할 값을 정하기 때문에
               //순회가 끝나도 하나의  값이 처리되지 못해 끝에 더미값을 푸쉬한다.
+              if (comment.id === post.data.comments[commentsSize].id) {
+                commentList.comments.push(comment);
+              }
               commentList.comments.push({
                 ...commentList.comments[commentList.comments.length - 1],
                 depth: commentList.comments[0].depth,
               });
-              // console.log("commentList", commentList);
               commentStore.push(commentList);
+            } else if (comment.id === post.data.comments[commentsSize].id) {
+              if (comment.group === commentList.group) {
+                commentList.comments.push(comment);
+                commentList.comments.push({
+                  ...commentList.comments[commentList.comments.length - 1],
+                  depth: commentList.comments[0].depth,
+                });
+                commentStore.push(commentList);
+              } else {
+                commentStore.push(commentList);
+                commentStore.push({ ...comment, comments: [] });
+              }
             } else {
               commentStore.push(commentList);
             }
-            //데이더 변질을 막기 위해 스프레드 연산자 사용
+
             commentList = { ...comment };
             commentList.comments = [];
           } else if (commentList === null) {
             commentList = { ...comment };
             commentList.comments = [];
+            if (!commentsSize) {
+              commentStore.push(commentList);
+            }
           } else {
             commentList.comments.push(comment);
           }
         })}
       {post.data.comments[0] &&
-        [...commentStore, commentList].map((comment) => {
-          console.log("comment deptg", commentList);
+        commentStore.map((comment) => {
+          // console.log("comment deptg", comment);
           return <Comment post={post.data} comment={comment} />;
         })}
     </Card>

@@ -44,24 +44,24 @@ const Commentform = ({ post, comment }) => {
         if (!res.data.fulfillmentValue) {
           return message.warning(res.data);
         }
-        dispatch({
-          type: ADD_COMMENT_ACTION,
-          payload: {
-            id: res.data.fulfillmentValue.id,
-            postId: post.id,
-            userId: userInfo && userInfo.id,
-            comment: commentContent,
-            comments: [],
+
+        const commentsData = res.data.fulfillmentValue.map((comment) => {
+          comment = {
+            ...comment,
             likes: [],
             dislikes: [],
-            created_at: Date(),
             user: {
               username: userInfo && userInfo.username,
               nickname: userInfo && userInfo.nickname,
               id: userInfo && userInfo.id,
               images: [{ filename: userInfo.profileImage }],
             },
-          },
+          };
+          return comment;
+        });
+        dispatch({
+          type: ADD_COMMENT_ACTION,
+          payload: { comments: commentsData, postId: post.id },
         });
         message.success("Comment add Complete! 🐳");
         // if (res.status === 201) {

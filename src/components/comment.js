@@ -40,7 +40,7 @@ const Reply = ({ post, comment }) => {
   let subCommentList = null;
   let subCommentStore = [];
 
-  // console.log("comment Info", post, comment);
+  // console.log("userinfo Info", userInfo);
   let likeCount = comment.likes.length + likeVal;
   let dislikeCount = comment.dislikes.length + dislikeVal;
 
@@ -230,7 +230,7 @@ const Reply = ({ post, comment }) => {
       <span className="comment-action">{dislikeCount}</span>
     </span>,
     <span key="comment-basic-reply-to" onClick={replyComment}>
-      {userInfo && userInfo.id === comment.user.id ? "Reply to" : ""}
+      {userInfo && userInfo.id ? "Reply to" : ""}
     </span>,
     <span key="comment-basic-change" onClick={commentChangeToggle}>
       {userInfo && userInfo.id === comment.user.id ? "Change" : ""}
@@ -290,18 +290,21 @@ const Reply = ({ post, comment }) => {
           // console.log(
           //   "comment sub commnet",
           //   childComment.comment,
-          //   childComment.depth,
-          //   comment.depth + 1
           // );
+          const commentsSize = comment.comments.length;
+          const subCommentsSize =
+            subCommentList && subCommentList.comments[0]
+              ? subCommentList.comments.length
+              : 0;
           if (
             subCommentList !== null &&
-            childComment.depth === comment.depth + 1
+            childComment.depth <= comment.depth + 1
           ) {
-            if (subCommentList.comments.length > 0) {
+            if (subCommentsSize > 0) {
               //이전값을 기준으로 출력할 값을 정하기 때문에
               //순회가 끝나도 하나의  값이 처리되지 못해 끝에 더미값을 푸쉬한다.
               subCommentList.comments.push({
-                ...subCommentList.comments[subCommentList.comments.length - 1],
+                ...subCommentList.comments[commentsSize - 1],
                 depth: subCommentList.comments[0].depth,
               });
               subCommentStore.push(subCommentList);
@@ -321,8 +324,9 @@ const Reply = ({ post, comment }) => {
             subCommentList.comments.push(childComment);
           }
         })) ||
-        subCommentStore.map((comment) => {
-          console.log("subCommentCheck", comment);
+        //댓글이 최신순으로 정렬되어있어 오랜된 댓글부터 보기위해 뒤집어준다.
+        subCommentStore.reverse().map((comment) => {
+          // console.log("subCommentCheck", comment);
           return <Reply post={post} comment={comment} />;
         })}
     </Comment>
