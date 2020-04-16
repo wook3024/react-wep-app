@@ -3,12 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
 import { Input, Button, Form, Checkbox, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import styled from "styled-components";
 import axios from "axios";
 
 import { LOG_IN_ACTION } from "../reducers/actions";
-
-const Span = styled.span``;
 
 let getLoginInfo = {};
 
@@ -35,7 +32,7 @@ const LoginForm = () => {
 
     getLoginInfo = await axios({
       method: "post",
-      url: "http://localhost:8080/user/signin",
+      url: "/user/signin",
       params: {
         ...loginInfo,
       },
@@ -86,7 +83,7 @@ const LoginForm = () => {
         />
       </Form.Item>
       {!loginState && (
-        <Span style={{ color: "red" }}>Please check login info</Span>
+        <span style={{ color: "red" }}>Please check login info</span>
       )}
       <Form.Item>
         <Form.Item name="remember" valuePropName="checked" noStyle>

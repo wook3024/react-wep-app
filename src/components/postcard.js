@@ -29,7 +29,6 @@ const Postcard = ({ post }) => {
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
-  // console.log("post.comments", post.data.comments);
 
   let commentList = null;
   const commentStore = [];
@@ -47,7 +46,7 @@ const Postcard = ({ post }) => {
       return false;
     }
     return true;
-  });
+  }, [userInfo]);
 
   const openImagebox = useCallback((e) => {
     console.log(e.target.alt);
@@ -60,7 +59,7 @@ const Postcard = ({ post }) => {
 
     axios({
       method: "post",
-      url: "http://localhost:8080/post/remove",
+      url: "/post/remove",
       params: { postId: post.data.id, userId: userInfo.id },
       withCredentials: true,
     })
@@ -107,7 +106,6 @@ const Postcard = ({ post }) => {
             <>
               {post.data.images.map((image) => {
                 images.push(`./images/${image.filename}`);
-                // console.log("image data", image);
                 return (
                   // eslint-disable-next-line jsx-a11y/alt-text
                   <img
@@ -120,11 +118,11 @@ const Postcard = ({ post }) => {
               {isOpen && (
                 <Lightbox
                   mainSrc={images[photoIndex]}
+                  onCloseRequest={() => setIsOpen(false)}
                   nextSrc={images[(photoIndex + 1) % images.length]}
                   prevSrc={
                     images[(photoIndex + images.length - 1) % images.length]
                   }
-                  onCloseRequest={() => setIsOpen(false)}
                   onMovePrevRequest={() =>
                     setPhotoIndex(
                       (photoIndex + images.length - 1) % images.length
@@ -159,9 +157,11 @@ const Postcard = ({ post }) => {
             key="ellipsis"
             content={
               <ButtonGroup>
-                <Button Button danger onClick={postRemove}>
-                  remove
-                </Button>
+                {userInfo && userInfo.id === post.data.userId ? (
+                  <Button Button danger onClick={postRemove}>
+                    remove
+                  </Button>
+                ) : null}
                 <Button Button type="primary" ghost>
                   in detail
                 </Button>

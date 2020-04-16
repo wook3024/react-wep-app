@@ -1,33 +1,28 @@
 import React, { useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Descriptions, Button, Input, Avatar, Upload, message } from "antd";
-import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
+
 import "react-medium-image-zoom/dist/styles.css";
 import "./App.css";
 import { USER_INFO_REFRESH } from "../reducers/actions";
 
-const Div = styled.div``;
 const { TextArea } = Input;
 
 const Profile = () => {
-  const { userInfo } = useSelector((state) => state);
-  const [changeToNickname, setChangeToNickname] = useState(
-    userInfo && userInfo.nickname
-  );
+  const [changeToNickname, setChangeToNickname] = useState(false);
   const [descriptionButtonToggle, setDescriptionButtonToggle] = useState(false);
+  const [nicknameButtonToggle, setNicknameButtonToggle] = useState(false);
   const [changeToDescription, setChangeToDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [visible, setVisible] = useState(false);
+  const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
-  const openSingleLightbox = useCallback(() => {
-    setVisible(visible ? true : true);
-  }, [visible]);
-
+  console.log("profile userinfo check", userInfo);
   const onChangeNickname = useCallback((e) => {
     setChangeToNickname(e.target.value);
   }, []);
@@ -36,14 +31,10 @@ const Profile = () => {
     setChangeToDescription(e.target.value);
   }, []);
 
-  const descriptionChange = () => {
-    setDescriptionButtonToggle(true);
-  };
-
   const changeDescription = () => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/user/descriptionChange",
+      url: "/post/user/descriptionChange",
       params: { description: changeToDescription, id: userInfo.id },
       withCredentials: true,
     })
@@ -61,10 +52,6 @@ const Profile = () => {
       })
       .then(() => {
         setDescriptionButtonToggle(false);
-
-        // return dispatch({
-        //   type: GET_POST_DATA,
-        // });
       })
       .catch((error) => {
         console.error("😡 ", error);
@@ -74,7 +61,7 @@ const Profile = () => {
   const changeNickname = () => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/user/nicknamechange",
+      url: "/post/user/nicknamechange",
       params: { changeToNickname, id: userInfo.id },
       withCredentials: true,
     })
@@ -87,24 +74,17 @@ const Profile = () => {
         }
         dispatch({
           type: USER_INFO_REFRESH,
-          payload: res.data,
+          payload: { ...res.data, profileImage: res.data.images[0].filename },
         });
       })
       .then(() => {
         setChangeToNickname(userInfo.nickname);
-
-        // return dispatch({
-        //   type: GET_POST_DATA,
-        // });
+        setNicknameButtonToggle(false);
       })
       .catch((error) => {
         console.error("😡 ", error);
       });
   };
-
-  // const handleFileInput = (e) => {
-  //   setSelectedFile(e.target.files[0]);
-  // };
 
   const handlePost = () => {
     const formData = new FormData();
@@ -112,7 +92,7 @@ const Profile = () => {
 
     axios({
       method: "post",
-      url: "http://localhost:8080/post/uploadProfileImage",
+      url: "/post/uploadProfileImage",
       withCredentials: true,
       data: formData,
       params: {
@@ -121,7 +101,18 @@ const Profile = () => {
     })
       .then((res) => {
         console.log("upload", res);
-        message.success(res.data);
+        if (res.data) {
+          message.success("Update Complete With Images! 🐳");
+        } else if (res.status === 200) {
+          message.warning(res.data);
+        } else {
+          message.warning("Update failed! 😱");
+        }
+
+        // dispatch({
+        //   type: USER_INFO_REFRESH,
+        //   payload: { userInfo: { ...userInfo, profileImage: res.data } },
+        // });
         setSelectedFile(null);
       })
       .catch((error) => {
@@ -157,29 +148,49 @@ const Profile = () => {
       size={"small"}
     >
       <Descriptions.Item label="UserName">
-        {userInfo && userInfo.username}
+        {userInfo && userInfo.id ? userInfo.username : "undefined"}
       </Descriptions.Item>
       <Descriptions.Item
         label={
-          <Div>
+          <div>
             NickName&nbsp;
-            <Button size={"small"} type="primary" onClick={changeNickname}>
-              modify
-            </Button>
-          </Div>
+            {nicknameButtonToggle ? (
+              <>
+                <Button size={"small"} type="primary" onClick={changeNickname}>
+                  modify
+                </Button>
+              </>
+            ) : (
+              <Button
+                size={"small"}
+                type="primary"
+                onClick={() =>
+                  setNicknameButtonToggle(nicknameButtonToggle ? false : true)
+                }
+              >
+                change
+              </Button>
+            )}
+          </div>
         }
       >
-        <Input
-          defaultValue={userInfo && userInfo.nickname}
-          onChange={onChangeNickname}
-        />
+        {nicknameButtonToggle ? (
+          <Input
+            defaultValue={userInfo && userInfo.nickname}
+            onChange={onChangeNickname}
+          />
+        ) : (
+          <Descriptions.Item label="Nickname">
+            {userInfo && userInfo.id ? userInfo.nickname : "undefined"}
+          </Descriptions.Item>
+        )}
       </Descriptions.Item>
       <Descriptions.Item label="Created_At">
-        {userInfo && userInfo.created_at}
+        {userInfo && userInfo.id ? userInfo.created_at : "undefined"}
       </Descriptions.Item>
       <Descriptions.Item
         label={
-          <Div>
+          <div>
             ProfileImage&nbsp;
             <Upload {...props}>
               <Button type="primary" size={"small"}>
@@ -191,14 +202,14 @@ const Profile = () => {
                 modify
               </Button>
             )}
-          </Div>
+          </div>
         }
       >
         {userInfo && userInfo.profileImage ? (
           <>
             <Avatar
               src={`./images/${userInfo.profileImage}`}
-              onClick={openSingleLightbox}
+              onClick={() => setVisible(visible ? false : true)}
             />
             {visible && (
               <Lightbox
@@ -213,18 +224,26 @@ const Profile = () => {
       </Descriptions.Item>
       <Descriptions.Item
         label={
-          <Div>
+          <div>
             Description&nbsp;
             {descriptionButtonToggle ? (
               <Button size={"small"} type="primary" onClick={changeDescription}>
                 modify
               </Button>
             ) : (
-              <Button size={"small"} type="primary" onClick={descriptionChange}>
+              <Button
+                size={"small"}
+                type="primary"
+                onClick={() =>
+                  setDescriptionButtonToggle(
+                    descriptionButtonToggle ? false : true
+                  )
+                }
+              >
                 change
               </Button>
             )}
-          </Div>
+          </div>
         }
       >
         {descriptionButtonToggle ? (

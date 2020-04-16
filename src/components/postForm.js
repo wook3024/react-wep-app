@@ -24,29 +24,32 @@ const PostForm = ({ postId }) => {
 
   const dispatch = useDispatch();
 
-  const getBase64 = (file) => {
+  const getBase64 = useCallback((file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
       reader.onerror = (error) => reject(error);
     });
-  };
+  }, []);
 
-  const handleCancel = () => setPreviewVisible(false);
+  const handleCancel = useCallback(() => setPreviewVisible(false), []);
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
+  const handlePreview = useCallback(
+    async (file) => {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
 
-    setPreviewImage(file.url || file.preview);
-    setPreviewVisible(true);
-  };
+      setPreviewImage(file.url || file.preview);
+      setPreviewVisible(true);
+    },
+    [getBase64]
+  );
 
-  const handleChange = ({ fileList }) => {
+  const handleChange = useCallback(({ fileList }) => {
     setFileList(fileList);
-  };
+  }, []);
 
   const uploadButton = (
     <div>
@@ -55,18 +58,21 @@ const PostForm = ({ postId }) => {
     </div>
   );
 
-  const onChangeTitle = (e) => {
+  const onChangeTitle = useCallback((e) => {
     setContent(e.target.value);
-  };
-  const onChangeContent = (e) => {
-    setTitle(e.target.value);
-    console.log("postId", postId);
-  };
+  }, []);
+  const onChangeContent = useCallback(
+    (e) => {
+      setTitle(e.target.value);
+      console.log("postId", postId);
+    },
+    [postId]
+  );
 
   const updatePost = useCallback(() => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/update",
+      url: "/post/update",
       params: {
         id: postId,
         title,
@@ -104,7 +110,7 @@ const PostForm = ({ postId }) => {
 
     axios({
       method: "post",
-      url: "http://localhost:8080/post/publish",
+      url: "/post/publish",
       params: {
         title,
         content,
@@ -118,7 +124,7 @@ const PostForm = ({ postId }) => {
         console.log("res", fileList[0], res.data);
         axios({
           method: "post",
-          url: "http://localhost:8080/post/uploadPostImage",
+          url: "/post/uploadPostImage",
           data: formData,
           params: { postId: res.data.id },
           withCredentials: true,
@@ -132,29 +138,20 @@ const PostForm = ({ postId }) => {
             console.error("😡 ", error);
           });
 
-        axios({
-          method: "get",
-          url: "http://localhost:8080/post",
-          params: { id: post[0] ? post[post.length - 1].id : undefined },
-        })
-          .then((res) => {
-            dispatch({
-              type: GET_POST_DATA,
-              payload: res.data,
-            });
-          })
-          .catch((error) => {
-            console.error("😡 ", error);
-          });
+        dispatch({
+          type: GET_POST_DATA,
+          payload: res.data,
+        });
+      })
+      .then(() => {
+        inputTitle.current.state.value = null;
+        inputContent.current.state.value = null;
+        setFileList([]);
       })
       .catch((error) => {
         console.error("😡 ", error);
       });
-
-    inputTitle.current.state.value = null;
-    inputContent.current.state.value = null;
-    setFileList([]);
-  }, [content, dispatch, fileList, post, postId, title, updatePost, userInfo]);
+  }, [content, dispatch, fileList, postId, title, updatePost, userInfo]);
 
   return (
     <Form
@@ -193,7 +190,6 @@ const PostForm = ({ postId }) => {
           <img alt="example" style={{ width: "100%" }} src={previewImage} />
         </Modal>
       </div>
-      {/* <input type="file" name="file" onChange={handleChange} /> */}
       <Button
         type="default"
         value="large"

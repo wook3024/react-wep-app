@@ -1,14 +1,11 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
 import axios from "axios";
 
 import { GET_POST_DATA } from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
 import "./App.css";
-
-const Div = styled.div``;
 
 let getDataCheck = false;
 let getPost = [];
@@ -35,10 +32,6 @@ const Profile = () => {
         return post.id === firstPostId;
       })
     ) {
-      // if (!getPost[0] || !getPost[1] || !getPost[2]) {
-      //   getDataCheck++;
-      // }
-
       getDataCheck = true;
       console.log(
         "getNewpost",
@@ -48,7 +41,7 @@ const Profile = () => {
       );
       axios({
         method: "get",
-        url: "http://localhost:8080/post",
+        url: "/post",
         params: { id: getPost[0] ? getPost[getPost.length - 1].id : undefined },
       })
         .then((res) => {
@@ -76,13 +69,9 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(
-    //   "post",
-    //   getPost[0] ? getPost[getPost.length - 1].id : undefined
-    // );
     axios({
       method: "get",
-      url: "http://localhost:8080/post",
+      url: "/post",
       params: { id: getPost[0] ? getPost[getPost.length - 1].id : undefined },
     })
       .then((postData) => {
@@ -98,7 +87,7 @@ const Profile = () => {
   }, []);
 
   return (
-    <Div>
+    <div>
       {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         //postCard 컴포넌트 내에서 Comment컴포넌트를 출력할 때
@@ -122,7 +111,7 @@ const Profile = () => {
         // console.log("data", post.comments);
         return <Postcard key={data.created_at} post={{ data }} />;
       })}
-    </Div>
+    </div>
   );
 };
 

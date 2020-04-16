@@ -9,24 +9,24 @@ const { Option } = Select;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 8 }
+    sm: { span: 8 },
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 16 }
-  }
+    sm: { span: 16 },
+  },
 };
 const tailFormItemLayout = {
   wrapperCol: {
     xs: {
       span: 24,
-      offset: 0
+      offset: 0,
     },
     sm: {
       span: 16,
-      offset: 8
-    }
-  }
+      offset: 8,
+    },
+  },
 };
 
 let formUserInfo = undefined;
@@ -37,23 +37,27 @@ const SignUp = () => {
 
   let history = useHistory();
 
-  const onFinish = async values => {
+  const onFinish = async (values) => {
     setLoading(true);
     formUserInfo = await values;
 
-    const user = await axios({
+    await axios({
       method: "post",
       url: "http://localhost:8080/user/signup",
-      params: formUserInfo
-    });
-
-    if (user && !user.data.fulfillmentValue) {
-      formUserInfo = undefined;
-      message.success("Sign Up Complete. Go to the main page! 🐳");
-      history.push("/");
-    } else {
-      message.warning("This user already exists. 😱");
-    }
+      params: formUserInfo,
+    })
+      .then((res) => {
+        if (!res.data.fulfillmentValue) {
+          formUserInfo = undefined;
+          message.success("Sign Up Complete. Go to the main page! 🐳");
+          history.push("/main");
+        } else {
+          message.warning("This user already exists. 😱");
+        }
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
     setLoading(false);
   };
 
@@ -72,14 +76,14 @@ const SignUp = () => {
       style={{
         float: "none",
         margin: "15rem auto",
-        width: 450
+        width: 450,
       }}
       {...formItemLayout}
       form={form}
       name="register"
       onFinish={onFinish}
       initialValues={{
-        prefix: "82"
+        prefix: "82",
       }}
       scrollToFirstError
     >
@@ -93,8 +97,8 @@ const SignUp = () => {
           // },
           {
             required: true,
-            message: "Please input your name!"
-          }
+            message: "Please input your name!",
+          },
         ]}
       >
         <Input />
@@ -105,8 +109,8 @@ const SignUp = () => {
         rules={[
           {
             required: true,
-            message: "Please input your password!"
-          }
+            message: "Please input your password!",
+          },
         ]}
         hasFeedback
       >
@@ -120,7 +124,7 @@ const SignUp = () => {
         rules={[
           {
             required: true,
-            message: "Please confirm your password!"
+            message: "Please confirm your password!",
           },
           ({ getFieldValue }) => ({
             validator(rule, value) {
@@ -130,8 +134,8 @@ const SignUp = () => {
               return Promise.reject(
                 "The two passwords that you entered do not match!"
               );
-            }
-          })
+            },
+          }),
         ]}
       >
         <Input.Password />
@@ -150,8 +154,8 @@ const SignUp = () => {
           {
             required: true,
             message: "Please input your nickname!",
-            whitespace: true
-          }
+            whitespace: true,
+          },
         ]}
       >
         <Input />
@@ -171,8 +175,8 @@ const SignUp = () => {
             validator: (_, value) =>
               value
                 ? Promise.resolve()
-                : Promise.reject("Should accept agreement")
-          }
+                : Promise.reject("Should accept agreement"),
+          },
         ]}
         {...tailFormItemLayout}
       >

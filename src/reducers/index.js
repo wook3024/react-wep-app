@@ -18,25 +18,9 @@ const initialState = {
   loginCheck: true,
 };
 
-// const callAxios = async (type, address, payload) => {
-//   const result = axios({
-//     method: type,
-//     url: `http://localhost:8080${address}`,
-//     params: {
-//       ...payload
-//     },
-//     credentials: "include",
-//     withCredentials: true
-//   });
-//   info = await result;
-//   console.log(info);
-//   return result;
-// };
-
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOG_IN_ACTION: {
-      // callAxios("post", "/user/signin", action.payload);
       return {
         ...state,
         userInfo: {
@@ -60,24 +44,6 @@ const reducer = (state = initialState, action) => {
         },
       };
     }
-    // case USER_NICKNAME_REFRESH: {
-    //   return {
-    //     ...state,
-    //     userInfo: {
-    //       ...action.payload,
-    //       created_at: moment(action.payload.created_at).format("LL"),
-    //     },
-    //     post: state.post.map((post) => {
-    //       post.comments.map((comment) => {
-    //         if (comment.id === action.payload.id) {
-    //           comment.nickname = action.payload.nickname;
-    //         }
-    //         return comment;
-    //       });
-    //       return post;
-    //     }),
-    //   };
-    // }
     case GET_POST_DATA: {
       console.log("get post data", state.post, action.payload.post);
       state.post = [...state.post, ...action.payload.post];

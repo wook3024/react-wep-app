@@ -3,13 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Menu, Button, message } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
-import styled from "styled-components";
 import axios from "axios";
 
 import { USER_INFO_REFRESH, LOG_OUT_ACTION } from "../reducers/actions";
 
 const { SubMenu } = Menu;
-const Span = styled.span``;
 
 const Navigation = () => {
   const { userInfo } = useSelector((state) => state);
@@ -20,7 +18,7 @@ const Navigation = () => {
     console.log("reload check");
     axios({
       method: "post",
-      url: "http://localhost:8080/user/signincheck",
+      url: "/user/signincheck",
       withCredentials: true,
     })
       .then((res) => {
@@ -33,12 +31,13 @@ const Navigation = () => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [dispatch, userInfo && userInfo.prolileImage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, userInfo && userInfo.id]);
 
   const logOut = () => {
     axios({
       method: "post",
-      url: "http://localhost:8080/user/logout",
+      url: "/user/logout",
       withCredentials: true,
     })
       .then((res) => {
@@ -70,10 +69,10 @@ const Navigation = () => {
     >
       <SubMenu
         title={
-          <Span className="submenu-title-wrapper">
+          <span className="submenu-title-wrapper">
             <SettingOutlined />
             Submenu
-          </Span>
+          </span>
         }
       >
         <Menu.ItemGroup title="Item 1">

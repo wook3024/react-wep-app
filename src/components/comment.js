@@ -35,8 +35,6 @@ const Reply = ({ post, comment }) => {
   const [changeState, setChangeState] = useState(false);
   const [commentValue, setCommentValue] = useState("");
   const [replyCommentState, setReplyCommentState] = useState(false);
-  const [visible, setVisible] = useState("hidden");
-  const [isZoomed, setIsZoomed] = useState(false);
   const [isOpenUserImage, setIsOpenUserImage] = useState(false);
   const commentForm = useRef(null);
   const { userInfo } = useSelector((state) => state);
@@ -46,7 +44,6 @@ const Reply = ({ post, comment }) => {
   let subCommentList = null;
   let subCommentStore = [];
 
-  // console.log("userinfo Info", userInfo);
   let likeCount = comment.likes.length + likeVal;
   let dislikeCount = comment.dislikes.length + dislikeVal;
 
@@ -56,7 +53,7 @@ const Reply = ({ post, comment }) => {
   useEffect(() => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/likeState",
+      url: "/post/comment/likeState",
       params: { userId: userInfo.id, commentId: comment.id },
       withCredentials: true,
     })
@@ -71,7 +68,7 @@ const Reply = ({ post, comment }) => {
 
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/dislikeState",
+      url: "/post/comment/dislikeState",
       params: { userId: userInfo.id, commentId: comment.id },
       withCredentials: true,
     })
@@ -86,16 +83,12 @@ const Reply = ({ post, comment }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openUserImage = useCallback(() => {
-    setIsOpenUserImage(isOpenUserImage ? false : true);
-  }, [isOpenUserImage]);
+  useEffect(() => {
+    setReplyCommentState(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comment.comments.length]);
 
-  const handleZoomChange = useCallback((shouldZoom) => {
-    console.log("shouldZoom", shouldZoom);
-    setIsZoomed(shouldZoom);
-    setVisible(shouldZoom === false ? "hidden" : "visible");
-  }, []);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const likeCheck = (res) => {
     if (res.status !== 201) {
       message.warning(res.data);
@@ -107,10 +100,10 @@ const Reply = ({ post, comment }) => {
     return true;
   };
 
-  const like = () => {
+  const like = useCallback(() => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/like",
+      url: "/post/comment/like",
       params: { commentId: comment.id },
       withCredentials: true,
     })
@@ -123,12 +116,12 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [comment.id, likeCheck, likeState, likeVal, pluelikeOrUnlikeVal]);
 
-  const dislike = () => {
+  const dislike = useCallback(() => {
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/dislike",
+      url: "/post/comment/dislike",
       params: { commentId: comment.id },
       withCredentials: true,
     })
@@ -141,14 +134,14 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [comment.id, dislikeState, dislikeVal, likeCheck, pluelikeOrUnlikeVal]);
 
-  const commentRemove = () => {
+  const commentRemove = useCallback(() => {
     console.log("comment Set check", comment);
     console.log("commentRemoveCheck");
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/remove",
+      url: "/post/comment/remove",
       params: {
         commentId: comment.id,
         postId: post.id,
@@ -169,7 +162,7 @@ const Reply = ({ post, comment }) => {
         comment.comments.forEach((comment) => {
           axios({
             method: "post",
-            url: "http://localhost:8080/post/comment/remove",
+            url: "/post/comment/remove",
             params: {
               commentId: comment.id,
               postId: post.id,
@@ -213,23 +206,22 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [comment, dispatch, post.id]);
 
-  const commentChangeToggle = () => {
-    setChangeState(changeState ? false : true);
-  };
+  const commentValueChange = useCallback(
+    (e) => {
+      setCommentValue(e.target.value);
+      console.log(commentValue);
+    },
+    [commentValue]
+  );
 
-  const commentValueChange = (e) => {
-    setCommentValue(e.target.value);
-    console.log(commentValue);
-  };
-
-  const commentChangeSubmit = () => {
-    setChangeState(changeState ? false : true);
+  const commentChangeSubmit = useCallback(() => {
+    setChangeState(false);
 
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/change",
+      url: "/post/comment/change",
       withCredentials: true,
       params: {
         commentId: comment.id,
@@ -256,14 +248,7 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-
-    console.log("commentChangeSubmit");
-  };
-
-  const replyComment = () => {
-    setReplyCommentState(replyCommentState ? false : true);
-    console.log("comment Info", comment);
-  };
+  }, [comment.id, comment.postId, commentValue, dispatch]);
 
   const actions = [
     <span key="comment-basic-like">
@@ -285,10 +270,16 @@ const Reply = ({ post, comment }) => {
       </Tooltip>
       <span className="comment-action">{dislikeCount}</span>
     </span>,
-    <span key="comment-basic-reply-to" onClick={replyComment}>
+    <span
+      key="comment-basic-reply-to"
+      onClick={() => setReplyCommentState(replyCommentState ? false : true)}
+    >
       {userInfo && userInfo.id ? "Reply to" : ""}
     </span>,
-    <span key="comment-basic-change" onClick={commentChangeToggle}>
+    <span
+      key="comment-basic-change"
+      onClick={() => setChangeState(changeState ? false : true)}
+    >
       {userInfo && userInfo.id === comment.user.id ? "Change" : ""}
     </span>,
     <span key="comment-basic-remove" onClick={commentRemove}>

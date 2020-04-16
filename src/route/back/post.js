@@ -147,7 +147,7 @@ router.post("/uploadProfileImage", (req, res, next) => {
                 }
               );
             }
-            return res.status(201).send("Udate Complete With Images! 🐳");
+            return res.json((await req).files[0].filename);
           })();
         });
       } catch (error) {
@@ -440,7 +440,6 @@ router.post("/publish", async (req, res, next) => {
       }).then(async () => {
         return res.json(
           await db.Post.findOne({
-            attributes: ["id"],
             order: [["id", "DESC"]],
           })
         );
@@ -512,8 +511,23 @@ router.post("/user/nicknameChange", async (req, res, next) => {
         { where: { id: req.query.id } }
       )
         .then(async () => {
-          const user = await db.User.findOne({ where: { id: req.query.id } });
-          return res.json(user);
+          return res.json(
+            await db.User.findOne({
+              where: { id: req.query.id },
+              include: [
+                {
+                  model: db.Image,
+                },
+              ],
+              attributes: [
+                "username",
+                "id",
+                "nickname",
+                "description",
+                "created_at",
+              ],
+            })
+          );
         })
         .catch((error) => {
           console.error("😡 ", error);

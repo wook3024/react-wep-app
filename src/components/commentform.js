@@ -23,9 +23,10 @@ const Commentform = ({ post, comment }) => {
 
   const addCommnet = () => {
     console.log("comment addComment", comment);
+
     axios({
       method: "post",
-      url: "http://localhost:8080/post/comment/add",
+      url: "/post/comment/add",
       params: {
         postId: post.id,
         userId: userInfo && userInfo.id,
@@ -61,19 +62,13 @@ const Commentform = ({ post, comment }) => {
           };
           return comment;
         });
-        console.log("commentsData", ...commentsData);
         dispatch({
           type: ADD_COMMENT_ACTION,
-          //payload를 이용해 commentData를 전송할 때 키명을 comments로 하면 리덕스에서 받지 못한다. 왜?
           payload: { comments: [...commentsData], postId: post.id },
         });
-        console.log("commentsData", [...commentsData]);
+      })
+      .then(() => {
         message.success("Comment add Complete! 🐳");
-        // if (res.status === 201) {
-        //   message.success(res.data);
-        // } else {
-        //   message.warning(res.data);
-        // }
       })
       .catch((error) => {
         console.error("😡 ", error);
