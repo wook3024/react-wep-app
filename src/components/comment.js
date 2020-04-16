@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useRef,
-  Children,
+  useCallback,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
@@ -13,9 +13,12 @@ import {
   LikeOutlined,
   DislikeFilled,
   LikeFilled,
+  UserOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
+import { Controlled as ControlledZoom } from "react-medium-image-zoom";
 
+import "react-medium-image-zoom/dist/styles.css";
 import Commentform from "./commentform";
 import {
   COMMENT_REMOVE_ACTION,
@@ -32,6 +35,8 @@ const Reply = ({ post, comment }) => {
   const [changeState, setChangeState] = useState(false);
   const [commentValue, setCommentValue] = useState("");
   const [replyCommentState, setReplyCommentState] = useState(false);
+  const [visible, setVisible] = useState("hidden");
+  const [isZoomed, setIsZoomed] = useState(false);
   const commentForm = useRef(null);
   const { userInfo } = useSelector((state) => state);
 
@@ -78,6 +83,12 @@ const Reply = ({ post, comment }) => {
         console.error("😡 ", error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleZoomChange = useCallback((shouldZoom) => {
+    console.log("shouldZoom", shouldZoom);
+    setIsZoomed(shouldZoom);
+    setVisible(shouldZoom === false ? "hidden" : "visible");
   }, []);
 
   const likeCheck = (res) => {
@@ -286,15 +297,31 @@ const Reply = ({ post, comment }) => {
       actions={actions}
       author={comment.user ? comment.user.nickname : "not found"}
       avatar={
-        <Avatar
-          src={
-            comment.user.images[0] &&
-            comment.user.images[0].filename !== undefined
-              ? require(`../images/${comment.user.images[0].filename}`)
-              : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
-          }
-          alt="Han Solo"
-        />
+        comment.user.images[0] &&
+        comment.user.images[0].filename !== undefined ? (
+          <>
+            <Avatar
+              src={`./images/${comment.user.images[0].filename}`}
+              alt="Han Solo"
+              onClick={handleZoomChange}
+            />
+            <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
+              <img
+                style={{
+                  position: "absolute",
+                  visibility: visible,
+                }}
+                alt="that wanaka tree"
+                src={`./images/${comment.user.images[0].filename}`}
+                width="500"
+              />
+            </ControlledZoom>
+          </>
+        ) : (
+          <>
+            <Avatar icon={<UserOutlined />} />
+          </>
+        )
       }
       content={
         changeState ? (

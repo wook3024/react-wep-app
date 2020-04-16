@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Descriptions, Button, Input, Avatar, Upload, message } from "antd";
 import styled from "styled-components";
-import { UserOutlined, UploadOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { Controlled as ControlledZoom } from "react-medium-image-zoom";
 
+import "react-medium-image-zoom/dist/styles.css";
 import "./App.css";
 import { USER_INFO_REFRESH } from "../reducers/actions";
 
@@ -19,8 +21,16 @@ const Profile = () => {
   const [descriptionButtonToggle, setDescriptionButtonToggle] = useState(false);
   const [changeToDescription, setChangeToDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [visible, setVisible] = useState("hidden");
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const dispatch = useDispatch();
+
+  const handleZoomChange = useCallback((shouldZoom) => {
+    console.log("shouldZoom", shouldZoom);
+    setIsZoomed(shouldZoom);
+    setVisible(shouldZoom === false ? "hidden" : "visible");
+  }, []);
 
   const onChangeNickname = (e) => {
     setChangeToNickname(e.target.value);
@@ -179,7 +189,23 @@ const Profile = () => {
         }
       >
         {userInfo && userInfo.profileImage ? (
-          <Avatar src={require(`../images/${userInfo.profileImage}`)} />
+          <>
+            <Avatar
+              src={`./images/${userInfo.profileImage}`}
+              onClick={handleZoomChange}
+            />
+            <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
+              <img
+                style={{
+                  position: "absolute",
+                  visibility: visible,
+                }}
+                alt="that wanaka tree"
+                src={`./images/${userInfo.profileImage}`}
+                width="500"
+              />
+            </ControlledZoom>
+          </>
         ) : (
           <Avatar icon={<UserOutlined />} />
         )}

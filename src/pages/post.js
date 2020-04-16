@@ -34,6 +34,17 @@ const Profile = () => {
 
   return (
     <Div>
+      <link
+        rel="stylesheet"
+        type="text/css"
+        charset="UTF-8"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+      />
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+      />
       {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         //postCard 컴포넌트 내에서 Comment컴포넌트를 출력할 때
