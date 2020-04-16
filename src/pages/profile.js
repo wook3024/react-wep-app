@@ -4,8 +4,7 @@ import { Descriptions, Button, Input, Avatar, Upload, message } from "antd";
 import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { Controlled as ControlledZoom } from "react-medium-image-zoom";
-
+import Lightbox from "react-image-lightbox";
 import "react-medium-image-zoom/dist/styles.css";
 import "./App.css";
 import { USER_INFO_REFRESH } from "../reducers/actions";
@@ -21,30 +20,27 @@ const Profile = () => {
   const [descriptionButtonToggle, setDescriptionButtonToggle] = useState(false);
   const [changeToDescription, setChangeToDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [visible, setVisible] = useState("hidden");
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
 
-  const handleZoomChange = useCallback((shouldZoom) => {
-    console.log("shouldZoom", shouldZoom);
-    setIsZoomed(shouldZoom);
-    setVisible(shouldZoom === false ? "hidden" : "visible");
+  const openSingleLightbox = useCallback(() => {
+    setVisible(visible ? true : true);
+  }, [visible]);
+
+  const onChangeNickname = useCallback((e) => {
+    setChangeToNickname(e.target.value);
   }, []);
 
-  const onChangeNickname = (e) => {
-    setChangeToNickname(e.target.value);
-  };
-
-  const onChangeDescription = (e) => {
+  const onChangeDescription = useCallback((e) => {
     setChangeToDescription(e.target.value);
-  };
+  }, []);
 
   const descriptionChange = () => {
     setDescriptionButtonToggle(true);
   };
 
-  const descriptionModify = () => {
+  const changeDescription = () => {
     axios({
       method: "post",
       url: "http://localhost:8080/post/user/descriptionChange",
@@ -53,6 +49,11 @@ const Profile = () => {
     })
       .then((res) => {
         console.log("changeToDescription result", res);
+        if (res.data.nickname) {
+          message.success("Description change succeeded!  🐳");
+        } else {
+          message.warning(res.data);
+        }
         return dispatch({
           type: USER_INFO_REFRESH,
           payload: res.data,
@@ -79,6 +80,11 @@ const Profile = () => {
     })
       .then((res) => {
         console.log("changeToNickname result", res);
+        if (res.data.nickname) {
+          message.success("Nickname change succeeded!  🐳");
+        } else {
+          message.warning(res.data);
+        }
         dispatch({
           type: USER_INFO_REFRESH,
           payload: res.data,
@@ -192,19 +198,14 @@ const Profile = () => {
           <>
             <Avatar
               src={`./images/${userInfo.profileImage}`}
-              onClick={handleZoomChange}
+              onClick={openSingleLightbox}
             />
-            <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
-              <img
-                style={{
-                  position: "absolute",
-                  visibility: visible,
-                }}
-                alt="that wanaka tree"
-                src={`./images/${userInfo.profileImage}`}
-                width="500"
+            {visible && (
+              <Lightbox
+                mainSrc={`./images/${userInfo.profileImage}`}
+                onCloseRequest={() => setVisible(false)}
               />
-            </ControlledZoom>
+            )}
           </>
         ) : (
           <Avatar icon={<UserOutlined />} />
@@ -215,7 +216,7 @@ const Profile = () => {
           <Div>
             Description&nbsp;
             {descriptionButtonToggle ? (
-              <Button size={"small"} type="primary" onClick={descriptionModify}>
+              <Button size={"small"} type="primary" onClick={changeDescription}>
                 modify
               </Button>
             ) : (

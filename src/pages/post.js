@@ -10,41 +10,95 @@ import "./App.css";
 
 const Div = styled.div``;
 
+let getDataCheck = false;
+let getPost = [];
+let firstPostId = undefined;
+
 const Profile = () => {
   const { post, userInfo } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   console.log("Post.js", post);
 
+  const onScroll = () => {
+    //getDataCheck조건은 처리 중인 작업이 끝날 때까지 때까지 기다린 후
+    //다음 작업을 시작하기 위해 사용한다.
+    //getPost[0] && getPost.map을 사용하는 건 마지막에 나오는 포스트
+    if (
+      window.scrollY >
+        document.documentElement.scrollHeight -
+          document.documentElement.clientHeight -
+          500 &&
+      !getDataCheck &&
+      getPost[0] &&
+      getPost.map((post) => {
+        return post.id === firstPostId;
+      })
+    ) {
+      // if (!getPost[0] || !getPost[1] || !getPost[2]) {
+      //   getDataCheck++;
+      // }
+
+      getDataCheck = true;
+      console.log(
+        "getNewpost",
+        getPost,
+        getPost.length - 1,
+        getPost[getPost.length - 1]
+      );
+      axios({
+        method: "get",
+        url: "http://localhost:8080/post",
+        params: { id: getPost[0] ? getPost[getPost.length - 1].id : undefined },
+      })
+        .then((res) => {
+          firstPostId = firstPostId === undefined ? getPost[0].id : firstPostId;
+          dispatch({
+            type: GET_POST_DATA,
+            payload: { post: (getPost = res.data) },
+          });
+        })
+        .then(() => {
+          getDataCheck = false;
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    }
+  };
+
   useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // console.log(
+    //   "post",
+    //   getPost[0] ? getPost[getPost.length - 1].id : undefined
+    // );
     axios({
       method: "get",
       url: "http://localhost:8080/post",
+      params: { id: getPost[0] ? getPost[getPost.length - 1].id : undefined },
     })
       .then((postData) => {
         dispatch({
           type: GET_POST_DATA,
-          payload: postData.data,
+          payload: { post: (getPost = postData.data) },
         });
       })
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [dispatch, post.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Div>
-      <link
-        rel="stylesheet"
-        type="text/css"
-        charset="UTF-8"
-        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-      />
-      <link
-        rel="stylesheet"
-        type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-      />
       {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         //postCard 컴포넌트 내에서 Comment컴포넌트를 출력할 때

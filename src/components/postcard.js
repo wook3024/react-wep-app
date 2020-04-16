@@ -5,11 +5,10 @@ import {
   EditOutlined,
   EllipsisOutlined,
   MessageOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
-import ModalImage from "react-modal-image";
-import { Controlled as ControlledZoom } from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 
 import "react-image-lightbox/style.css";
@@ -24,19 +23,17 @@ const { Meta } = Card;
 const Postcard = ({ post }) => {
   const [revisePost, setRevisePost] = useState(false);
   const [addComment, setAddComment] = useState(false);
-  const [visible, setVisible] = useState("hidden");
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [currentImage, setCurrentImage] = useState(0);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [viewerIsOpen, setViewerIsOpen] = useState(false);
+  const [isOpenUserImage, setIsOpenUserImage] = useState(false);
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
   // console.log("post.comments", post.data.comments);
 
   let commentList = null;
-  let commentStore = [];
+  const commentStore = [];
+  const images = [];
 
   useEffect(() => {
     setRevisePost(false);
@@ -44,34 +41,21 @@ const Postcard = ({ post }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo && userInfo.username, post.data.comments.length]);
 
-  const openLightbox = useCallback(() => {
-    setCurrentImage(0);
-    setViewerIsOpen(true);
-    setIsOpen(true);
-  }, []);
-
-  const closeLightbox = () => {
-    setCurrentImage(0);
-    setViewerIsOpen(false);
-  };
-
-  const images = [];
-
-  const handleZoomChange = useCallback((shouldZoom) => {
-    console.log("shouldZoom", shouldZoom);
-    setIsZoomed(shouldZoom);
-    setVisible(shouldZoom === false ? "hidden" : "visible");
-  }, []);
-
-  const loginCheck = () => {
+  const loginCheck = useCallback(() => {
     if (!(userInfo && userInfo.username)) {
       message.warning("Login Please! 😱");
       return false;
     }
     return true;
-  };
+  });
 
-  const postRemove = () => {
+  const openImagebox = useCallback((e) => {
+    console.log(e.target.alt);
+    setPhotoIndex(e.target.alt);
+    setIsOpen(true);
+  }, []);
+
+  const postRemove = useCallback(() => {
     if (!loginCheck()) return;
 
     axios({
@@ -95,17 +79,17 @@ const Postcard = ({ post }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [dispatch, loginCheck, post.data.id, userInfo.id]);
 
-  const postChange = () => {
+  const postChange = useCallback(() => {
     if (!loginCheck()) return;
     setRevisePost(revisePost === true ? false : true);
-  };
+  }, [loginCheck, revisePost]);
 
-  const commentChange = () => {
+  const commentChange = useCallback(() => {
     if (!loginCheck()) return;
     setAddComment(addComment === true ? false : true);
-  };
+  }, [addComment, loginCheck]);
 
   return (
     <Card
@@ -123,20 +107,13 @@ const Postcard = ({ post }) => {
             <>
               {post.data.images.map((image) => {
                 images.push(`./images/${image.filename}`);
-                if (image.filename === post.data.images[0].filename) {
-                  console.log("image data", image);
-                  return (
-                    <img
-                      src={`./images/${image.filename}`}
-                      onClick={openLightbox}
-                      alt={image.filename}
-                    />
-                  );
-                }
+                // console.log("image data", image);
                 return (
-                  <ModalImage
-                    small={`./images/${image.filename}`}
-                    large={`./images/${image.filename}`}
+                  // eslint-disable-next-line jsx-a11y/alt-text
+                  <img
+                    src={`./images/${image.filename}`}
+                    onClick={openImagebox}
+                    alt={images.length - 1}
                   />
                 );
               })}
@@ -197,36 +174,31 @@ const Postcard = ({ post }) => {
       >
         <Meta
           avatar={
-            <>
-              <Avatar
-                src={
-                  post.data.user.images[0] &&
-                  post.data.user.images[0].filename !== undefined
-                    ? `./images/${post.data.user.images[0].filename}`
-                    : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
-                }
-                onClick={handleZoomChange}
-              />
-              <ControlledZoom
-                isZoomed={isZoomed}
-                onZoomChange={handleZoomChange}
-              >
-                <img
-                  style={{
-                    position: "absolute",
-                    visibility: visible,
-                  }}
-                  alt="that wanaka tree"
-                  src={
-                    post.data.user.images[0] &&
-                    post.data.user.images[0].filename !== undefined
-                      ? `./images/${post.data.user.images[0].filename}`
-                      : "https://i.pinimg.com/originals/0b/39/ea/0b39ea68844c6d4664d54af04bf83088.png"
-                  }
-                  width="500"
+            post.data.user.images[0] &&
+            post.data.user.images[0].filename !== undefined ? (
+              <>
+                <Avatar
+                  src={`./images/${post.data.user.images[0].filename}`}
+                  alt="Han Solo"
+                  onClick={() => setIsOpenUserImage(true)}
                 />
-              </ControlledZoom>
-            </>
+                {isOpenUserImage && (
+                  <Lightbox
+                    //css변경할 때 사용
+                    reactModalStyle={{
+                      overlay: {},
+                      content: {},
+                    }}
+                    mainSrc={`./images/${post.data.user.images[0].filename}`}
+                    onCloseRequest={() => setIsOpenUserImage(false)}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                <Avatar icon={<UserOutlined />} />
+              </>
+            )
           }
           title={post.data.title}
           description={post.data.content}

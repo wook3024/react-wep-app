@@ -79,9 +79,10 @@ const reducer = (state = initialState, action) => {
     //   };
     // }
     case GET_POST_DATA: {
+      console.log("get post data", state.post, action.payload.post);
+      state.post = [...state.post, ...action.payload.post];
       return {
         ...state,
-        post: action.payload,
       };
     }
     case REMOVE_POST_ACTION: {

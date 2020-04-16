@@ -11,8 +11,17 @@ const Op = Sequelize.Op;
 
 router.get("", async (req, res, next) => {
   try {
+    const data = req.query;
+    const condition = () => {
+      console.log("data check", data);
+      if (data.id === undefined) {
+        return {};
+      }
+      console.log("data check op.lt", data);
+      return { id: { [Op.lt]: parseInt(data.id) } };
+    };
     const posts = await db.Post.findAll({
-      where: {},
+      where: { ...condition() },
       include: [
         {
           model: db.Comment,
@@ -51,8 +60,9 @@ router.get("", async (req, res, next) => {
         [db.Comment, "group", "ASC"],
         [db.Comment, "sort", "DESC"],
       ],
+      limit: 5,
     });
-
+    console.log("response post data", await posts);
     return res.json(posts);
   } catch (error) {
     console.error("😡 ", error);

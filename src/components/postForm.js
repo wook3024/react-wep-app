@@ -4,7 +4,7 @@ import { Input, Button, Form, message, Upload, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-import { GET_POST_DATA, UPDATE_POST_ACTION } from "../reducers/actions";
+import { GET_POST_DATA } from "../reducers/actions";
 
 const { TextArea } = Input;
 
@@ -17,7 +17,7 @@ const PostForm = ({ postId }) => {
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
 
-  const { userInfo } = useSelector((state) => state);
+  const { userInfo, post } = useSelector((state) => state);
 
   const inputTitle = useRef(null);
   const inputContent = useRef(null);
@@ -115,7 +115,7 @@ const PostForm = ({ postId }) => {
         fileList.forEach((file) => {
           formData.append("file", file.originFileObj);
         });
-        console.log("res", res);
+        console.log("res", fileList[0], res.data);
         axios({
           method: "post",
           url: "http://localhost:8080/post/uploadPostImage",
@@ -135,6 +135,7 @@ const PostForm = ({ postId }) => {
         axios({
           method: "get",
           url: "http://localhost:8080/post",
+          params: { id: post[0] ? post[post.length - 1].id : undefined },
         })
           .then((res) => {
             dispatch({
@@ -153,7 +154,7 @@ const PostForm = ({ postId }) => {
     inputTitle.current.state.value = null;
     inputContent.current.state.value = null;
     setFileList([]);
-  }, [content, dispatch, fileList, postId, title, updatePost, userInfo]);
+  }, [content, dispatch, fileList, post, postId, title, updatePost, userInfo]);
 
   return (
     <Form

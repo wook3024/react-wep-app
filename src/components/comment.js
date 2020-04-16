@@ -16,7 +16,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { Controlled as ControlledZoom } from "react-medium-image-zoom";
+import Lightbox from "react-image-lightbox";
 
 import "react-medium-image-zoom/dist/styles.css";
 import Commentform from "./commentform";
@@ -37,6 +37,7 @@ const Reply = ({ post, comment }) => {
   const [replyCommentState, setReplyCommentState] = useState(false);
   const [visible, setVisible] = useState("hidden");
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isOpenUserImage, setIsOpenUserImage] = useState(false);
   const commentForm = useRef(null);
   const { userInfo } = useSelector((state) => state);
 
@@ -84,6 +85,10 @@ const Reply = ({ post, comment }) => {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const openUserImage = useCallback(() => {
+    setIsOpenUserImage(isOpenUserImage ? false : true);
+  }, [isOpenUserImage]);
 
   const handleZoomChange = useCallback((shouldZoom) => {
     console.log("shouldZoom", shouldZoom);
@@ -303,19 +308,19 @@ const Reply = ({ post, comment }) => {
             <Avatar
               src={`./images/${comment.user.images[0].filename}`}
               alt="Han Solo"
-              onClick={handleZoomChange}
+              onClick={() => setIsOpenUserImage(true)}
             />
-            <ControlledZoom isZoomed={isZoomed} onZoomChange={handleZoomChange}>
-              <img
-                style={{
-                  position: "absolute",
-                  visibility: visible,
+            {isOpenUserImage && (
+              <Lightbox
+                //css변경할 때 사용
+                reactModalStyle={{
+                  overlay: {},
+                  content: {},
                 }}
-                alt="that wanaka tree"
-                src={`./images/${comment.user.images[0].filename}`}
-                width="500"
+                mainSrc={`./images/${comment.user.images[0].filename}`}
+                onCloseRequest={() => setIsOpenUserImage(false)}
               />
-            </ControlledZoom>
+            )}
           </>
         ) : (
           <>
