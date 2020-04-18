@@ -70,99 +70,6 @@ router.get("", async (req, res, next) => {
   }
 });
 
-router.post("/uploadPostImage", (req, res, next) => {
-  try {
-    if (req.isAuthenticated()) {
-      try {
-        upload(req, res, (err) => {
-          // console.log("user check", req);
-          if (err instanceof multer.MulterError) {
-            return next(err);
-          } else if (err) {
-            return next(err);
-          }
-
-          return (async () => {
-            if (!(await req).files[0]) {
-              return res.send("Upload Complete! 🐳");
-            }
-            (await req).files.forEach((file) => {
-              console.log("file info", file.filename);
-              console.log("file.path", file);
-              db.Image.create({
-                postId: req.query.postId ? req.query.postId : null,
-                filename: file.filename,
-                userId: req.query.userId ? req.query.userId : null,
-              });
-            });
-            return res.status(201).send("Upload Complete With Images! 🐳");
-          })();
-        });
-      } catch (error) {
-        console.error("😡 ", error);
-        next(error);
-      }
-    } else {
-      res.send("Login Please! 😱");
-    }
-  } catch (error) {
-    console.error("😡 ", error);
-    next(error);
-  }
-});
-
-router.post("/uploadProfileImage", (req, res, next) => {
-  try {
-    if (req.isAuthenticated()) {
-      try {
-        upload(req, res, (err) => {
-          // console.log("user check", req);
-          if (err instanceof multer.MulterError) {
-            return next(err);
-          } else if (err) {
-            return next(err);
-          }
-
-          return (async () => {
-            if (!(await req).files[0]) {
-              return res.send("Upload failed! 😡");
-            }
-            const imageCheck = db.Image.findOne({
-              where: { userId: req.query.userId },
-            });
-            console.log("imageCheck", await imageCheck);
-            if ((await imageCheck) === null) {
-              db.Image.create({
-                postId: req.query.postId ? req.query.postId : null,
-                filename: (await req).files[0].filename,
-                userId: req.query.userId ? req.query.userId : null,
-              });
-            } else {
-              db.Image.update(
-                {
-                  filename: (await req).files[0].filename,
-                },
-                {
-                  where: { userId: req.query.userId ? req.query.userId : null },
-                }
-              );
-            }
-            return res.json((await req).files[0].filename);
-          })();
-        });
-      } catch (error) {
-        console.error("😡 ", error);
-        next(error);
-      }
-    } else {
-      res.send("Login Please! 😱");
-    }
-  } catch (error) {
-    console.error("😡 ", error);
-    next(error);
-  }
-});
-
 router.get("/comment", async (req, res, next) => {
   try {
     const data = req.query;
@@ -426,6 +333,113 @@ router.post("/comment/change", async (req, res, next) => {
   }
 });
 
+router.post("/uploadPostImage", (req, res, next) => {
+  // console.log("uploda image data 😱😱😱\n", req.file);
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        upload(req, res, (err) => {
+          // console.log("user check", req);
+          if (err instanceof multer.MulterError) {
+            return next(err);
+          } else if (err) {
+            return next(err);
+          }
+
+          const data = req.query;
+          // console.log("uploadPostImage data", data);
+          return db.Image.destroy({
+            where: { postId: data.postId },
+          }).then(async (destroyResult) => {
+            // console.log(
+            //   "Image destroy state",
+            //   destroyResult,
+            //   data.postId,
+            //   (await req).files
+            // );
+            if (!(await req).files[0]) {
+              return res.send("Upload Complete! 🐳");
+            }
+            (await req).files.forEach((file) => {
+              console.log("file info", file.filename);
+              // console.log("file.path", file);
+              db.Image.create({
+                postId: data.postId ? data.postId : null,
+                filename: file.filename,
+                userId: data.userId ? data.userId : null,
+              });
+            });
+            const imageFiles = (await req).files;
+            req = null;
+            return res.json(imageFiles);
+          });
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    } else {
+      res.send("Login Please! 😱");
+    }
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/uploadProfileImage", (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        upload(req, res, (err) => {
+          // console.log("user check", req);
+          if (err instanceof multer.MulterError) {
+            return next(err);
+          } else if (err) {
+            return next(err);
+          }
+
+          const data = req.query;
+          return (async () => {
+            if (!(await req).files[0]) {
+              return res.send("Upload failed! 😡");
+            }
+            const imageCheck = db.Image.findOne({
+              where: { userId: req.query.userId },
+            });
+            console.log("imageCheck", await imageCheck);
+            if ((await imageCheck) === null) {
+              db.Image.create({
+                postId: data.postId ? data.postId : null,
+                filename: (await req).files[0].filename,
+                userId: data.userId ? data.userId : null,
+              });
+            } else {
+              db.Image.update(
+                {
+                  filename: (await req).files[0].filename,
+                },
+                {
+                  where: { userId: req.query.userId ? req.query.userId : null },
+                }
+              );
+            }
+            return res.json((await req).files[0].filename);
+          })();
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    } else {
+      res.send("Login Please! 😱");
+    }
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
 router.post("/publish", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
@@ -437,10 +451,18 @@ router.post("/publish", async (req, res, next) => {
         userId: user.id,
         title: data.title,
         content: data.content,
+        updated_at: data.now,
       }).then(async () => {
         return res.json(
           await db.Post.findOne({
             order: [["id", "DESC"]],
+            include: {
+              model: db.User,
+              include: {
+                model: db.Image,
+              },
+              attributes: ["username", "id"],
+            },
           })
         );
       });
@@ -485,13 +507,29 @@ router.post("/update", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       // console.log("update check", req.query);
+      const data = req.query;
       const post = db.Post.update(
-        { title: req.query.title, content: req.query.content },
-        { where: { id: req.query.id } }
+        {
+          title: data.title,
+          content: data.content,
+          updated_at: data.now,
+        },
+        { where: { id: data.id } }
       );
       // console.log("update post", await post);
       if (await post) {
-        return res.status(201).send("Post Update Complete! 🐳");
+        return db.Post.findOne({
+          where: { id: data.id },
+          include: {
+            model: db.User,
+            include: {
+              model: db.Image,
+            },
+            attributes: ["username", "id"],
+          },
+        }).then((post) => {
+          return res.json(post);
+        });
       }
       return res.send("This post has already been removed. 😱");
     }

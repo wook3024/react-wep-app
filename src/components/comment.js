@@ -18,7 +18,6 @@ import {
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
 
-import "react-medium-image-zoom/dist/styles.css";
 import Commentform from "./commentform";
 import {
   COMMENT_REMOVE_ACTION,

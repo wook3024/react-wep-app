@@ -17,3 +17,357 @@
 6.sequelize에서 comment를 같은 그룹으로 묶기 위해 시간값을 이용하려 했지만 알 수 없는 에러 발생 => 값을 넘겨줌으로써 해결
 7.대댓글 부분 코드 정리 필요                  
 8.프로필 이미지 업데이트시 reload되는 문제 발생                          
+9.postman이용 시 create-react-app의 proxy설정에 유의!
+10.이미지 크기가 커지면 포스트 게시 할 때 reload 일어난다.
+11.이미지를 올릴 때 reload가 일어나지 않으면 multer에 저장된 이전 데이터가 초기화되지 않아 현재 추가한 이미지와 이전에 추가한 이미지가 같이 업로드되는 현상이 발생 => formdata 변수를 전역으로 선언해서 발생한 문제...
+
+
+
+router.post("/uploadPostImage", (req, res, next) => {
+  console.log("uploda image data 😱😱😱\n", req);
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        upload(req, res, (err) => {
+          // console.log("user check", req);
+          if (err instanceof multer.MulterError) {
+            return next(err);
+          } else if (err) {
+            return next(err);
+          }
+
+          const data = req.query;
+          // console.log("uploadPostImage data", data);
+          return db.Image.destroy({
+            where: { postId: data.postId },
+          }).then(async (destroyResult) => {
+            // console.log(
+            //   "Image destroy state",
+            //   destroyResult,
+            //   data.postId,
+            //   (await req).files
+            // );
+            if (!(await req).files[0]) {
+              return res.send("Upload Complete! 🐳");
+            }
+            (await req).files.forEach((file) => {
+              console.log("file info", file.filename);
+              // console.log("file.path", file);
+              db.Image.create({
+                postId: data.postId ? data.postId : null,
+                filename: file.filename,
+                userId: data.userId ? data.userId : null,
+              });
+            });
+            return res.json((await req).files);
+          });
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    } else {
+      res.send("Login Please! 😱");
+    }
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Input, Button, Form, message, Upload, Modal } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import axios from "axios";
+
+import { PUBLISH_POST_ACTION, UPDATE_POST_ACTION } from "../reducers/actions";
+
+const moment = require("moment");
+const { now } = moment;
+
+const FormData = require("form-data");
+const { TextArea } = Input;
+
+const formData = new FormData();
+
+const PostForm = ({ post }) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
+
+  const { userInfo } = useSelector((state) => state);
+
+  const inputTitle = useRef(null);
+  const inputContent = useRef(null);
+
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   if (post && post.id) {
+  //     toDataURL("./logo192.png", function (dataUrl) {
+  //       // console.log("RESULT:", dataUrl);
+  //       var file = dataURLtoFile(
+  //         dataUrl,
+  //         moment(now()).format("YYYYMMDDhmmss") + post.images[0].filename
+  //       );
+  //       console.log(file);
+  //       setFileList([
+  //         {
+  //           uid: "-1",
+  //           name:
+  //             moment(now()).format("YYYYMMDDhmmss") + post.images[0].filename,
+  //           status: "done",
+  //           originFileObj: file,
+  //           url: "./logo192.png",
+  //         },
+  //       ]);
+  //     });
+  //   }
+  // }, [post]);
+
+  function toDataURL(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        callback(reader.result);
+      };
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
+    xhr.send();
+  }
+
+  function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  const getBase64 = useCallback((file) => {
+    console.log("getBase64", file);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }, []);
+
+  const handleCancel = useCallback(() => setPreviewVisible(false), []);
+
+  const handlePreview = useCallback(
+    async (file) => {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+
+      setPreviewImage(file.url || file.preview);
+      setPreviewVisible(true);
+    },
+    [getBase64]
+  );
+
+  const handleChange = useCallback(({ fileList }) => {
+    console.log("filelist", fileList);
+    setFileList(fileList);
+  }, []);
+
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div className="ant-upload-text">Upload</div>
+    </div>
+  );
+
+  const onChangeTitle = useCallback((e) => {
+    setContent(e.target.value);
+  }, []);
+  const onChangeContent = useCallback((e) => {
+    setTitle(e.target.value);
+  }, []);
+
+  const updatePost = useCallback(() => {
+    axios({
+      method: "post",
+      url: "/post/update",
+      params: {
+        id: post.id,
+        title,
+        content,
+        now: moment(now()).format("YYYYMMDDhmmss"),
+      },
+      withCredentials: true,
+    })
+      .then((res) => {
+        fileList.forEach((file) => {
+          formData.append("file", file.originFileObj);
+        });
+        console.log("fileList", fileList);
+        axios({
+          method: "post",
+          url: "/post/uploadPostImage",
+          data: formData,
+          params: {
+            postId: res.data.id,
+            //update 값 이용해 기존의 이미지와 교체 여부 확인
+            update: true,
+            formData,
+          },
+          withCredentials: true,
+        })
+          .then((images) => {
+            console.log("upload", images, res);
+            if (res.status === 200) {
+              message.success("Upload post success with image!. 🐳");
+            } else {
+              message.success("Upload post success!. 🐳");
+            }
+            dispatch({
+              type: UPDATE_POST_ACTION,
+              payload: {
+                post: { ...res.data, images: images.data, comments: [] },
+              },
+            });
+            inputTitle.current.state.value = null;
+            inputContent.current.state.value = null;
+          })
+          .catch((error) => {
+            console.error("😡 ", error);
+          });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  }, [content, dispatch, fileList, post, title]);
+
+  const onSubmit = useCallback(async () => {
+    if (!(userInfo && userInfo.username)) {
+      message.warning("Login Please! 😱");
+      return;
+    }
+
+    if (post && post.id !== undefined) {
+      updatePost();
+      return;
+    }
+
+    axios({
+      method: "post",
+      url: "/post/publish",
+      params: {
+        title,
+        content,
+        now: moment(now()).format("YYYYMMDDhmmss"),
+      },
+      withCredentials: true,
+    })
+      .then((res) => {
+        fileList.forEach((file) => {
+          formData.append("file", file.originFileObj);
+        });
+        console.log("res", fileList[0], res);
+        axios({
+          method: "post",
+          url: "/post/uploadPostImage",
+          data: formData,
+          params: { postId: res.data.id },
+          withCredentials: true,
+        })
+          .then((images) => {
+            console.log("upload", images, res);
+            if (res.status === 200) {
+              message.success("Upload post success with image!. 🐳");
+            } else {
+              message.success("Upload post success!. 🐳");
+            }
+            dispatch({
+              type: PUBLISH_POST_ACTION,
+              payload: {
+                post: { ...res.data, images: images.data, comments: [] },
+              },
+            });
+          })
+          .catch((error) => {
+            message.warning("Upload failed");
+            console.error("😡 ", error);
+          });
+      })
+      .then(() => {
+        inputTitle.current.state.value = null;
+        inputContent.current.state.value = null;
+        setFileList([]);
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  }, [content, dispatch, fileList, post, title, updatePost, userInfo]);
+
+  return (
+    <Form
+      style={{
+        margin: " 0 auto",
+        width: 350,
+      }}
+    >
+      <Input
+        placeholder="title"
+        ref={inputTitle}
+        allowClear
+        onChange={onChangeContent}
+      />
+      <br />
+      <br />
+      <TextArea
+        placeholder="content"
+        ref={inputContent}
+        allowClear
+        onChange={onChangeTitle}
+      />
+      <br />
+      <br />
+      <div className="clearfix">
+        <Upload
+          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          listType="picture-card"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+        >
+          {fileList.length >= 8 ? null : uploadButton}
+        </Upload>
+        <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
+          <img alt="example" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
+      </div>
+      <Button
+        type="default"
+        value="large"
+        htmlType="submit"
+        onClick={onSubmit}
+        style={{
+          display: "flex",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto",
+          width: 350,
+        }}
+      >
+        publish
+      </Button>
+    </Form>
+  );
+};
+
+export default React.memo(PostForm);

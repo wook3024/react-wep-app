@@ -8,6 +8,7 @@ import {
   ADD_COMMENT_ACTION,
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
+  PUBLISH_POST_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -59,15 +60,20 @@ const reducer = (state = initialState, action) => {
       };
     }
     case UPDATE_POST_ACTION: {
+      const postIndex = state.post.findIndex((post) => {
+        return post.id === action.payload.post.id;
+      });
+      console.log("UPDATE POST ACTION", action.payload, postIndex);
+      state.post[postIndex] = action.payload.post;
+      return {
+        ...state,
+      };
+    }
+    case PUBLISH_POST_ACTION: {
       // console.log("post id, info id", action.payload.id);
       return {
         ...state,
-        post: state.post.map((post) => {
-          if (post.id === action.payload.id) {
-            return (post = action.payload);
-          }
-          return post;
-        }),
+        post: [action.payload.post, ...state.post],
       };
     }
     case ADD_COMMENT_ACTION: {

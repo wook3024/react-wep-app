@@ -9,7 +9,6 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
-import "react-medium-image-zoom/dist/styles.css";
 
 import "react-image-lightbox/style.css";
 import ButtonGroup from "antd/lib/button/button-group";
@@ -38,7 +37,11 @@ const Postcard = ({ post }) => {
     setRevisePost(false);
     setAddComment(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInfo && userInfo.username, post.data.comments.length]);
+  }, [
+    userInfo && userInfo.username,
+    post.data.comments.length,
+    post.data.updated_at,
+  ]);
 
   const loginCheck = useCallback(() => {
     if (!(userInfo && userInfo.username)) {
@@ -205,7 +208,7 @@ const Postcard = ({ post }) => {
         />
       </Card>
       {addComment && <Commentform post={post.data} />}
-      {revisePost && <PostForm postId={post.data.id} />}
+      {revisePost && <PostForm post={post.data} />}
       {post.data.comments[0] &&
         post.data.comments.forEach((comment) => {
           const commentsSize = post.data.comments.length - 1;
@@ -217,9 +220,9 @@ const Postcard = ({ post }) => {
             //반복되는 리렌더링에 의해 무결성 요구됨
             //데이더 변질을 막기 위해 스프레드 연산자 사용
             if (commentList.comments.length > 0) {
-              // console.log("commentList", commentList, comment);
               //이전값을 기준으로 출력할 값을 정하기 때문에
               //순회가 끝나도 하나의  값이 처리되지 못해 끝에 더미값을 푸쉬한다.
+              // console.log("commentList", commentList, comment);
               if (
                 comment.id === post.data.comments[commentsSize].id &&
                 comment.group === commentList.group
@@ -231,7 +234,10 @@ const Postcard = ({ post }) => {
                 depth: commentList.comments[0].depth,
               });
               commentStore.push(commentList);
-              if (comment.id === post.data.comments[commentsSize].id) {
+              if (
+                comment.id === post.data.comments[commentsSize].id &&
+                comment.group !== commentList.group
+              ) {
                 commentStore.push({ ...comment, comments: [] });
               }
             } else if (comment.id === post.data.comments[commentsSize].id) {
@@ -257,6 +263,7 @@ const Postcard = ({ post }) => {
             commentList.comments = [];
             if (!commentsSize) {
               commentStore.push(commentList);
+              console.log("commentSize", commentsSize);
             }
           } else {
             commentList.comments.push(comment);
@@ -264,7 +271,7 @@ const Postcard = ({ post }) => {
         })}
       {post.data.comments[0] &&
         commentStore.map((comment) => {
-          // console.log("comment deptg", comment);
+          console.log("comment deptg", comment, commentStore.length);
           return <Comment post={post.data} comment={comment} />;
         })}
     </Card>

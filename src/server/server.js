@@ -7,8 +7,8 @@ const session = require("express-session");
 
 const db = require("../models");
 const passportConfig = require("../passport/index");
-const user = require("./back/user");
-const post = require("./back/post");
+const user = require("../route/back/user");
+const post = require("../route/back/post");
 
 const sequelize = db.sequelize;
 const app = express();
@@ -19,7 +19,7 @@ sequelize
   .then(() => {
     console.log("\n\n🦛 ", "Sequelize Connection Success!", "🤫\n\n");
   })
-  .catch(error => {
+  .catch((error) => {
     console.error("😡 ", error);
   });
 
@@ -27,10 +27,11 @@ passportConfig();
 app.use(
   cors({
     origin: true,
-    credentials: true
+    credentials: true,
   })
 );
 
+app.use(express.static("public"));
 app.use(logger("dev"));
 app.use(express.static("images"));
 app.use(cookieParser("inputencryptstring"));
@@ -41,9 +42,9 @@ app.use(
     secret: "inputencryptstring",
     cookie: {
       httpOnly: true,
-      secure: false
+      secure: false,
     },
-    name: "whynot?"
+    name: "whynot?",
   })
 );
 app.use(passport.initialize());

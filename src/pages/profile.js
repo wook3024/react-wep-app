@@ -5,7 +5,6 @@ import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
 
-import "react-medium-image-zoom/dist/styles.css";
 import "./App.css";
 import { USER_INFO_REFRESH } from "../reducers/actions";
 
@@ -109,10 +108,10 @@ const Profile = () => {
           message.warning("Update failed! 😱");
         }
 
-        // dispatch({
-        //   type: USER_INFO_REFRESH,
-        //   payload: { userInfo: { ...userInfo, profileImage: res.data } },
-        // });
+        dispatch({
+          type: USER_INFO_REFRESH,
+          payload: { userInfo: { ...userInfo, profileImage: res.data } },
+        });
         setSelectedFile(null);
       })
       .catch((error) => {
