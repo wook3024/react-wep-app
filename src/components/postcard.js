@@ -108,11 +108,11 @@ const Postcard = ({ post }) => {
           post.data.images[0] && (
             <>
               {post.data.images.map((image) => {
-                images.push(`./images/${image.filename}`);
+                images.push(`../../public/images/${image.filename}`);
                 return (
                   // eslint-disable-next-line jsx-a11y/alt-text
                   <img
-                    src={`./images/${image.filename}`}
+                    src={`../../public/images/${image.filename}`}
                     onClick={openImagebox}
                     alt={images.length - 1}
                   />
@@ -181,7 +181,7 @@ const Postcard = ({ post }) => {
             post.data.user.images[0].filename !== undefined ? (
               <>
                 <Avatar
-                  src={`./images/${post.data.user.images[0].filename}`}
+                  src={`../../public/images/${post.data.user.images[0].filename}`}
                   alt="Han Solo"
                   onClick={() => setIsOpenUserImage(true)}
                 />
@@ -192,7 +192,7 @@ const Postcard = ({ post }) => {
                       overlay: {},
                       content: {},
                     }}
-                    mainSrc={`./images/${post.data.user.images[0].filename}`}
+                    mainSrc={`../../public/images/${post.data.user.images[0].filename}`}
                     onCloseRequest={() => setIsOpenUserImage(false)}
                   />
                 )}

@@ -296,7 +296,7 @@ const Reply = ({ post, comment }) => {
         comment.user.images[0].filename !== undefined ? (
           <>
             <Avatar
-              src={`./images/${comment.user.images[0].filename}`}
+              src={`../../public/images/${comment.user.images[0].filename}`}
               alt="Han Solo"
               onClick={() => setIsOpenUserImage(true)}
             />

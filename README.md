@@ -18,11 +18,19 @@
 7.대댓글 부분 코드 정리 필요                  
 8.프로필 이미지 업데이트시 reload되는 문제 발생                          
 9.postman이용 시 create-react-app의 proxy설정에 유의!
-10.이미지 크기가 커지면 포스트 게시 할 때 reload 일어난다.
+10.이미지 크기가 커지면 포스트 게시 할 때 reload 일어난다. => 웹팩 설정 추가함으로써 해결(개발 모드에서만 발생하는 문제인 거 같다)devServer: {
+    watchOptions: {
+      ignored: [path.resolve(__dirname, "path/to/images")],
+    },
+  }, 
 11.이미지를 올릴 때 reload가 일어나지 않으면 multer에 저장된 이전 데이터가 초기화되지 않아 현재 추가한 이미지와 이전에 추가한 이미지가 같이 업로드되는 현상이 발생 => formdata 변수를 전역으로 선언해서 발생한 문제...
 12.image 업데이트를 진행하면서 기존의 이미지를 삭제하려 했으나 "fs in not a function"에러가 발생. => server에서 삭제를 진행하니 정상적으로 동작. 하지만 절대경로를 이용해야 가능.
 => path.join(__dirname, path) 이용해서 해결
 
+
+// "dev": "BROWSER='google-chrome-stable' nodemon --experimental-modules",
+    // "start": "BROWSER='google-chrome-stable' react-scripts start",
+    // "build": "react-scripts build",
 
 
 router.post("/uploadPostImage", (req, res, next) => {

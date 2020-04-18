@@ -45,7 +45,9 @@ const PostForm = ({ post }) => {
         }
         //if(fileName 안넣으면 비동기로 인해 fileName이 섞인다.
         if (fileName) {
-          toDataURL(`./images/${image.filename}`, function (dataUrl) {
+          toDataURL(`../../public/images/${image.filename}`, function (
+            dataUrl
+          ) {
             // console.log("RESULT:", dataUrl);
             var file = dataURLtoFile(dataUrl, fileName);
             imageList.push({
@@ -53,7 +55,7 @@ const PostForm = ({ post }) => {
               status: "done",
               name: fileName,
               originFileObj: file,
-              url: `./images/${image.filename}`,
+              url: `../../public/images/${image.filename}`,
             });
             if (imageList.length === post.images.length) {
               console.log("imageList check", imageList);
@@ -138,21 +140,6 @@ const PostForm = ({ post }) => {
   }, []);
 
   const updatePost = useCallback(() => {
-    // if (post && post.images[0]) {
-    //   post.images.forEach((image) => {
-    //     console.log(image.filename);
-
-    //     fs.unlink(`./images/${image.filename}`, (err) => {
-    //       if (err) {
-    //         console.error(err);
-    //         return;
-    //       }
-
-    //       //file removed
-    //     });
-    //   });
-    // }
-
     axios({
       method: "post",
       url: "/post/update",

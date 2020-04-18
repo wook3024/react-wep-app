@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/register": "^7.9.0",
+    "@babel/runtime": "^7.9.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -15,19 +17,20 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
+    "form-data": "^3.0.0",
+    "ignore-styles": "^5.0.1",
     "moment": "^2.24.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "path": "^0.12.7",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-image-lightbox": "^5.1.1",
-    "react-medium-image-zoom": "^4.3.0",
-    "react-modal-image": "^2.5.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
@@ -37,9 +40,9 @@
     "styled-components": "^5.0.1"
   },
   "scripts": {
-    "dev": "BROWSER='google-chrome-stable' nodemon --experimental-modules",
-    "start": "BROWSER='google-chrome-stable' react-scripts start",
-    "build": "react-scripts build",
+    "start": "webpack-dev-server --mode development",
+    "prebuild": "rimraf dist",
+    "build": "webpack --progress --mode production",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -59,7 +62,21 @@
     ]
   },
   "devDependencies": {
-    "redux-devtools": "^3.5.0"
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react-app": "^9.1.2",
+    "html-webpack-plugin": "^4.2.0",
+    "nodemon": "^2.0.3",
+    "npm-run-all": "^4.1.5",
+    "redux-devtools": "^3.5.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://localhost:5000"
 }
