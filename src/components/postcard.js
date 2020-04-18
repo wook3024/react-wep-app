@@ -263,7 +263,7 @@ const Postcard = ({ post }) => {
             commentList.comments = [];
             if (!commentsSize) {
               commentStore.push(commentList);
-              console.log("commentSize", commentsSize);
+              // console.log("commentSize", commentsSize);
             }
           } else {
             commentList.comments.push(comment);
@@ -271,7 +271,7 @@ const Postcard = ({ post }) => {
         })}
       {post.data.comments[0] &&
         commentStore.map((comment) => {
-          console.log("comment deptg", comment, commentStore.length);
+          // console.log("comment deptg", comment, commentStore.length);
           return <Comment post={post.data} comment={comment} />;
         })}
     </Card>

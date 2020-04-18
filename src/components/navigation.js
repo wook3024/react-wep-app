@@ -5,7 +5,7 @@ import { Menu, Button, message } from "antd";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-import { USER_INFO_REFRESH, LOG_OUT_ACTION } from "../reducers/actions";
+import { USER_INFO_REFRESH_ACTION, LOG_OUT_ACTION } from "../reducers/actions";
 
 const { SubMenu } = Menu;
 
@@ -24,7 +24,7 @@ const Navigation = () => {
       .then((res) => {
         console.log("login check", res);
         return dispatch({
-          type: USER_INFO_REFRESH,
+          type: USER_INFO_REFRESH_ACTION,
           payload: res.data,
         });
       })

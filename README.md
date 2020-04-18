@@ -20,6 +20,8 @@
 9.postman이용 시 create-react-app의 proxy설정에 유의!
 10.이미지 크기가 커지면 포스트 게시 할 때 reload 일어난다.
 11.이미지를 올릴 때 reload가 일어나지 않으면 multer에 저장된 이전 데이터가 초기화되지 않아 현재 추가한 이미지와 이전에 추가한 이미지가 같이 업로드되는 현상이 발생 => formdata 변수를 전역으로 선언해서 발생한 문제...
+12.image 업데이트를 진행하면서 기존의 이미지를 삭제하려 했으나 "fs in not a function"에러가 발생. => server에서 삭제를 진행하니 정상적으로 동작. 하지만 절대경로를 이용해야 가능.
+=> path.join(__dirname, path) 이용해서 해결
 
 
 

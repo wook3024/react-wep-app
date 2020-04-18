@@ -1,8 +1,9 @@
 import {
   LOG_IN_ACTION,
   LOG_OUT_ACTION,
-  USER_INFO_REFRESH,
-  GET_POST_DATA,
+  USER_INFO_REFRESH_ACTION,
+  GET_POST_DATA_ACTION,
+  GET_MORE_POST_ACTION,
   REMOVE_POST_ACTION,
   UPDATE_POST_ACTION,
   ADD_COMMENT_ACTION,
@@ -36,7 +37,7 @@ const reducer = (state = initialState, action) => {
         userInfo: {},
       };
     }
-    case USER_INFO_REFRESH: {
+    case USER_INFO_REFRESH_ACTION: {
       return {
         ...state,
         userInfo: {
@@ -45,7 +46,16 @@ const reducer = (state = initialState, action) => {
         },
       };
     }
-    case GET_POST_DATA: {
+    case GET_POST_DATA_ACTION: {
+      console.log("get post data", state.post, action.payload.post);
+      if (!state.post[0]) {
+        state.post = action.payload.post;
+      }
+      return {
+        ...state,
+      };
+    }
+    case GET_MORE_POST_ACTION: {
       console.log("get post data", state.post, action.payload.post);
       state.post = [...state.post, ...action.payload.post];
       return {

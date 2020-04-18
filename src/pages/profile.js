@@ -6,7 +6,7 @@ import axios from "axios";
 import Lightbox from "react-image-lightbox";
 
 import "./App.css";
-import { USER_INFO_REFRESH } from "../reducers/actions";
+import { USER_INFO_REFRESH_ACTION } from "../reducers/actions";
 
 const { TextArea } = Input;
 
@@ -45,7 +45,7 @@ const Profile = () => {
           message.warning(res.data);
         }
         return dispatch({
-          type: USER_INFO_REFRESH,
+          type: USER_INFO_REFRESH_ACTION,
           payload: res.data,
         });
       })
@@ -72,7 +72,7 @@ const Profile = () => {
           message.warning(res.data);
         }
         dispatch({
-          type: USER_INFO_REFRESH,
+          type: USER_INFO_REFRESH_ACTION,
           payload: { ...res.data, profileImage: res.data.images[0].filename },
         });
       })
@@ -91,11 +91,12 @@ const Profile = () => {
 
     axios({
       method: "post",
-      url: "/post/uploadProfileImage",
+      url: "/post/user/uploadProfileImage",
       withCredentials: true,
       data: formData,
       params: {
         userId: userInfo ? userInfo.id : null,
+        profileImage: true,
       },
     })
       .then((res) => {
@@ -109,7 +110,7 @@ const Profile = () => {
         }
 
         dispatch({
-          type: USER_INFO_REFRESH,
+          type: USER_INFO_REFRESH_ACTION,
           payload: { userInfo: { ...userInfo, profileImage: res.data } },
         });
         setSelectedFile(null);

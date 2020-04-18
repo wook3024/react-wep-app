@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
-import { GET_POST_DATA } from "../reducers/actions";
+import {
+  GET_POST_DATA_ACTION,
+  GET_MORE_POST_ACTION,
+} from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
 import "./App.css";
@@ -47,7 +50,7 @@ const Profile = () => {
         .then((res) => {
           firstPostId = firstPostId === undefined ? getPost[0].id : firstPostId;
           dispatch({
-            type: GET_POST_DATA,
+            type: GET_MORE_POST_ACTION,
             payload: { post: (getPost = res.data) },
           });
         })
@@ -76,7 +79,7 @@ const Profile = () => {
     })
       .then((postData) => {
         dispatch({
-          type: GET_POST_DATA,
+          type: GET_POST_DATA_ACTION,
           payload: { post: (getPost = postData.data) },
         });
       })

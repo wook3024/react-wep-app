@@ -38,7 +38,7 @@ const PostForm = ({ post }) => {
         for (const [i, c] of imageName.entries()) {
           console.log("i, i", i, c, c === "_");
           if (c === "_") {
-            fileName = image.filename.slice(i);
+            fileName = image.filename.slice(i + 1);
             console.log("filename", fileName);
             break;
           }
@@ -47,14 +47,11 @@ const PostForm = ({ post }) => {
         if (fileName) {
           toDataURL(`./images/${image.filename}`, function (dataUrl) {
             // console.log("RESULT:", dataUrl);
-            var file = dataURLtoFile(
-              dataUrl,
-              moment(now()).format("YYYYMMDDhmmss") + fileName
-            );
+            var file = dataURLtoFile(dataUrl, fileName);
             imageList.push({
               uid: index - 3,
               status: "done",
-              name: moment(now()).format("YYYYMMDDhmmss") + fileName,
+              name: fileName,
               originFileObj: file,
               url: `./images/${image.filename}`,
             });
@@ -71,7 +68,7 @@ const PostForm = ({ post }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function toDataURL(url, callback) {
+  const toDataURL = (url, callback) => {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
       var reader = new FileReader();
@@ -83,9 +80,9 @@ const PostForm = ({ post }) => {
     xhr.open("GET", url);
     xhr.responseType = "blob";
     xhr.send();
-  }
+  };
 
-  function dataURLtoFile(dataurl, filename) {
+  const dataURLtoFile = (dataurl, filename) => {
     var arr = dataurl.split(","),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
@@ -95,7 +92,7 @@ const PostForm = ({ post }) => {
       u8arr[n] = bstr.charCodeAt(n);
     }
     return new File([u8arr], filename, { type: mime });
-  }
+  };
 
   const getBase64 = useCallback((file) => {
     console.log("getBase64", file);
@@ -141,6 +138,21 @@ const PostForm = ({ post }) => {
   }, []);
 
   const updatePost = useCallback(() => {
+    // if (post && post.images[0]) {
+    //   post.images.forEach((image) => {
+    //     console.log(image.filename);
+
+    //     fs.unlink(`./images/${image.filename}`, (err) => {
+    //       if (err) {
+    //         console.error(err);
+    //         return;
+    //       }
+
+    //       //file removed
+    //     });
+    //   });
+    // }
+
     axios({
       method: "post",
       url: "/post/update",
@@ -179,7 +191,11 @@ const PostForm = ({ post }) => {
             dispatch({
               type: UPDATE_POST_ACTION,
               payload: {
-                post: { ...res.data, images: images.data, comments: [] },
+                post: {
+                  ...res.data,
+                  images: images.data instanceof Array ? images.data : [],
+                  comments: [],
+                },
               },
             });
             inputTitle.current.state.value = null;
@@ -237,7 +253,11 @@ const PostForm = ({ post }) => {
             dispatch({
               type: PUBLISH_POST_ACTION,
               payload: {
-                post: { ...res.data, images: images.data, comments: [] },
+                post: {
+                  ...res.data,
+                  images: images.data instanceof Array ? images.data : [],
+                  comments: [],
+                },
               },
             });
           })

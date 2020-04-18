@@ -7,8 +7,10 @@ const session = require("express-session");
 
 const db = require("../models");
 const passportConfig = require("../passport/index");
-const user = require("../route/back/user");
-const post = require("../route/back/post");
+const user = require("../route/back/user/user");
+const post = require("../route/back/post/post");
+const postUser = require("../route/back/post/user");
+const comment = require("../route/back/post/comment");
 
 const sequelize = db.sequelize;
 const app = express();
@@ -50,6 +52,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/post/comment", comment);
+app.use("/post/user", postUser);
 app.use("/user", user);
 app.use("/post", post);
 
