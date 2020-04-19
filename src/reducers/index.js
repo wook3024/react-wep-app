@@ -11,12 +11,15 @@ import {
   COMMENT_UPDATE_ACTION,
   PUBLISH_POST_ACTION,
   GET_HASHTAG_POST_ACTION,
+  POST_LIST_REMOVE_ACTION,
+  SET_HASHTAG_ACTION,
 } from "./actions";
 import moment from "moment";
 
 const initialState = {
   userInfo: {},
   post: [],
+  hashtag: undefined,
   signupCheck: false,
   loginCheck: true,
 };
@@ -68,6 +71,18 @@ const reducer = (state = initialState, action) => {
         ...state,
       };
     }
+    case SET_HASHTAG_ACTION: {
+      console.log("get hashtag data", action.payload.post);
+      if (state.hashtag === action.payload.hashtag) {
+        state.post.hashtag = action.payload.hashtag;
+      } else {
+        state.post.hashtag = null;
+      }
+      return {
+        ...state,
+        hashtag: action.payload.hashtag,
+      };
+    }
     case GET_HASHTAG_POST_ACTION: {
       state.post = [];
       console.log("get hashtag post data", state.post, action.payload.hashtag);
@@ -78,6 +93,12 @@ const reducer = (state = initialState, action) => {
       console.log("check hashtag post", state.post);
       return {
         ...state,
+      };
+    }
+    case POST_LIST_REMOVE_ACTION: {
+      return {
+        ...state,
+        post: [],
       };
     }
     case REMOVE_POST_ACTION: {

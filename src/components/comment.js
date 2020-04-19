@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
 import moment from "moment";
 import {
@@ -23,6 +23,8 @@ import Commentform from "./commentform";
 import {
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
+  SET_HASHTAG_ACTION,
+  POST_LIST_REMOVE_ACTION,
 } from "../reducers/actions";
 
 const { TextArea } = Input;
@@ -40,6 +42,7 @@ const Reply = ({ post, comment }) => {
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   let subCommentList = null;
   let subCommentStore = [];
@@ -98,6 +101,18 @@ const Reply = ({ post, comment }) => {
     if (res.data === "unLike") pluelikeOrUnlikeVal = -1;
     else pluelikeOrUnlikeVal = 1;
     return true;
+  };
+
+  const searchHashtag = (hashtag) => {
+    console.log("hashtag: ", hashtag);
+    dispatch({
+      type: POST_LIST_REMOVE_ACTION,
+    });
+    dispatch({
+      type: SET_HASHTAG_ACTION,
+      payload: { hashtag: hashtag },
+    });
+    history.push("/hashtag");
   };
 
   const like = useCallback(() => {
@@ -342,17 +357,17 @@ const Reply = ({ post, comment }) => {
             // console.log("comment check", comment);
             if (comment.charAt(0) === "#") {
               return (
-                <Link
-                  to={{
-                    pathname: `post/${comment.slice(1)}`,
-                    state: "flushDeal",
+                <span
+                  style={{ color: "#3399ff", cursor: "pointer" }}
+                  onClick={() => {
+                    searchHashtag(comment.slice(1));
                   }}
                 >
                   {comment}&nbsp;
-                </Link>
+                </span>
               );
             } else {
-              return <>comment&nbsp;</>;
+              return <span>comment&nbsp;</span>;
             }
           })
         )

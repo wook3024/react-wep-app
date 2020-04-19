@@ -1,22 +1,24 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { message } from "antd";
 
 import {
   GET_POST_DATA_ACTION,
   GET_MORE_POST_ACTION,
+  POST_LIST_REMOVE_ACTION,
 } from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
 import "./App.css";
 
-let getDataCheck = false;
-let getPost = [];
-let firstPostId = undefined;
-
 const Profile = () => {
   const { post, userInfo } = useSelector((state) => state);
   const dispatch = useDispatch();
+
+  let getDataCheck = false;
+  let getPost = [];
+  let firstPostId = undefined;
 
   console.log("Post.js", post);
 
@@ -73,6 +75,9 @@ const Profile = () => {
 
   useEffect(() => {
     if (getPost[0] !== post[0]) {
+      dispatch({
+        type: POST_LIST_REMOVE_ACTION,
+      });
       getPost = [];
     }
     axios({
@@ -85,6 +90,11 @@ const Profile = () => {
           type: GET_POST_DATA_ACTION,
           payload: { post: (getPost = postData.data) },
         });
+      })
+      .then(() => {
+        if (getPost.length === 0) {
+          message.warning("not found! 🐳");
+        }
       })
       .catch((error) => {
         console.error("😡 ", error);

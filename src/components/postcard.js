@@ -15,7 +15,8 @@ import "react-image-lightbox/style.css";
 import ButtonGroup from "antd/lib/button/button-group";
 import {
   REMOVE_POST_ACTION,
-  GET_HASHTAG_POST_ACTION,
+  SET_HASHTAG_ACTION,
+  POST_LIST_REMOVE_ACTION,
 } from "../reducers/actions";
 import PostForm from "./postForm";
 import Commentform from "./commentform";
@@ -50,22 +51,14 @@ const Postcard = ({ post }) => {
 
   const searchHashtag = (hashtag) => {
     console.log("hashtag: ", hashtag);
-    axios({
-      method: "post",
-      url: `/post/hashtag`,
-      params: { postId: post.data.id, hashtag: hashtag },
-    })
-      .then((res) => {
-        console.log("searchHashtag", res);
-        dispatch({
-          type: GET_HASHTAG_POST_ACTION,
-          payload: { hashtag: res.data },
-        });
-        history.push("/hashtag");
-      })
-      .catch((error) => {
-        console.error("😡 ", error);
-      });
+    dispatch({
+      type: POST_LIST_REMOVE_ACTION,
+    });
+    dispatch({
+      type: SET_HASHTAG_ACTION,
+      payload: { hashtag: hashtag },
+    });
+    history.push("/hashtag");
   };
 
   const loginCheck = useCallback(() => {

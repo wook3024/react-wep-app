@@ -7,6 +7,7 @@ import Profile from "../pages/profile";
 import SignUp from "../pages/signup";
 import Post from "../pages/post";
 import Hashtag from "../pages/hashtag";
+// import Search from "../pages/search";
 
 const Div = styled.div``;
 
@@ -19,6 +20,7 @@ const Connecting = () => {
         <Route path="/signUp" component={SignUp} />
         <Route path="/main" component={Post} />
         <Route path="/hashtag" component={Hashtag} />
+        <Route path="/search" component={Hashtag} />
       </Suspense>
     </Switch>
   );

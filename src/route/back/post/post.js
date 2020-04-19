@@ -244,12 +244,24 @@ router.post("/remove", async (req, res, next) => {
   }
 });
 
-router.post("/hashtag", async (req, res, next) => {
-  console.log("hashtag check  🐳", await req.query);
+router.get("/hashtag", async (req, res, next) => {
+  console.log("hashtag check  🐳", req.query);
 
   const data = req.query;
+  if (!data.hashtag) {
+    console.log("please insert hashtag! 😱");
+    return res.send("please insert hashtag! 😱");
+  }
+  const condition = () => {
+    console.log("data check", data);
+    if (data.id === undefined) {
+      return {};
+    }
+    console.log("data check op.lt", data);
+    return { postId: { [Op.lt]: parseInt(data.id) } };
+  };
   return db.Hashtag.findAll({
-    where: { hashtag: data.hashtag },
+    where: { hashtag: data.hashtag, ...condition() },
     include: [
       {
         model: db.Post,
@@ -288,7 +300,8 @@ router.post("/hashtag", async (req, res, next) => {
         ],
       },
     ],
-    order: [[db.Post, "created_at", "DESC"]],
+    order: [["created_at", "DESC"]],
+    limit: 5,
   })
     .then(async (posts) => {
       posts.forEach((post) => {

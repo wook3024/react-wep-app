@@ -1,42 +1,70 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { message } from "antd";
 
+import {
+  GET_POST_DATA_ACTION,
+  GET_MORE_POST_ACTION,
+  POST_LIST_REMOVE_ACTION,
+} from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
 import "./App.css";
-import { USER_INFO_REFRESH_ACTION } from "../reducers/actions";
 
-const Hashtag = () => {
-  const [posts, setPosts] = useState([]);
-  const { post, userInfo } = useSelector((state) => state);
-
+const Profile = () => {
+  const { post, userInfo, hashtag } = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  console.log("get Hashtah Post", post);
+  let getDataCheck = false;
+  let getPost = [];
+  let firstPostId = undefined;
 
-  const onScroll = useCallback(() => {
+  console.log("hashtag post", post, hashtag);
+
+  const onScroll = () => {
     if (
       window.scrollY >
         document.documentElement.scrollHeight -
           document.documentElement.clientHeight -
           500 &&
-      posts.length - 1 <= post.length
+      !getDataCheck &&
+      getPost[0] &&
+      getPost.map((post) => {
+        return post.id === firstPostId;
+      })
     ) {
-      console.log("getNewpost");
-      const postIndex = post.findIndex((post) => {
-        return posts[posts.length - 1].id === post.id;
-      });
-      let i = 0;
-      while (++i <= 5 && post[postIndex + i]) {
-        posts.push(post[postIndex + i]);
-      }
-      console.log("scroll push", posts);
-      dispatch({
-        type: USER_INFO_REFRESH_ACTION,
-        payload: userInfo,
-      });
+      getDataCheck = true;
+      console.log(
+        "getNewpost",
+        getPost,
+        getPost.length - 1,
+        getPost[getPost.length - 1]
+      );
+      axios({
+        method: "get",
+        url: "/post/hashtag",
+        params: {
+          id: getPost[0] ? getPost[getPost.length - 1].id : undefined,
+          hashtag,
+        },
+      })
+        .then((hashtagData) => {
+          getPost = hashtagData.data.map((hashtag) => hashtag.post);
+          firstPostId = firstPostId === undefined ? getPost[0].id : firstPostId;
+          dispatch({
+            type: GET_MORE_POST_ACTION,
+            payload: { post: getPost },
+          });
+        })
+        .then(() => {
+          getDataCheck = false;
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
     }
-  }, [dispatch, post, posts, userInfo]);
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", onScroll);
@@ -47,28 +75,47 @@ const Hashtag = () => {
   }, []);
 
   useEffect(() => {
-    if (!posts[0] && posts.length <= 3) {
-      let i = -1;
-      while (++i <= 5 && post[i]) {
-        posts.push(post[i]);
-        console.log("posts check", i, post[i]);
-      }
+    console.log("useEffect check", post, getPost);
+    if (getPost[0] !== post[0]) {
       dispatch({
-        type: USER_INFO_REFRESH_ACTION,
-        payload: userInfo,
+        type: POST_LIST_REMOVE_ACTION,
       });
+      getPost = [];
     }
+    axios({
+      method: "get",
+      url: "/post/hashtag",
+      params: {
+        id: getPost[0] ? getPost[getPost.length - 1].id : undefined,
+        hashtag,
+      },
+    })
+      .then((hashtagData) => {
+        getPost = hashtagData.data.map((hashtag) => hashtag.post);
+        dispatch({
+          type: GET_POST_DATA_ACTION,
+          payload: { post: getPost },
+        });
+      })
+      .then(() => {
+        if (getPost.length === 0) {
+          message.warning("not found! 🐳");
+        }
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hashtag, hashtag !== post.hashtag]);
 
   return (
     <div>
       {userInfo && userInfo.username && <PostForm />}
-      {posts.map((data) => {
+      {post.map((data) => {
         return <Postcard key={data.created_at} post={{ data }} />;
       })}
     </div>
   );
 };
 
-export default Hashtag;
+export default Profile;
