@@ -10,6 +10,7 @@ import {
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
   PUBLISH_POST_ACTION,
+  GET_HASHTAG_POST_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -48,7 +49,12 @@ const reducer = (state = initialState, action) => {
     }
     case GET_POST_DATA_ACTION: {
       console.log("get post data", state.post, action.payload.post);
-      if (!state.post[0]) {
+      if (!state.post[0] || state.post[0] !== action.payload.post[0]) {
+        console.log(
+          "get post data aicton check",
+          state.post,
+          action.payload.post
+        );
         state.post = action.payload.post;
       }
       return {
@@ -58,6 +64,18 @@ const reducer = (state = initialState, action) => {
     case GET_MORE_POST_ACTION: {
       console.log("get post data", state.post, action.payload.post);
       state.post = [...state.post, ...action.payload.post];
+      return {
+        ...state,
+      };
+    }
+    case GET_HASHTAG_POST_ACTION: {
+      state.post = [];
+      console.log("get hashtag post data", state.post, action.payload.hashtag);
+      action.payload.hashtag.forEach((hashtag) => {
+        state.post.push(hashtag.post);
+        console.log("hashtag.post check", hashtag.post);
+      });
+      console.log("check hashtag post", state.post);
       return {
         ...state,
       };

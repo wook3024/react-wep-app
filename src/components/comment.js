@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
 import moment from "moment";
 import {
@@ -207,24 +208,24 @@ const Reply = ({ post, comment }) => {
       });
   }, [comment, dispatch, post.id]);
 
-  const commentValueChange = useCallback(
-    (e) => {
-      setCommentValue(e.target.value);
-      console.log(commentValue);
-    },
-    [commentValue]
-  );
+  const commentValueChange = (e) => {
+    setCommentValue(e.target.value);
+    console.log("commentValeu", commentValue);
+  };
 
   const commentChangeSubmit = useCallback(() => {
     setChangeState(false);
 
+    if (commentValue.trim() === "") {
+      return message.warning("Please include the contents.! 😱");
+    }
     axios({
       method: "post",
       url: "/post/comment/change",
       withCredentials: true,
       params: {
         commentId: comment.id,
-        comment: commentValue,
+        comment: commentValue.trimRight(),
       },
     })
       .then((res) => {
@@ -240,7 +241,7 @@ const Reply = ({ post, comment }) => {
           payload: {
             commentId: comment.id,
             postId: comment.postId,
-            comment: commentValue,
+            comment: commentValue.trimRight(),
           },
         });
       })
@@ -337,7 +338,23 @@ const Reply = ({ post, comment }) => {
             </Button>
           </Form>
         ) : (
-          comment.comment
+          comment.comment.split(" ").map((comment) => {
+            // console.log("comment check", comment);
+            if (comment.charAt(0) === "#") {
+              return (
+                <Link
+                  to={{
+                    pathname: `post/${comment.slice(1)}`,
+                    state: "flushDeal",
+                  }}
+                >
+                  {comment}&nbsp;
+                </Link>
+              );
+            } else {
+              return <>comment&nbsp;</>;
+            }
+          })
         )
       }
       datetime={

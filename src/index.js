@@ -2,14 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Switch } from "react-router-dom";
 
-import reducer from "./reducers/index";
-import { createStore } from "redux";
-import { Provider } from "react-redux";
-
 import "./pages/App.css";
 import App from "./pages/app";
-
-let store = createStore(reducer);
 
 ReactDOM.render(
   <React.StrictMode>

@@ -7,8 +7,6 @@ import axios from "axios";
 
 import { LOG_IN_ACTION } from "../reducers/actions";
 
-let getLoginInfo = {};
-
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [loginState, setLoginState] = useState(true);
@@ -28,6 +26,11 @@ const LoginForm = () => {
     setLoading(true);
 
     let loginInfo = await values;
+    loginInfo = {
+      ...loginInfo,
+      username: loginInfo.username.trim(),
+      password: loginInfo.password.trim(),
+    };
     console.log("Success:", loginInfo);
 
     getLoginInfo = await axios({
@@ -37,18 +40,24 @@ const LoginForm = () => {
         ...loginInfo,
       },
       withCredentials: true,
-    });
-    getLoginInfo = getLoginInfo.data;
-
-    if (getLoginInfo && getLoginInfo.username) {
-      return dispatch({
-        type: LOG_IN_ACTION,
-        payload: getLoginInfo,
+    })
+      .then((res) => {
+        if (res.data.username) {
+          return dispatch({
+            type: LOG_IN_ACTION,
+            payload: res.data,
+          });
+        } else {
+          setLoginState(false);
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+        setLoading(false);
+        setLoginState(false);
+        message.error("Server error! 😡");
       });
-    } else {
-      setLoginState(false);
-      setLoading(false);
-    }
   };
 
   return (

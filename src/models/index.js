@@ -23,6 +23,7 @@ db.Post = require("./post")(sequelize, Sequelize);
 db.Like = require("./like")(sequelize, Sequelize);
 db.Dislike = require("./dislike")(sequelize, Sequelize);
 db.Image = require("./image")(sequelize, Sequelize);
+db.Hashtag = require("./hashtag")(sequelize, Sequelize);
 
 //database association
 //현재 sequelize의 이해가 부족하여 필요한 부분만 사용가능하도록 만들었지만
@@ -47,5 +48,8 @@ db.Image.belongsTo(db.User, { foreignKey: "userId" });
 /*--------------------------------------------------*/
 db.User.hasMany(db.Comment);
 db.Comment.belongsTo(db.User, { foreignKey: "userId" });
+/*--------------------------------------------------*/
+db.Post.hasMany(db.Hashtag);
+db.Hashtag.belongsTo(db.Post, { foreignKey: "postId" });
 
 module.exports = db;

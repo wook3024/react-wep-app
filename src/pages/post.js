@@ -72,6 +72,9 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
+    if (getPost[0] !== post[0]) {
+      getPost = [];
+    }
     axios({
       method: "get",
       url: "/post",

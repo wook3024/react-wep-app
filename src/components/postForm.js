@@ -13,8 +13,8 @@ const FormData = require("form-data");
 const { TextArea } = Input;
 
 const PostForm = ({ post }) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(post ? post.title : "");
+  const [content, setContent] = useState(post ? post.content : "");
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
@@ -145,8 +145,8 @@ const PostForm = ({ post }) => {
       url: "/post/update",
       params: {
         id: post.id,
-        title,
-        content,
+        title: title.trimRight(),
+        content: content.trimRight(),
         now: moment(now()).format("YYYYMMDDhmmss"),
       },
       withCredentials: true,
@@ -185,8 +185,8 @@ const PostForm = ({ post }) => {
                 },
               },
             });
-            inputTitle.current.state.value = null;
-            inputContent.current.state.value = null;
+            // inputTitle.current.state.value = null;
+            // inputContent.current.state.value = null;
           })
           .catch((error) => {
             console.error("😡 ", error);
@@ -199,21 +199,22 @@ const PostForm = ({ post }) => {
 
   const onSubmit = useCallback(async () => {
     if (!(userInfo && userInfo.username)) {
-      message.warning("Login Please! 😱");
-      return;
+      return message.warning("Login Please! 😱");
     }
-
+    if (title.trim() === "") {
+      return message.warning("Please include the titles.! 😱");
+    }
     if (post && post.id !== undefined) {
-      updatePost();
-      return;
+      console.log("title trim", title);
+      return updatePost();
     }
 
     axios({
       method: "post",
       url: "/post/publish",
       params: {
-        title,
-        content,
+        title: title.trimRight(),
+        content: content.trimRight(),
         now: moment(now()).format("YYYYMMDDhmmss"),
       },
       withCredentials: true,

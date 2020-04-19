@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Card, Avatar, Button, Popover, message, Tooltip } from "antd";
 import {
   EditOutlined,
@@ -12,7 +13,10 @@ import Lightbox from "react-image-lightbox";
 
 import "react-image-lightbox/style.css";
 import ButtonGroup from "antd/lib/button/button-group";
-import { REMOVE_POST_ACTION } from "../reducers/actions";
+import {
+  REMOVE_POST_ACTION,
+  GET_HASHTAG_POST_ACTION,
+} from "../reducers/actions";
 import PostForm from "./postForm";
 import Commentform from "./commentform";
 import Comment from "./comment";
@@ -28,6 +32,7 @@ const Postcard = ({ post }) => {
   const { userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   let commentList = null;
   const commentStore = [];
@@ -42,6 +47,26 @@ const Postcard = ({ post }) => {
     post.data.comments.length,
     post.data.updated_at,
   ]);
+
+  const searchHashtag = (hashtag) => {
+    console.log("hashtag: ", hashtag);
+    axios({
+      method: "post",
+      url: `/post/hashtag`,
+      params: { postId: post.data.id, hashtag: hashtag },
+    })
+      .then((res) => {
+        console.log("searchHashtag", res);
+        dispatch({
+          type: GET_HASHTAG_POST_ACTION,
+          payload: { hashtag: res.data },
+        });
+        history.push("/hashtag");
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
 
   const loginCheck = useCallback(() => {
     if (!(userInfo && userInfo.username)) {
@@ -165,7 +190,16 @@ const Postcard = ({ post }) => {
                     remove
                   </Button>
                 ) : null}
-                <Button Button type="primary" ghost>
+                <Button
+                  Button
+                  type="primary"
+                  ghost
+                  onClick={() => {
+                    message.success(
+                      `I am mindless. Because I have no idea. 🐳`
+                    );
+                  }}
+                >
                   in detail
                 </Button>
               </ButtonGroup>
@@ -203,9 +237,51 @@ const Postcard = ({ post }) => {
               </>
             )
           }
-          title={post.data.title}
-          description={post.data.content}
+          title={post.data.title.split(" ").map((title) => {
+            // console.log("title check", title);
+            if (title.charAt(0) === "#") {
+              return (
+                <span
+                  style={{ color: "#3399ff", cursor: "pointer" }}
+                  onClick={() => {
+                    searchHashtag(title.slice(1));
+                  }}
+                >
+                  {title}&nbsp;
+                </span>
+              );
+            } else {
+              return <span>{title}&nbsp;</span>;
+            }
+          })}
         />
+        <br />
+        <div
+          style={{
+            display: "inline-block",
+            width: "340px",
+            float: "left",
+            wordBreak: "break-all",
+          }}
+        >
+          {post.data.content.split(" ").map((content) => {
+            // console.log("content check", content);
+            if (content.charAt(0) === "#") {
+              return (
+                <span
+                  style={{ color: "#3399ff", cursor: "pointer" }}
+                  onClick={() => {
+                    searchHashtag(content.slice(1));
+                  }}
+                >
+                  {content}&nbsp;
+                </span>
+              );
+            } else {
+              return <span>{content}&nbsp;</span>;
+            }
+          })}
+        </div>
       </Card>
       {addComment && <Commentform post={post.data} />}
       {revisePost && <PostForm post={post.data} />}

@@ -24,13 +24,16 @@ const Commentform = ({ post, comment }) => {
   const addCommnet = () => {
     console.log("comment addComment", comment);
 
+    if (commentContent.trim() === "") {
+      return message.warning("Please include the contents.! 😱");
+    }
     axios({
       method: "post",
       url: "/post/comment/add",
       params: {
         postId: post.id,
         userId: userInfo && userInfo.id,
-        comment: commentContent,
+        comment: commentContent.trimRight(),
         depth: comment ? comment.depth + 1 : 1,
         group: comment ? comment.group : moment(now()).format("YYYYMMDDhmmss"),
         sort: comment ? comment.sort : 1,

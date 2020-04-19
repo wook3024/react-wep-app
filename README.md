@@ -26,6 +26,105 @@
 11.이미지를 올릴 때 reload가 일어나지 않으면 multer에 저장된 이전 데이터가 초기화되지 않아 현재 추가한 이미지와 이전에 추가한 이미지가 같이 업로드되는 현상이 발생 => formdata 변수를 전역으로 선언해서 발생한 문제...
 12.image 업데이트를 진행하면서 기존의 이미지를 삭제하려 했으나 "fs in not a function"에러가 발생. => server에서 삭제를 진행하니 정상적으로 동작. 하지만 절대경로를 이용해야 가능.
 => path.join(__dirname, path) 이용해서 해결
+13.html태크에서 크기를 넘어가도 줄바꿈되지 않는 현상 => wordBreak: "break-all" 추가함으로서 해결
+14.dispatch안하고 re-rendering 어떻게 할까. hashtag page에서 필요. useState 이용해서 가능할거라 생각했는데 안되네...
+
+
+
+
+import React, { useEffect } from "react";
+import { useSelector, useDispatch, useState } from "react-redux";
+
+import Postcard from "../components/postcard";
+import PostForm from "../components/postForm";
+import "./App.css";
+import { USER_INFO_REFRESH_ACTION } from "../reducers/actions";
+
+let getDataCheck = false;
+
+let posts = [];
+
+const Hashtag = () => {
+  const [renderingCheck, setRenderingCheck] = useState(false);
+  const { post, userInfo } = useSelector((state) => state);
+
+  const dispatch = useDispatch();
+
+  console.log("get Hashtah Post", post);
+  if (!posts[0] && posts.length <= 3) {
+    let i = -1;
+    while (++i <= 3) {
+      posts.push(post[i]);
+    }
+    console.log("posts check", posts, posts.length);
+  }
+
+  const onScroll = () => {
+    if (
+      window.scrollY >
+        document.documentElement.scrollHeight -
+          document.documentElement.clientHeight -
+          500 &&
+      !getDataCheck &&
+      posts.length - 1 < post.length
+    ) {
+      getDataCheck = true;
+      console.log("getNewpost");
+      const postIndex = post.findIndex((post) => {
+        return posts[posts.length - 1].id === post.id;
+      });
+      let i = 0;
+      while (++i <= 3) {
+        posts.push(post[postIndex + i]);
+      }
+      console.log("scroll push", posts);
+      //   setRenderingCheck(renderingCheck ? false : true);
+      //   dispatch({
+      //     type: USER_INFO_REFRESH_ACTION,
+      //     payload: userInfo,
+      //   });
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!posts[0] && posts.length <= 3) {
+      let i = -1;
+      while (++i <= 3) {
+        posts.push(post[i]);
+      }
+      //   setRenderingCheck(renderingCheck ? false : true);
+      console.log("posts check", posts, posts.length);
+      //   dispatch({
+      //     type: USER_INFO_REFRESH_ACTION,
+      //     payload: userInfo,
+      //   });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts.length]);
+
+  return (
+    <div>
+      {userInfo && userInfo.username && <PostForm />}
+      {posts.map((data) => {
+        return <Postcard key={data.created_at} post={{ data }} />;
+      })}
+    </div>
+  );
+};
+
+export default Hashtag;
+
+
+
+
 
 
 // "dev": "BROWSER='google-chrome-stable' nodemon --experimental-modules",

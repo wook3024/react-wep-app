@@ -136,18 +136,39 @@ router.post("/publish", async (req, res, next) => {
         content: data.content,
         updated_at: data.now,
       }).then(async () => {
-        return res.json(
-          await db.Post.findOne({
-            order: [["id", "DESC"]],
+        db.Post.findOne({
+          order: [["id", "DESC"]],
+          include: {
+            model: db.User,
             include: {
-              model: db.User,
-              include: {
-                model: db.Image,
-              },
-              attributes: ["username", "id"],
+              model: db.Image,
             },
+            attributes: ["username", "id"],
+          },
+        })
+          .then((post) => {
+            const hashtag = data.title.split(" ");
+            hashtag.forEach(async (hashtag) => {
+              if (hashtag.charAt(0) === "#") {
+                // console.log(
+                //   "hashtag.slice(1)",
+                //   hashtag.slice(1),
+                //   post.dataValues
+                // );
+                const createHashtag = db.Hashtag.create({
+                  postId: post.dataValues.id,
+                  hashtag: hashtag.slice(1),
+                });
+                console.log("createHashtagState", await createHashtag);
+              }
+            });
+
+            // console.log("hashtag post", post.dataValues);
+            return res.json(post.dataValues);
           })
-        );
+          .catch((error) => {
+            console.error("😡 ", error);
+          });
       });
     }
     res.send("Login Please! 😱");
@@ -160,8 +181,8 @@ router.post("/publish", async (req, res, next) => {
 router.post("/update", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
-      // console.log("update check", req.query);
       const data = req.query;
+      // console.log("update check", data);
       const post = db.Post.update(
         {
           title: data.title,
@@ -216,11 +237,69 @@ router.post("/remove", async (req, res, next) => {
       }
       return res.send("You do not have permission to delete this post! 😱");
     }
-    res.send("Login Please! 😱");
+    return res.send("Login Please! 😱");
   } catch (error) {
     console.error("😡 ", error);
     next(error);
   }
+});
+
+router.post("/hashtag", async (req, res, next) => {
+  console.log("hashtag check  🐳", await req.query);
+
+  const data = req.query;
+  return db.Hashtag.findAll({
+    where: { hashtag: data.hashtag },
+    include: [
+      {
+        model: db.Post,
+        include: [
+          {
+            model: db.Comment,
+            include: [
+              {
+                model: db.Like,
+              },
+              {
+                model: db.Dislike,
+              },
+              {
+                model: db.User,
+                include: [
+                  {
+                    model: db.Image,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.Image,
+          },
+          {
+            model: db.User,
+            attributes: ["username", "nickname", "id"],
+            include: [
+              {
+                model: db.Image,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    order: [[db.Post, "created_at", "DESC"]],
+  })
+    .then(async (posts) => {
+      posts.forEach((post) => {
+        console.log("include hashtag posts", post.dataValues);
+      });
+      return res.json(posts);
+    })
+    .catch((error) => {
+      console.error("😡 ", error);
+      next(error);
+    });
 });
 
 module.exports = router;
