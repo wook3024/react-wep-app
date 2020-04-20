@@ -34,13 +34,12 @@ const Searchform = () => {
   return (
     <Search
       style={{
-        display: "block",
+        display: "flex",
         margin: "0 auto",
         width: 400,
       }}
       placeholder="input search text"
       onSearch={onSearch}
-      enterButton
       ref={inputSearch}
     />
   );

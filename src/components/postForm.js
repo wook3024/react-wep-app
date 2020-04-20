@@ -279,6 +279,7 @@ const PostForm = ({ post }) => {
       {!post && (
         <Button
           type="primary"
+          ghost
           block
           style={{
             display: "block",
