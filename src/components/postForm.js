@@ -276,8 +276,9 @@ const PostForm = ({ post }) => {
   return (
     <Form
       style={{
-        margin: " 0 auto",
-        width: 350,
+        margin: "0 auto",
+        padding: "1rem 0 0 0",
+        width: 400,
       }}
     >
       <Input
@@ -323,7 +324,7 @@ const PostForm = ({ post }) => {
           alignItems: "center",
           justifyContent: "center",
           margin: "0 auto",
-          width: 350,
+          width: 400,
         }}
       >
         publish

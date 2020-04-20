@@ -10,6 +10,7 @@ import {
 } from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
+import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
@@ -110,6 +111,7 @@ const Profile = () => {
 
   return (
     <div>
+      <Searchform />
       {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         return <Postcard key={data.created_at} post={{ data }} />;

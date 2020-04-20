@@ -10,17 +10,19 @@ import {
 } from "../reducers/actions";
 import Postcard from "../components/postcard";
 import PostForm from "../components/postForm";
+import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
   const { post, userInfo } = useSelector((state) => state);
+
   const dispatch = useDispatch();
 
   let getDataCheck = false;
   let getPost = [];
   let firstPostId = undefined;
 
-  console.log("Post.js", post);
+  console.log("Post.js", post, __dirname);
 
   const onScroll = () => {
     //getDataCheck조건은 처리 중인 작업이 끝날 때까지 때까지 기다린 후
@@ -104,6 +106,7 @@ const Profile = () => {
 
   return (
     <div>
+      <Searchform />
       {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         //postCard 컴포넌트 내에서 Comment컴포넌트를 출력할 때
