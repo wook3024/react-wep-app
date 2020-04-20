@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { message } from "antd";
+import { message, Button } from "antd";
 
 import {
   GET_POST_DATA_ACTION,
@@ -14,6 +14,7 @@ import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
+  const [postingState, setPostingState] = useState(false);
   const { post, userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();

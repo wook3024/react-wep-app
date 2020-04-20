@@ -112,7 +112,6 @@ const Profile = () => {
   return (
     <div>
       <Searchform />
-      {userInfo && userInfo.username && <PostForm />}
       {post.map((data) => {
         return <Postcard key={data.created_at} post={{ data }} />;
       })}

@@ -18,6 +18,7 @@ const PostForm = ({ post }) => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const [postingState, setPostingState] = useState(false);
 
   const { userInfo } = useSelector((state) => state);
 
@@ -274,62 +275,86 @@ const PostForm = ({ post }) => {
   ]);
 
   return (
-    <Form
-      style={{
-        margin: "0 auto",
-        padding: "1rem 0 0 0",
-        width: 400,
-      }}
-    >
-      <Input
-        placeholder="title"
-        ref={inputTitle}
-        allowClear
-        defaultValue={post && post.title}
-        onChange={onChangeContent}
-      />
-      <br />
-      <br />
-      <TextArea
-        placeholder="content"
-        ref={inputContent}
-        allowClear
-        defaultValue={post && post.content}
-        onChange={onChangeTitle}
-      />
-      <br />
-      <br />
-      <div className="clearfix">
-        <Upload
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          listType="picture-card"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
+    <>
+      {!post && (
+        <Button
+          type="primary"
+          block
+          style={{
+            display: "block",
+            margin: "0.5rem auto 0",
+            width: 400,
+          }}
+          onClick={() => {
+            setPostingState(postingState ? false : true);
+          }}
         >
-          {fileList.length >= 8 ? null : uploadButton}
-        </Upload>
-        <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
-          <img alt="example" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-      </div>
-      <Button
-        type="default"
-        value="large"
-        htmlType="submit"
-        onClick={onSubmit}
-        style={{
-          display: "flex",
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "0 auto",
-          width: 400,
-        }}
-      >
-        publish
-      </Button>
-    </Form>
+          Posting
+        </Button>
+      )}
+      {(postingState || post) && (
+        <Form
+          style={{
+            margin: "0 auto",
+            padding: "1rem 0 0 0",
+            width: 400,
+          }}
+        >
+          <Input
+            placeholder="title"
+            ref={inputTitle}
+            allowClear
+            defaultValue={post && post.title}
+            onChange={onChangeContent}
+          />
+          <br />
+          <br />
+          <TextArea
+            placeholder="content"
+            ref={inputContent}
+            allowClear
+            defaultValue={post && post.content}
+            onChange={onChangeTitle}
+          />
+          <br />
+          <br />
+          <div className="clearfix">
+            <Upload
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+            >
+              {fileList.length >= 8 ? null : uploadButton}
+            </Upload>
+            <Modal
+              visible={previewVisible}
+              footer={null}
+              onCancel={handleCancel}
+            >
+              <img alt="example" style={{ width: "100%" }} src={previewImage} />
+            </Modal>
+          </div>
+          <Button
+            type="default"
+            value="large"
+            htmlType="submit"
+            onClick={onSubmit}
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto",
+              width: 400,
+            }}
+          >
+            publish
+          </Button>
+        </Form>
+      )}
+    </>
   );
 };
 
