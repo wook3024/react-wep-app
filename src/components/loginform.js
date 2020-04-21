@@ -33,7 +33,7 @@ const LoginForm = () => {
     };
     console.log("Success:", loginInfo);
 
-    getLoginInfo = await axios({
+    await axios({
       method: "post",
       url: "/user/signin",
       params: {

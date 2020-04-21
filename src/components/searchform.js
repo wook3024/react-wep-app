@@ -5,7 +5,7 @@ import { Input } from "antd";
 
 import {
   POST_LIST_REMOVE_ACTION,
-  SET_HASHTAG_ACTION,
+  SET_SEARCHTAG_ACTION,
 } from "../reducers/actions";
 
 const { Search } = Input;
@@ -22,13 +22,13 @@ const Searchform = () => {
       type: POST_LIST_REMOVE_ACTION,
     });
     dispatch({
-      type: SET_HASHTAG_ACTION,
-      payload: { hashtag: value },
+      type: SET_SEARCHTAG_ACTION,
+      payload: { searchtag: value },
     });
     console.log("input search", inputSearch);
     inputSearch.current.input.state.value = null;
-    history.push("/main");
-    history.push("/search");
+    // history.push("/main");
+    history.push("/searchtag");
   };
 
   return (

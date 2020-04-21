@@ -112,6 +112,7 @@ const Reply = ({ post, comment }) => {
       type: SET_HASHTAG_ACTION,
       payload: { hashtag: hashtag },
     });
+    window.scrollTo(0, 0);
     history.push("/hashtag");
   };
 

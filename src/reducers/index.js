@@ -13,6 +13,7 @@ import {
   GET_HASHTAG_POST_ACTION,
   POST_LIST_REMOVE_ACTION,
   SET_HASHTAG_ACTION,
+  SET_SEARCHTAG_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -20,6 +21,7 @@ const initialState = {
   userInfo: {},
   post: [],
   hashtag: undefined,
+  searchtag: undefined,
   signupCheck: false,
   loginCheck: true,
 };
@@ -81,6 +83,19 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         hashtag: action.payload.hashtag,
+      };
+    }
+    case SET_SEARCHTAG_ACTION: {
+      console.log("get searchtag data", action.payload.post);
+      //같은 페이지 내에서 이동하는지 체크하기위함
+      if (state.searchtag === action.payload.searchtag) {
+        state.post.searchtag = action.payload.searchtag;
+      } else {
+        state.post.searchtag = null;
+      }
+      return {
+        ...state,
+        searchtag: action.payload.searchtag,
       };
     }
     case GET_HASHTAG_POST_ACTION: {

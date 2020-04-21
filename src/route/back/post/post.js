@@ -148,8 +148,8 @@ router.post("/publish", async (req, res, next) => {
         })
           .then((post) => {
             const hashtag = data.title.split(" ");
-            hashtag.forEach(async (hashtag) => {
-              if (hashtag.charAt(0) === "#") {
+            hashtag.forEach(async (tag) => {
+              if (tag.charAt(0) === "#") {
                 // console.log(
                 //   "hashtag.slice(1)",
                 //   hashtag.slice(1),
@@ -157,10 +157,23 @@ router.post("/publish", async (req, res, next) => {
                 // );
                 const createHashtag = db.Hashtag.create({
                   postId: post.dataValues.id,
-                  hashtag: hashtag.slice(1),
+                  hashtag: tag.slice(1),
                 });
-                console.log("createHashtagState", await createHashtag);
+                const createSearchtag = db.Searchtag.create({
+                  postId: post.dataValues.id,
+                  searchtag: tag.slice(1),
+                });
+                console.log(
+                  "createTagState",
+                  await createHashtag,
+                  await createSearchtag
+                );
               }
+              const createSearchtag = db.Searchtag.create({
+                postId: post.dataValues.id,
+                searchtag: tag,
+              });
+              console.log("createSearchTagState", await createSearchtag);
             });
 
             // console.log("hashtag post", post.dataValues);
@@ -220,6 +233,14 @@ router.post("/remove", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       // console.log("remove proccessiong", data);
+      const hashtag = db.Hashtag.destroy({
+        where: { postId: data.postId },
+      });
+      console.log("remove hashtag 🐳🐳🐳🐳\n", await hashtag);
+      const searchtag = db.Searchtag.destroy({
+        where: { postId: data.postId },
+      });
+      console.log("remove searchtag 🐳🐳🐳🐳\n", await searchtag);
       const comment = db.Comment.destroy({
         where: { postId: data.postId },
       });
@@ -308,6 +329,96 @@ router.get("/hashtag", async (req, res, next) => {
         console.log("include hashtag posts", post.dataValues);
       });
       return res.json(posts);
+    })
+    .catch((error) => {
+      console.error("😡 ", error);
+      next(error);
+    });
+});
+
+router.get("/searchtag", async (req, res, next) => {
+  console.log("searchtag check  🐳", req.query);
+
+  const data = req.query;
+  if (!data.content) {
+    console.log("please insert content! 😱");
+    return res.send("please insert content! 😱");
+  }
+  const condition = () => {
+    console.log("data check", data);
+    if (data.id === undefined) {
+      return {};
+    }
+    console.log("data check op.lt", data);
+    return { postId: { [Op.lt]: parseInt(data.id) } };
+  };
+  const searchtag = () => {
+    const tag = data.content.split(" ");
+    return { searchtag: { [Op.or]: tag } };
+  };
+  return db.Searchtag.findAll({
+    where: { ...searchtag(), ...condition() },
+    attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("postId")), "postId"]],
+    limit: 2,
+  })
+    .then(async (postsId) => {
+      console.log("#include searchtag postsId", await postsId);
+      const postCondition = () => {
+        const postSet = postsId.map((postId) => {
+          console.log("include searchtag postsId", postId.dataValues);
+          return postId.dataValues.postId;
+        });
+        //해당되는 포스트 없다면 빈 배열 반환
+        if (!postSet[0]) {
+          return [];
+        }
+        return { id: { [Op.or]: postSet } };
+      };
+      console.log("postCondition check", postCondition());
+      //해당되는 포스드가 없을 때 빈 배열이 반환되므로 []를 response로 준다.
+      if (!postCondition().id) {
+        return res.json([]);
+      }
+      return db.Post.findAll({
+        where: { ...postCondition() },
+        include: [
+          {
+            model: db.Comment,
+            include: [
+              {
+                model: db.Like,
+              },
+              {
+                model: db.Dislike,
+              },
+              {
+                model: db.User,
+                include: [
+                  {
+                    model: db.Image,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            model: db.Image,
+          },
+          {
+            model: db.User,
+            attributes: ["username", "nickname", "id"],
+            include: [
+              {
+                model: db.Image,
+              },
+            ],
+          },
+        ],
+        order: [["created_at", "DESC"]],
+      }).then((posts) => {
+        console.log("include searchtag posts", posts);
+        return res.json(posts);
+      });
     })
     .catch((error) => {
       console.error("😡 ", error);

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { message, Button } from "antd";
+import { message } from "antd";
 
 import {
   GET_POST_DATA_ACTION,
@@ -14,7 +14,6 @@ import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
-  const [postingState, setPostingState] = useState(false);
   const { post, userInfo } = useSelector((state) => state);
 
   const dispatch = useDispatch();
@@ -29,6 +28,12 @@ const Profile = () => {
     //getDataCheck조건은 처리 중인 작업이 끝날 때까지 때까지 기다린 후
     //다음 작업을 시작하기 위해 사용한다.
     //getPost[0] && getPost.map을 사용하는 건 마지막에 나오는 포스트
+    console.log(
+      "scroll",
+      window.scrollY,
+      document.documentElement.scrollHeight,
+      document.documentElement.clientHeight
+    );
     if (
       window.scrollY >
         document.documentElement.scrollHeight -
@@ -96,7 +101,7 @@ const Profile = () => {
       })
       .then(() => {
         if (getPost.length === 0) {
-          message.warning("not found! 🐳");
+          message.warning("There are no posts 🐳");
         }
       })
       .catch((error) => {

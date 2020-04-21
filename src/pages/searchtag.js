@@ -13,14 +13,14 @@ import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
-  const { post, userInfo, hashtag } = useSelector((state) => state);
+  const { post, userInfo, searchtag } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   let getDataCheck = false;
   let getPost = [];
   let firstPostId = undefined;
 
-  console.log("hashtag post", post, hashtag);
+  console.log("searchtag post", post, searchtag);
 
   const onScroll = () => {
     if (
@@ -43,14 +43,14 @@ const Profile = () => {
       );
       axios({
         method: "get",
-        url: "/post/hashtag",
+        url: "/post/searchtag",
         params: {
           id: getPost[0] ? getPost[getPost.length - 1].id : undefined,
-          hashtag,
+          content: searchtag,
         },
       })
         .then((hashtagData) => {
-          getPost = hashtagData.data.map((hashtag) => hashtag.post);
+          getPost = hashtagData.data.map((searchtag) => searchtag);
           firstPostId = firstPostId === undefined ? getPost[0].id : firstPostId;
           dispatch({
             type: GET_MORE_POST_ACTION,
@@ -84,14 +84,15 @@ const Profile = () => {
     }
     axios({
       method: "get",
-      url: "/post/hashtag",
+      url: "/post/searchtag",
       params: {
         id: getPost[0] ? getPost[getPost.length - 1].id : undefined,
-        hashtag,
+        content: searchtag,
       },
     })
-      .then((hashtagData) => {
-        getPost = hashtagData.data.map((hashtag) => hashtag.post);
+      .then((searchtagData) => {
+        console.log("searchtagData", searchtagData);
+        getPost = searchtagData.data.map((searchtag) => searchtag);
         dispatch({
           type: GET_POST_DATA_ACTION,
           payload: { post: getPost },
@@ -106,7 +107,7 @@ const Profile = () => {
         console.error("😡 ", error);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hashtag, hashtag !== post.hashtag]);
+  }, [searchtag, searchtag !== post.searchtag]);
 
   return (
     <div>
