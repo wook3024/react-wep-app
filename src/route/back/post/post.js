@@ -28,7 +28,6 @@ router.get("", async (req, res, next) => {
       order: [
         ["created_at", "DESC"],
         [db.Comment, "group", "ASC"],
-        [db.Comment, "depth", "ASC"],
         [db.Comment, "sort", "DESC"],
       ],
       limit: 5,
@@ -364,39 +363,7 @@ router.get("/searchtag", async (req, res, next) => {
 
       return db.Post.findAll({
         where: { ...postCondition() },
-        include: [
-          {
-            model: db.Comment,
-            include: [
-              {
-                model: db.Like,
-              },
-              {
-                model: db.Dislike,
-              },
-              {
-                model: db.User,
-                include: [
-                  {
-                    model: db.Image,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: db.Image,
-          },
-          {
-            model: db.User,
-            attributes: ["username", "nickname", "id"],
-            include: [
-              {
-                model: db.Image,
-              },
-            ],
-          },
-        ],
+        ...findAllPostElement(),
         order: [
           ["created_at", "DESC"],
           [db.Comment, "group", "ASC"],

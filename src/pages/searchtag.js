@@ -100,7 +100,7 @@ const Profile = () => {
       })
       .then(() => {
         if (getPost.length === 0) {
-          message.warning("not found! 🐳");
+          message.warning("There are no posts 🐳");
         }
       })
       .catch((error) => {

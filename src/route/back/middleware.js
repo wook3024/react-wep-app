@@ -15,24 +15,28 @@ const removeLocalImage = (target, value) => {
     } else {
       console.error("😡 ", "target not found");
     }
-  })().then((res) => {
-    res.forEach((image) => {
-      console.log("find image 🐳🐳", image.dataValues.filename);
-      fs.unlink(
-        path.join(
-          __dirname,
-          `../../../public/images/${image.dataValues.filename}`
-        ),
-        (error) => {
-          if (error) {
-            console.error("😡 ", error);
-            return;
+  })()
+    .then((res) => {
+      res.forEach((image) => {
+        console.log("find image 🐳🐳", image.dataValues.filename);
+        fs.unlink(
+          path.join(
+            __dirname,
+            `../../../public/images/${image.dataValues.filename}`
+          ),
+          (error) => {
+            if (error) {
+              console.error("😡 ", error);
+              return;
+            }
+            console.log("File deleted! 🐳", image.dataValues.filename);
           }
-          console.log("File deleted! 🐳");
-        }
-      );
+        );
+      });
+    })
+    .catch((error) => {
+      console.error("😡 ", error);
     });
-  });
 };
 
 const findAllPostElement = () => {
