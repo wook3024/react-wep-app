@@ -13,7 +13,7 @@ import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
-  const { post, userInfo, searchtag } = useSelector((state) => state);
+  const { post, searchtag } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   let getDataCheck = false;

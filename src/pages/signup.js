@@ -50,7 +50,7 @@ const SignUp = () => {
         if (!res.data.fulfillmentValue) {
           formUserInfo = undefined;
           message.success("Sign Up Complete. Go to the main page! 🐳");
-          history.push("/main");
+          history.push("/signin");
         } else {
           message.warning("This user already exists. 😱");
         }

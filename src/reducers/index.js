@@ -9,6 +9,7 @@ import {
   ADD_COMMENT_ACTION,
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
+  GET_COMMENT_ACTION,
   PUBLISH_POST_ACTION,
   GET_HASHTAG_POST_ACTION,
   POST_LIST_REMOVE_ACTION,
@@ -197,6 +198,20 @@ const reducer = (state = initialState, action) => {
           }
           return comment;
         }
+      );
+      return {
+        ...state,
+      };
+    }
+    case GET_COMMENT_ACTION: {
+      const postIndex = state.post.findIndex(
+        (post) => post.id === action.payload.postId
+      );
+      state.post[postIndex].comments = action.payload.comments;
+      console.log(
+        "get comment actopn",
+        action.payload.comments,
+        state.post[postIndex].comments
       );
       return {
         ...state,

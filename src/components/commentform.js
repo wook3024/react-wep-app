@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input, Form, Button, message } from "antd";
 import axios from "axios";
 
-import { ADD_COMMENT_ACTION } from "../reducers/actions";
+import { GET_COMMENT_ACTION } from "../reducers/actions";
 
 const moment = require("moment");
 const { now } = moment;
@@ -49,25 +49,19 @@ const Commentform = ({ post, comment }) => {
         }
 
         console.log("comment add", res.data.fulfillmentValue);
-        const commentsData = res.data.fulfillmentValue.map((comment) => {
-          comment = {
-            ...comment,
-            user: {
-              ...comment.user,
-              images: [
-                {
-                  filename: comment.user.images[0]
-                    ? comment.user.images[0].filename
-                    : undefined,
-                },
-              ],
+        axios({
+          method: "get",
+          url: "/post/comment",
+          params: { postId: post.id },
+        }).then((comments) => {
+          console.log("comments data check", comments);
+          dispatch({
+            type: GET_COMMENT_ACTION,
+            payload: {
+              postId: post.id,
+              comments: comments.data,
             },
-          };
-          return comment;
-        });
-        dispatch({
-          type: ADD_COMMENT_ACTION,
-          payload: { comments: [...commentsData], postId: post.id },
+          });
         });
       })
       .then(() => {
@@ -79,18 +73,23 @@ const Commentform = ({ post, comment }) => {
   };
 
   return (
-    <Form>
+    <Form
+      style={{
+        width: "320px",
+        display: "block",
+        margin: "0 auto",
+      }}
+    >
       <TextArea
         rows={4}
         style={{
-          margin: "0 0 0.5rem 0",
-          width: "300px",
+          margin: "0.5rem 0",
           display: "block",
         }}
         onChange={changeComment}
         ref={commentForm}
       />
-      <Button type="primary" onClick={addCommnet}>
+      <Button type="primary" ghost onClick={addCommnet}>
         submit
       </Button>
     </Form>

@@ -13,7 +13,7 @@ import Searchform from "../components/searchform";
 import "./App.css";
 
 const Profile = () => {
-  const { post, userInfo, hashtag } = useSelector((state) => state);
+  const { post, hashtag } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   let getDataCheck = false;
@@ -51,7 +51,10 @@ const Profile = () => {
       })
         .then((hashtagData) => {
           getPost = hashtagData.data.map((hashtag) => hashtag.post);
-          firstPostId = firstPostId === undefined ? getPost[0].id : firstPostId;
+          firstPostId =
+            firstPostId === undefined && getPost[0]
+              ? getPost[0].id
+              : firstPostId;
           dispatch({
             type: GET_MORE_POST_ACTION,
             payload: { post: getPost },

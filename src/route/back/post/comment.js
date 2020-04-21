@@ -2,6 +2,7 @@ const express = require("express");
 const Sequelize = require("sequelize");
 
 const db = require("../../../models");
+const { findAllCommentElement } = require("../middleware");
 
 const router = express.Router();
 const sequlize = db.sequelize;
@@ -13,7 +14,11 @@ router.get("/", async (req, res, next) => {
     // console.log("postId check", data);
     const comments = await db.Comment.findAll({
       where: { postId: data.postId },
-      order: [["created_at", "DESC"]],
+      ...findAllCommentElement(),
+      order: [
+        ["group", "ASC"],
+        ["sort", "DESC"],
+      ],
     });
     return res.json(comments);
   } catch (error) {
@@ -100,6 +105,7 @@ router.post("/like", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       const userInfo = req.user.dataValues;
+
       // console.log("Like post", userInfo);
       const checkStatus = db.Like.findOne({
         where: { userId: userInfo.id, commentId: data.commentId },
@@ -111,6 +117,7 @@ router.post("/like", async (req, res, next) => {
           userId: userInfo.id,
           commentId: data.commentId,
         });
+
         return res.status(201).send("like");
       }
       db.Like.destroy({
@@ -204,7 +211,9 @@ router.post("/remove", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       const userInfo = req.user.dataValues;
+
       if (!data.commentId) return res.send("not found! 😱");
+
       let removeStatus = null;
       if (!data.force) {
         removeStatus = db.Comment.destroy({
@@ -216,11 +225,13 @@ router.post("/remove", async (req, res, next) => {
         });
       }
       console.log("removeStatus", await removeStatus);
+
       if ((await removeStatus) === 0) {
         return res.send(
           "It's not your comment! or The comment has already been removed.😱"
         );
       }
+
       const updateCheck = db.Comment.update(
         { sort: sequlize.literal("sort -1") },
         {
@@ -249,13 +260,16 @@ router.post("/change", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       const userInfo = req.user.dataValues;
+
       if (!data.commentId) return res.send("not found! 😱");
+
       console.log("check data", userInfo.id, data.commentId, data.comment);
       const updateStatus = db.Comment.update(
         { comment: data.comment },
         { where: { userId: userInfo.id, id: data.commentId } }
       );
       console.log("updateStatus", await updateStatus);
+
       if ((await updateStatus) === 0) {
         return res.send(
           "It's not your comment! or The comment has already been updated.😱"

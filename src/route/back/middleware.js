@@ -35,4 +35,66 @@ const removeLocalImage = (target, value) => {
   });
 };
 
-module.exports = { removeLocalImage };
+const findAllPostElement = () => {
+  return {
+    include: [
+      {
+        model: db.Comment,
+        include: [
+          {
+            model: db.Like,
+          },
+          {
+            model: db.Dislike,
+          },
+          {
+            model: db.User,
+            include: [
+              {
+                model: db.Image,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: db.Image,
+      },
+      {
+        model: db.User,
+        include: [
+          {
+            model: db.Image,
+          },
+        ],
+        attributes: ["username", "id"],
+      },
+    ],
+  };
+};
+
+const findAllCommentElement = () => {
+  return {
+    include: [
+      {
+        model: db.Like,
+      },
+      {
+        model: db.Dislike,
+      },
+      {
+        model: db.User,
+        include: [
+          {
+            model: db.Image,
+          },
+        ],
+      },
+    ],
+  };
+};
+module.exports = {
+  removeLocalImage,
+  findAllPostElement,
+  findAllCommentElement,
+};

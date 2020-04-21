@@ -22,18 +22,10 @@ const Profile = () => {
   let getPost = [];
   let firstPostId = undefined;
 
-  console.log("Post.js", post, __dirname);
-
   const onScroll = () => {
     //getDataCheck조건은 처리 중인 작업이 끝날 때까지 때까지 기다린 후
     //다음 작업을 시작하기 위해 사용한다.
     //getPost[0] && getPost.map을 사용하는 건 마지막에 나오는 포스트
-    console.log(
-      "scroll",
-      window.scrollY,
-      document.documentElement.scrollHeight,
-      document.documentElement.clientHeight
-    );
     if (
       window.scrollY >
         document.documentElement.scrollHeight -

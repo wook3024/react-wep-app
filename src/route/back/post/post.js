@@ -1,4 +1,4 @@
-const { removeLocalImage } = require("../middleware");
+const { removeLocalImage, findAllPostElement } = require("../middleware");
 
 const express = require("express");
 const multer = require("multer");
@@ -24,42 +24,11 @@ router.get("", async (req, res, next) => {
     };
     const posts = await db.Post.findAll({
       where: { ...condition() },
-      include: [
-        {
-          model: db.Comment,
-          include: [
-            {
-              model: db.Like,
-            },
-            {
-              model: db.Dislike,
-            },
-            {
-              model: db.User,
-              include: [
-                {
-                  model: db.Image,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          model: db.Image,
-        },
-        {
-          model: db.User,
-          include: [
-            {
-              model: db.Image,
-            },
-          ],
-          attributes: ["username", "id"],
-        },
-      ],
+      ...findAllPostElement(),
       order: [
         ["created_at", "DESC"],
         [db.Comment, "group", "ASC"],
+        [db.Comment, "depth", "ASC"],
         [db.Comment, "sort", "DESC"],
       ],
       limit: 5,
@@ -150,11 +119,6 @@ router.post("/publish", async (req, res, next) => {
             const hashtag = data.title.split(" ");
             hashtag.forEach(async (tag) => {
               if (tag.charAt(0) === "#") {
-                // console.log(
-                //   "hashtag.slice(1)",
-                //   hashtag.slice(1),
-                //   post.dataValues
-                // );
                 const createHashtag = db.Hashtag.create({
                   postId: post.dataValues.id,
                   hashtag: tag.slice(1),
@@ -195,6 +159,7 @@ router.post("/update", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
+
       // console.log("update check", data);
       const post = db.Post.update(
         {
@@ -204,6 +169,7 @@ router.post("/update", async (req, res, next) => {
         },
         { where: { id: data.id } }
       );
+
       // console.log("update post", await post);
       if (await post) {
         return db.Post.findOne({
@@ -216,6 +182,41 @@ router.post("/update", async (req, res, next) => {
             attributes: ["username", "id"],
           },
         }).then((post) => {
+          console.log("update post data 🐳", post);
+          const removeHashtag = db.Hashtag.destroy({
+            where: { postId: post.dataValues.id },
+          });
+          console.log("removeHashtag 🐳", removeHashtag);
+
+          const removeSearchtag = db.Searchtag.destroy({
+            where: { postId: post.dataValues.id },
+          });
+          console.log("removeSearchtag 🐳", removeSearchtag);
+
+          const hashtag = data.title.split(" ");
+          hashtag.forEach(async (tag) => {
+            if (tag.charAt(0) === "#") {
+              const createHashtag = db.Hashtag.create({
+                postId: post.dataValues.id,
+                hashtag: tag.slice(1),
+              });
+              const createSearchtag = db.Searchtag.create({
+                postId: post.dataValues.id,
+                searchtag: tag.slice(1),
+              });
+
+              console.log(
+                "createTag 🐳",
+                await createHashtag,
+                await createSearchtag
+              );
+            }
+            const createSearchtag = db.Searchtag.create({
+              postId: post.dataValues.id,
+              searchtag: tag,
+            });
+            console.log("createSearchTagState", await createSearchtag);
+          });
           return res.json(post);
         });
       }
@@ -253,6 +254,7 @@ router.post("/remove", async (req, res, next) => {
         where: { userId: data.userId, id: data.postId },
       });
       console.log("remove post 🐳🐳🐳🐳\n", await post);
+
       if (await post) {
         return res.status(201).send("Post Remove Complete! 🐳");
       }
@@ -271,6 +273,7 @@ router.get("/hashtag", async (req, res, next) => {
   const data = req.query;
   if (!data.hashtag) {
     console.log("please insert hashtag! 😱");
+
     return res.send("please insert hashtag! 😱");
   }
   const condition = () => {
@@ -279,6 +282,7 @@ router.get("/hashtag", async (req, res, next) => {
       return {};
     }
     console.log("data check op.lt", data);
+
     return { postId: { [Op.lt]: parseInt(data.id) } };
   };
   return db.Hashtag.findAll({
@@ -286,48 +290,21 @@ router.get("/hashtag", async (req, res, next) => {
     include: [
       {
         model: db.Post,
-        include: [
-          {
-            model: db.Comment,
-            include: [
-              {
-                model: db.Like,
-              },
-              {
-                model: db.Dislike,
-              },
-              {
-                model: db.User,
-                include: [
-                  {
-                    model: db.Image,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: db.Image,
-          },
-          {
-            model: db.User,
-            attributes: ["username", "nickname", "id"],
-            include: [
-              {
-                model: db.Image,
-              },
-            ],
-          },
-        ],
+        ...findAllPostElement(),
       },
     ],
-    order: [["created_at", "DESC"]],
+    order: [
+      ["created_at", "DESC"],
+      [db.Post, db.Comment, "group", "ASC"],
+      [db.Post, db.Comment, "sort", "DESC"],
+    ],
     limit: 5,
   })
     .then(async (posts) => {
       posts.forEach((post) => {
         console.log("include hashtag posts", post.dataValues);
       });
+
       return res.json(posts);
     })
     .catch((error) => {
@@ -338,12 +315,12 @@ router.get("/hashtag", async (req, res, next) => {
 
 router.get("/searchtag", async (req, res, next) => {
   console.log("searchtag check  🐳", req.query);
-
   const data = req.query;
   if (!data.content) {
     console.log("please insert content! 😱");
     return res.send("please insert content! 😱");
   }
+
   const condition = () => {
     console.log("data check", data);
     if (data.id === undefined) {
@@ -352,10 +329,12 @@ router.get("/searchtag", async (req, res, next) => {
     console.log("data check op.lt", data);
     return { postId: { [Op.lt]: parseInt(data.id) } };
   };
+
   const searchtag = () => {
     const tag = data.content.split(" ");
     return { searchtag: { [Op.or]: tag } };
   };
+
   return db.Searchtag.findAll({
     where: { ...searchtag(), ...condition() },
     attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("postId")), "postId"]],
@@ -368,17 +347,21 @@ router.get("/searchtag", async (req, res, next) => {
           console.log("include searchtag postsId", postId.dataValues);
           return postId.dataValues.postId;
         });
+
         //해당되는 포스트 없다면 빈 배열 반환
         if (!postSet[0]) {
           return [];
         }
+
         return { id: { [Op.or]: postSet } };
       };
       console.log("postCondition check", postCondition());
+
       //해당되는 포스드가 없을 때 빈 배열이 반환되므로 []를 response로 준다.
       if (!postCondition().id) {
         return res.json([]);
       }
+
       return db.Post.findAll({
         where: { ...postCondition() },
         include: [
@@ -414,9 +397,14 @@ router.get("/searchtag", async (req, res, next) => {
             ],
           },
         ],
-        order: [["created_at", "DESC"]],
+        order: [
+          ["created_at", "DESC"],
+          [db.Comment, "group", "ASC"],
+          [db.Comment, "sort", "DESC"],
+        ],
       }).then((posts) => {
         console.log("include searchtag posts", posts);
+
         return res.json(posts);
       });
     })

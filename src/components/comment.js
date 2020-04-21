@@ -25,6 +25,7 @@ import {
   COMMENT_UPDATE_ACTION,
   SET_HASHTAG_ACTION,
   POST_LIST_REMOVE_ACTION,
+  GET_COMMENT_ACTION,
 } from "../reducers/actions";
 
 const { TextArea } = Input;
@@ -195,12 +196,19 @@ const Reply = ({ post, comment }) => {
                 comment.id,
                 comment.postId
               );
-              dispatch({
-                type: COMMENT_REMOVE_ACTION,
-                payload: {
-                  commentId: comment.id,
-                  postId: comment.postId,
-                },
+              axios({
+                method: "get",
+                url: "/post/comment",
+                params: { postId: post.id },
+              }).then((comments) => {
+                console.log("comments data check", comments);
+                dispatch({
+                  type: GET_COMMENT_ACTION,
+                  payload: {
+                    postId: post.id,
+                    comments: comments.data,
+                  },
+                });
               });
             })
             .catch((error) => {
@@ -305,7 +313,7 @@ const Reply = ({ post, comment }) => {
 
   return (
     <Comment
-      style={{ width: "300px" }}
+      style={{ width: "300px", margin: "0 auto" }}
       actions={actions}
       author={comment.user ? comment.user.nickname : "not found"}
       avatar={
@@ -368,7 +376,7 @@ const Reply = ({ post, comment }) => {
                 </span>
               );
             } else {
-              return <span>comment&nbsp;</span>;
+              return <span>{comment}&nbsp;</span>;
             }
           })
         )
