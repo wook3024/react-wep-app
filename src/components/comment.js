@@ -18,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
+import PropTypes from "prop-types";
 
 import Commentform from "./commentform";
 import {
@@ -434,6 +435,11 @@ const Reply = ({ post, comment }) => {
         })}
     </Comment>
   );
+};
+
+Reply.propTypes = {
+  post: PropTypes.object,
+  comment: PropTypes.object,
 };
 
 export default Reply;

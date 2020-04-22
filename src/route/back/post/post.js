@@ -30,7 +30,7 @@ router.get("", async (req, res, next) => {
         [db.Comment, "group", "ASC"],
         [db.Comment, "sort", "DESC"],
       ],
-      limit: 5,
+      limit: 3,
     });
     // console.log("response post data", await posts);
     return res.json(posts);
@@ -297,7 +297,7 @@ router.get("/hashtag", async (req, res, next) => {
       [db.Post, db.Comment, "group", "ASC"],
       [db.Post, db.Comment, "sort", "DESC"],
     ],
-    limit: 5,
+    limit: 3,
   })
     .then(async (posts) => {
       posts.forEach((post) => {
@@ -331,13 +331,13 @@ router.get("/searchtag", async (req, res, next) => {
 
   const searchtag = () => {
     const tag = data.content.split(" ");
+    console.log("seatchtag check op.lt", tag);
     return { searchtag: { [Op.or]: tag } };
   };
 
   return db.Searchtag.findAll({
     where: { ...searchtag(), ...condition() },
     attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("postId")), "postId"]],
-    limit: 2,
   })
     .then(async (postsId) => {
       console.log("#include searchtag postsId", await postsId);
@@ -369,6 +369,7 @@ router.get("/searchtag", async (req, res, next) => {
           [db.Comment, "group", "ASC"],
           [db.Comment, "sort", "DESC"],
         ],
+        limit: 3,
       }).then((posts) => {
         console.log("include searchtag posts", posts);
 

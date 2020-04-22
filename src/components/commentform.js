@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Input, Form, Button, message } from "antd";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 import { GET_COMMENT_ACTION } from "../reducers/actions";
 
@@ -94,6 +95,11 @@ const Commentform = ({ post, comment }) => {
       </Button>
     </Form>
   );
+};
+
+Commentform.propTypes = {
+  post: PropTypes.object,
+  comment: PropTypes.object,
 };
 
 export default Commentform;

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input, Button, Form, message, Upload, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 import { PUBLISH_POST_ACTION, UPDATE_POST_ACTION } from "../reducers/actions";
 
@@ -12,7 +13,7 @@ const { now } = moment;
 const FormData = require("form-data");
 const { TextArea } = Input;
 
-const PostForm = ({ post }) => {
+const PostForm = ({ post = {} }) => {
   const [title, setTitle] = useState(post ? post.title : "");
   const [content, setContent] = useState(post ? post.content : "");
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -32,7 +33,7 @@ const PostForm = ({ post }) => {
   useEffect(() => {
     console.log("post id check", post ? post.id : post, post);
     const imageList = [];
-    if (post && post.images[0]) {
+    if (post && post.images && post.images[0]) {
       post.images.forEach((image, index) => {
         let fileName = undefined;
         const imageName = [...image.filename];
@@ -359,4 +360,8 @@ const PostForm = ({ post }) => {
   );
 };
 
-export default React.memo(PostForm);
+PostForm.propTypes = {
+  post: PropTypes.object,
+};
+
+export default PostForm;

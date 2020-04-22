@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
+import PropTypes from "prop-types";
 
 import "react-image-lightbox/style.css";
 import ButtonGroup from "antd/lib/button/button-group";
@@ -346,6 +347,10 @@ const Postcard = ({ post }) => {
         })}
     </Card>
   );
+};
+
+Postcard.propTypes = {
+  post: PropTypes.object,
 };
 
 export default Postcard;
