@@ -25,6 +25,9 @@ db.Dislike = require("./dislike")(sequelize, Sequelize);
 db.Image = require("./image")(sequelize, Sequelize);
 db.Hashtag = require("./hashtag")(sequelize, Sequelize);
 db.Searchtag = require("./searchtag")(sequelize, Sequelize);
+db.Following = require("./following")(sequelize, Sequelize);
+db.Scrap = require("./scrap")(sequelize, Sequelize);
+db.Notification = require("./notification")(sequelize, Sequelize);
 
 //database association
 //현재 sequelize의 이해가 부족하여 필요한 부분만 사용가능하도록 만들었지만
@@ -55,5 +58,11 @@ db.Hashtag.belongsTo(db.Post, { foreignKey: "postId" });
 /*--------------------------------------------------*/
 db.Post.hasMany(db.Searchtag);
 db.Searchtag.belongsTo(db.Post, { foreignKey: "postId" });
+/*--------------------------------------------------*/
+db.User.hasMany(db.Following);
+db.Following.belongsTo(db.User, { foreignKey: "targetUserId" });
+/*--------------------------------------------------*/
+db.Post.hasMany(db.Scrap);
+db.Scrap.belongsTo(db.Post, { foreignKey: "postId" });
 
 module.exports = db;

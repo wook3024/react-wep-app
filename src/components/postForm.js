@@ -277,7 +277,7 @@ const PostForm = ({ post = {} }) => {
 
   return (
     <>
-      {!post && (
+      {!postingState && !post.id && (
         <Button
           type="primary"
           ghost
@@ -294,7 +294,7 @@ const PostForm = ({ post = {} }) => {
           Posting
         </Button>
       )}
-      {(postingState || post) && (
+      {(postingState || post.id) && (
         <Form
           style={{
             margin: "0 auto",

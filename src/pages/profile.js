@@ -1,12 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Descriptions, Button, Input, Avatar, Upload, message } from "antd";
+import { Link } from "react-router-dom";
+import {
+  Descriptions,
+  Button,
+  Input,
+  Avatar,
+  Upload,
+  message,
+  Table,
+} from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
 
 import "./App.css";
-import { USER_INFO_REFRESH_ACTION } from "../reducers/actions";
+import {
+  USER_INFO_REFRESH_ACTION,
+  GET_SCRAP_DATA_ACTION,
+  GET_FOLLOWING_DATA_ACTION,
+  UNFOLLOWING_ACTION,
+  UNSCRAP_ACTION,
+} from "../reducers/actions";
 
 const { TextArea } = Input;
 
@@ -16,12 +31,158 @@ const Profile = () => {
   const [nicknameButtonToggle, setNicknameButtonToggle] = useState(false);
   const [changeToDescription, setChangeToDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [followingData, setFollowingData] = useState([]);
+  const [scrapData, setScrapData] = useState([]);
   const [visible, setVisible] = useState(false);
-  const { userInfo } = useSelector((state) => state);
+  const { userInfo, following, scrap } = useSelector((state) => state);
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "/post/user/getFollowingData",
+      withCredentials: true,
+    })
+      .then((getFollowindData) => {
+        // console.log("getFollowindData", getFollowindData);
+        getFollowindData.data.forEach((followingUser) => {
+          followingData.push({
+            key: followingUser.user.id,
+            name: followingUser.user.nickname,
+            age: followingUser.user.age ? followingUser.user.age : null,
+            created_at: followingUser.user.created_at,
+            description: followingUser.user.description,
+          });
+        });
+        dispatch({
+          type: GET_FOLLOWING_DATA_ACTION,
+          payload: { following: followingData },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+
+    axios({
+      method: "get",
+      url: "/post/user/getScrapData",
+      withCredentials: true,
+    })
+      .then((getScrapData) => {
+        // console.log("getScrapData", getScrapData);
+        getScrapData.data.forEach((scrapUser) => {
+          scrapData.push({
+            key: scrapUser.post.id,
+            title: scrapUser.post.title,
+            name: scrapUser.post.user.nickname,
+            created_at: scrapUser.post.created_at,
+            description: scrapUser.post.content,
+          });
+        });
+        dispatch({
+          type: GET_SCRAP_DATA_ACTION,
+          payload: { scrap: scrapData },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+    console.log("inset date check", followingData, scrapData);
+  }, [dispatch, followingData, scrapData]);
+
   console.log("profile userinfo check", userInfo);
+
+  const followingColumns = [
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Age", dataIndex: "age", key: "age" },
+    { title: "Created_at", dataIndex: "created_at", key: "address" },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (data) => (
+        <Link
+          onClick={() => {
+            unFollowing(data);
+          }}
+        >
+          Delete
+        </Link>
+      ),
+    },
+  ];
+
+  const scrapColumns = [
+    { title: "Title", dataIndex: "title", key: "title" },
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Created_at", dataIndex: "created_at", key: "address" },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (data) => (
+        <Link
+          onClick={() => {
+            unScrap(data);
+          }}
+        >
+          Delete
+        </Link>
+      ),
+    },
+  ];
+
+  const unFollowing = (data) => {
+    axios({
+      method: "post",
+      url: "/post/user/unfollowing",
+      withCredentials: true,
+      params: { userId: data.key },
+    })
+      .then((res) => {
+        console.log("unFollowing response", res);
+        if (res.status === 201) {
+          message.success(res.data);
+        } else {
+          message.warning(res.data);
+        }
+
+        dispatch({
+          type: UNFOLLOWING_ACTION,
+          payload: { key: data.key },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
+
+  const unScrap = (data) => {
+    axios({
+      method: "post",
+      url: "/post/user/unscrap",
+      withCredentials: true,
+      params: { userId: data.key, postId: data.key },
+    })
+      .then((res) => {
+        console.log("unScrap response", res);
+        if (res.status === 201) {
+          message.success(res.data);
+        } else {
+          message.warning(res.data);
+        }
+
+        dispatch({
+          type: UNSCRAP_ACTION,
+          payload: { key: data.key },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
+
   const onChangeNickname = useCallback((e) => {
     setChangeToNickname(e.target.value);
   }, []);
@@ -141,118 +302,163 @@ const Profile = () => {
   };
 
   return (
-    <Descriptions
-      style={{ margin: "7rem auto", maxWidth: 600 }}
-      bordered
-      title="User Info"
-      size={"small"}
-    >
-      <Descriptions.Item label="UserName">
-        {userInfo && userInfo.id ? userInfo.username : "undefined"}
-      </Descriptions.Item>
-      <Descriptions.Item
-        label={
-          <div>
-            NickName&nbsp;
-            {nicknameButtonToggle ? (
-              <>
-                <Button size={"small"} type="primary" onClick={changeNickname}>
+    <>
+      <Descriptions
+        style={{ margin: "5rem auto", maxWidth: 600 }}
+        bordered
+        title="User Info"
+        size={"small"}
+      >
+        <Descriptions.Item label="UserName">
+          {userInfo && userInfo.id ? userInfo.username : "undefined"}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            <div>
+              NickName&nbsp;
+              {nicknameButtonToggle ? (
+                <>
+                  <Button
+                    size={"small"}
+                    type="primary"
+                    ghost
+                    onClick={changeNickname}
+                  >
+                    modify
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size={"small"}
+                  type="primary"
+                  ghost
+                  onClick={() =>
+                    setNicknameButtonToggle(nicknameButtonToggle ? false : true)
+                  }
+                >
+                  change
+                </Button>
+              )}
+            </div>
+          }
+        >
+          {nicknameButtonToggle ? (
+            <Input
+              defaultValue={userInfo && userInfo.nickname}
+              onChange={onChangeNickname}
+            />
+          ) : (
+            <Descriptions.Item label="Nickname">
+              {userInfo && userInfo.id ? userInfo.nickname : "undefined"}
+            </Descriptions.Item>
+          )}
+        </Descriptions.Item>
+        <Descriptions.Item label="Created_At">
+          {userInfo && userInfo.id ? userInfo.created_at : "undefined"}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            <div>
+              ProfileImage&nbsp;
+              <Upload {...props}>
+                <Button type="primary" ghost size={"small"}>
+                  select
+                </Button>
+              </Upload>
+              {selectedFile !== null && (
+                <Button
+                  type="primary"
+                  ghost
+                  size={"small"}
+                  onClick={handlePost}
+                >
                   modify
                 </Button>
-              </>
-            ) : (
-              <Button
-                size={"small"}
-                type="primary"
-                onClick={() =>
-                  setNicknameButtonToggle(nicknameButtonToggle ? false : true)
-                }
-              >
-                change
-              </Button>
-            )}
-          </div>
-        }
-      >
-        {nicknameButtonToggle ? (
-          <Input
-            defaultValue={userInfo && userInfo.nickname}
-            onChange={onChangeNickname}
-          />
-        ) : (
-          <Descriptions.Item label="Nickname">
-            {userInfo && userInfo.id ? userInfo.nickname : "undefined"}
-          </Descriptions.Item>
-        )}
-      </Descriptions.Item>
-      <Descriptions.Item label="Created_At">
-        {userInfo && userInfo.id ? userInfo.created_at : "undefined"}
-      </Descriptions.Item>
-      <Descriptions.Item
-        label={
-          <div>
-            ProfileImage&nbsp;
-            <Upload {...props}>
-              <Button type="primary" size={"small"}>
-                select
-              </Button>
-            </Upload>
-            {selectedFile !== null && (
-              <Button type="primary" size={"small"} onClick={handlePost}>
-                modify
-              </Button>
-            )}
-          </div>
-        }
-      >
-        {userInfo && userInfo.profileImage ? (
-          <>
-            <Avatar
-              src={`../../public/images/${userInfo.profileImage}`}
-              onClick={() => setVisible(visible ? false : true)}
-            />
-            {visible && (
-              <Lightbox
-                mainSrc={`../../public/images/${userInfo.profileImage}`}
-                onCloseRequest={() => setVisible(false)}
+              )}
+            </div>
+          }
+        >
+          {userInfo && userInfo.profileImage ? (
+            <>
+              <Avatar
+                src={`../../public/images/${userInfo.profileImage}`}
+                onClick={() => setVisible(visible ? false : true)}
               />
-            )}
-          </>
-        ) : (
-          <Avatar icon={<UserOutlined />} />
-        )}
-      </Descriptions.Item>
-      <Descriptions.Item
-        label={
-          <div>
-            Description&nbsp;
-            {descriptionButtonToggle ? (
-              <Button size={"small"} type="primary" onClick={changeDescription}>
-                modify
-              </Button>
-            ) : (
-              <Button
-                size={"small"}
-                type="primary"
-                onClick={() =>
-                  setDescriptionButtonToggle(
-                    descriptionButtonToggle ? false : true
-                  )
-                }
-              >
-                change
-              </Button>
-            )}
-          </div>
-        }
-      >
-        {descriptionButtonToggle ? (
-          <TextArea rows={4} onChange={onChangeDescription} />
-        ) : (
-          userInfo && `${userInfo.description}`
-        )}
-      </Descriptions.Item>
-    </Descriptions>
+              {visible && (
+                <Lightbox
+                  mainSrc={`../../public/images/${userInfo.profileImage}`}
+                  onCloseRequest={() => setVisible(false)}
+                />
+              )}
+            </>
+          ) : (
+            <Avatar icon={<UserOutlined />} />
+          )}
+        </Descriptions.Item>
+        <Descriptions.Item
+          label={
+            <div>
+              Description&nbsp;
+              {descriptionButtonToggle ? (
+                <Button
+                  size={"small"}
+                  type="primary"
+                  ghost
+                  onClick={changeDescription}
+                >
+                  modify
+                </Button>
+              ) : (
+                <Button
+                  size={"small"}
+                  type="primary"
+                  ghost
+                  onClick={() =>
+                    setDescriptionButtonToggle(
+                      descriptionButtonToggle ? false : true
+                    )
+                  }
+                >
+                  change
+                </Button>
+              )}
+            </div>
+          }
+        >
+          {descriptionButtonToggle ? (
+            <TextArea rows={4} onChange={onChangeDescription} />
+          ) : (
+            userInfo && `${userInfo.description}`
+          )}
+        </Descriptions.Item>
+      </Descriptions>
+      <div style={{ margin: "0 auto", maxWidth: 600 }}>
+        <h3>Following</h3>
+        <Table
+          columns={followingColumns}
+          expandable={{
+            expandedRowRender: (record) => (
+              <p style={{ margin: 0 }}>{record.description}</p>
+            ),
+            rowExpandable: (record) => record.name !== "Not Expandable",
+          }}
+          dataSource={following}
+        />
+      </div>
+      <div style={{ margin: "5rem auto", maxWidth: 600 }}>
+        <h3>Scrap</h3>
+        <Table
+          columns={scrapColumns}
+          expandable={{
+            expandedRowRender: (record) => (
+              <p style={{ margin: 0 }}>{record.description}</p>
+            ),
+            rowExpandable: (record) => record.name !== "Not Expandable",
+          }}
+          dataSource={scrap}
+        />
+      </div>
+    </>
   );
 };
 export default Profile;

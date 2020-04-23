@@ -15,6 +15,10 @@ import {
   POST_LIST_REMOVE_ACTION,
   SET_HASHTAG_ACTION,
   SET_SEARCHTAG_ACTION,
+  GET_FOLLOWING_DATA_ACTION,
+  GET_SCRAP_DATA_ACTION,
+  UNFOLLOWING_ACTION,
+  UNSCRAP_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -23,6 +27,8 @@ const initialState = {
   post: [],
   hashtag: undefined,
   searchtag: undefined,
+  following: [],
+  scrap: [],
   signupCheck: false,
   loginCheck: true,
 };
@@ -213,6 +219,39 @@ const reducer = (state = initialState, action) => {
         action.payload.comments,
         state.post[postIndex].comments
       );
+      return {
+        ...state,
+      };
+    }
+    case GET_FOLLOWING_DATA_ACTION: {
+      console.log("get following action", action.payload);
+      return {
+        ...state,
+        following: action.payload.following,
+      };
+    }
+    case GET_SCRAP_DATA_ACTION: {
+      console.log("get scrap action", action.payload);
+      return {
+        ...state,
+        scrap: action.payload.scrap,
+      };
+    }
+    case UNFOLLOWING_ACTION: {
+      console.log("get scrap action", action.payload);
+      state.following = state.following.filter((data) => {
+        return data.key !== action.payload.key;
+      });
+      return {
+        ...state,
+      };
+    }
+    case UNSCRAP_ACTION: {
+      console.log("get scrap action", action.payload);
+      state.scrap = state.scrap.filter((data) => {
+        console.log("unscrap action check", data.key, action.payload.key);
+        return data.key !== action.payload.key;
+      });
       return {
         ...state,
       };

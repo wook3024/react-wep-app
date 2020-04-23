@@ -1,20 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
-    "comment",
+    "following",
     {
-      comment: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      group: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      depth: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      sort: {
+      userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },

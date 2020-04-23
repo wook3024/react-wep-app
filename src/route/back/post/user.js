@@ -127,4 +127,205 @@ router.post("/uploadProfileImage", (req, res, next) => {
   }
 });
 
+router.post("/following", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const data = req.query;
+      console.log("get following data check", req.query);
+
+      const followingCheck = db.Following.findOne({
+        where: { userId: data.userId, targetUserId: data.targetUserId },
+      });
+      if ((await followingCheck) !== null) {
+        return res.status(201).send("following already completed! 😱");
+      }
+
+      return db.Following.create({
+        userId: data.userId,
+        targetUserId: data.targetUserId,
+      })
+        .then((followingData) => {
+          console.log("following result check", followingData.dataValues);
+          return res.json(followingData.dataValues);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+          next(error);
+        });
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/scrap", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const data = req.query;
+      console.log("get scrap data check", req.query);
+
+      const scrapCheck = db.Scrap.findOne({
+        where: { userId: data.userId, postId: data.postId },
+      });
+      if ((await scrapCheck) !== null) {
+        return res.status(201).send("scrap already completed! 😱");
+      }
+
+      return db.Scrap.create({
+        userId: data.userId,
+        postId: data.postId,
+      })
+        .then((scrapData) => {
+          console.log("scrap result check", scrapData.dataValues);
+          return res.json(scrapData.dataValues);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+          next(error);
+        });
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.get("/getFollowingData", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        const user = req.user;
+        console.log("getFollwingData set", user.dataValues);
+
+        return db.Following.findAll({
+          where: { userId: user.dataValues.id },
+          include: [
+            {
+              model: db.User,
+              attributes: [
+                "id",
+                "username",
+                "nickname",
+                "description",
+                "created_at",
+              ],
+            },
+          ],
+        }).then((getFollowingData) => {
+          console.log("get following data", getFollowingData);
+          return res.json(getFollowingData);
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.get("/getScrapData", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        const user = req.user;
+        console.log("getFollwingData set", user.dataValues);
+
+        return db.Scrap.findAll({
+          where: { userId: user.dataValues.id },
+          include: [
+            {
+              model: db.Post,
+              include: [
+                {
+                  model: db.User,
+                  attributes: [
+                    "id",
+                    "username",
+                    "nickname",
+                    "description",
+                    "created_at",
+                  ],
+                },
+              ],
+            },
+          ],
+        }).then((getScrapData) => {
+          console.log("get Scrap data", getScrapData);
+          return res.json(getScrapData);
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/unfollowing", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        const user = req.user;
+        const data = req.query;
+        console.log("getFollwingData set", user.dataValues);
+
+        return db.Following.destroy({
+          where: { userId: user.id, targetUserId: data.userId },
+        }).then((state) => {
+          if (state !== null) {
+            return res.status(201).send("unFollowing succsess! 🐳");
+          }
+          return res.send("unFollowing failed! 😱");
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
+router.post("/unScrap", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      try {
+        const user = req.user;
+        const data = req.query;
+        console.log("getFollwingData set", user.dataValues);
+
+        return db.Scrap.destroy({
+          where: { userId: user.id, postId: data.postId },
+        }).then((state) => {
+          if (state !== null) {
+            return res.status(201).send("unFollowing succsess! 🐳");
+          }
+          return res.send("unFollowing failed! 😱");
+        });
+      } catch (error) {
+        console.error("😡 ", error);
+        next(error);
+      }
+    }
+    res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
 module.exports = router;

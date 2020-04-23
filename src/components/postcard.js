@@ -113,6 +113,47 @@ const Postcard = ({ post }) => {
     setAddComment(addComment === true ? false : true);
   }, [addComment, loginCheck]);
 
+  const onFollowing = () => {
+    // console.log("insert follwoing data check", userInfo, post.data);
+    axios({
+      method: "post",
+      url: "/post/user/following",
+      withCredentials: true,
+      params: { userId: userInfo.id, targetUserId: post.data.userId },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("following success! 🐳");
+        } else {
+          message.warning(res.data);
+        }
+        console.log("following state check", res);
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
+
+  const onScrap = () => {
+    axios({
+      method: "post",
+      url: "/post/user/scrap",
+      withCredentials: true,
+      params: { userId: userInfo.id, postId: post.data.id },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          message.success("scrap success! 🐳");
+        } else {
+          message.warning(res.data);
+        }
+        console.log("scrap state check", res);
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
+
   return (
     <Card
       style={{
@@ -160,44 +201,51 @@ const Postcard = ({ post }) => {
           )
         }
         actions={[
-          <Tooltip
-            placement="topLeft"
-            title="change"
+          <Popover
+            key="topLeft"
+            content="change 🐳"
             arrowPointAtCenter
             onClick={postChange}
           >
             <EditOutlined key="edit" />
-          </Tooltip>,
-          <Tooltip
-            placement="topLeft"
-            title="comment"
+          </Popover>,
+          <Popover
+            key="topLeft"
+            content="comment 🐳"
             arrowPointAtCenter
             onClick={commentChange}
           >
             <MessageOutlined key="comment" />
-          </Tooltip>,
+          </Popover>,
           <Popover
             key="ellipsis"
             content={
-              <ButtonGroup>
-                {userInfo && userInfo.id === post.data.userId ? (
-                  <Button Button danger onClick={postRemove}>
-                    remove
-                  </Button>
-                ) : null}
-                <Button
-                  Button
-                  type="primary"
-                  ghost
-                  onClick={() => {
-                    message.success(
-                      `I am mindless. Because I have no idea. 🐳`
-                    );
-                  }}
-                >
-                  in detail
-                </Button>
-              </ButtonGroup>
+              userInfo && userInfo.id ? (
+                <>
+                  {userInfo.id === post.data.userId ? (
+                    <ButtonGroup>
+                      <Button Button danger onClick={postRemove}>
+                        remove
+                      </Button>
+                      <Button Button type="primary" ghost onClick={onScrap}>
+                        scrap
+                      </Button>
+                    </ButtonGroup>
+                  ) : null}
+                  {userInfo.id !== post.data.userId ? (
+                    <ButtonGroup>
+                      <Button Button type="primary" ghost onClick={onFollowing}>
+                        following
+                      </Button>
+                      <Button Button type="primary" ghost onClick={onScrap}>
+                        scrap
+                      </Button>
+                    </ButtonGroup>
+                  ) : null}
+                </>
+              ) : (
+                "Login please! 🐳"
+              )
             }
           >
             <EllipsisOutlined key="ellipsis" />

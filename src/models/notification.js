@@ -1,20 +1,24 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
-    "comment",
+    "notification",
     {
+      title: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       comment: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
-      group: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+      message: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
-      depth: {
+      username: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      sort: {
+      userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
