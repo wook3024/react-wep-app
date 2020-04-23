@@ -45,7 +45,7 @@ const Profile = () => {
       withCredentials: true,
     })
       .then((getFollowindData) => {
-        // console.log("getFollowindData", getFollowindData);
+        console.log("getFollowindData", getFollowindData);
         getFollowindData.data.forEach((followingUser) => {
           followingData.push({
             key: followingUser.user.id,

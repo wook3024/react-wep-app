@@ -210,6 +210,7 @@ router.get("/getFollowingData", async (req, res, next) => {
                 "username",
                 "nickname",
                 "description",
+                "age",
                 "created_at",
               ],
             },
