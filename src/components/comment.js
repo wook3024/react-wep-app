@@ -122,7 +122,7 @@ const Reply = ({ post, comment }) => {
     axios({
       method: "post",
       url: "/post/comment/like",
-      params: { commentId: comment.id },
+      params: { commentId: comment.id, postId: post.id },
       withCredentials: true,
     })
       .then((res) => {
@@ -134,7 +134,7 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [comment.id, likeCheck, likeState, likeVal, pluelikeOrUnlikeVal]);
+  }, [comment.id, likeCheck, likeState, likeVal, pluelikeOrUnlikeVal, post.id]);
 
   const dislike = useCallback(() => {
     axios({
@@ -251,6 +251,7 @@ const Reply = ({ post, comment }) => {
       params: {
         commentId: comment.id,
         comment: commentValue.trimRight(),
+        postId: post.id,
       },
     })
       .then((res) => {
@@ -273,7 +274,7 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [comment.id, comment.postId, commentValue, dispatch]);
+  }, [comment.id, comment.postId, commentValue, dispatch, post.id]);
 
   const actions = [
     <span key="comment-basic-like">

@@ -97,6 +97,7 @@ router.post("/publish", async (req, res, next) => {
       const user = req.user.dataValues;
       const data = req.query;
 
+      console.log("user", user);
       //비동기 작업을 위해 작성한 구문
       return db.Post.create({
         userId: user.id,
@@ -115,6 +116,27 @@ router.post("/publish", async (req, res, next) => {
           },
         })
           .then((post) => {
+            db.Following.findAll({
+              where: { targetUserId: user.id },
+            }).then((followers) => {
+              console.log("followers 😱😡", followers);
+              followers.forEach((follower) => {
+                db.Notification.create({
+                  userId: follower.dataValues.userId,
+                  postId: post.dataValues.id,
+                  username: user.username,
+                  state: "publish",
+                  message: data.title,
+                })
+                  .then((res) => {
+                    console.log("create notification", res);
+                  })
+                  .catch((error) => {
+                    console.error("😡 ", error);
+                  });
+              });
+            });
+
             const hashtag = data.title.split(" ");
             hashtag.forEach(async (tag) => {
               if (tag.charAt(0) === "#") {
@@ -157,6 +179,7 @@ router.post("/publish", async (req, res, next) => {
 router.post("/update", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
+      const user = req.user.dataValues;
       const data = req.query;
 
       // console.log("update check", data);
@@ -182,6 +205,27 @@ router.post("/update", async (req, res, next) => {
           },
         }).then((post) => {
           console.log("update post data 🐳", post);
+          db.Following.findAll({
+            where: { targetUserId: user.id },
+          }).then((followers) => {
+            console.log("followers 😱😡", followers);
+            followers.forEach((follower) => {
+              db.Notification.create({
+                userId: follower.dataValues.userId,
+                postId: post.dataValues.id,
+                username: user.username,
+                state: "update",
+                message: data.title,
+              })
+                .then((res) => {
+                  console.log("create notification", res);
+                })
+                .catch((error) => {
+                  console.error("😡 ", error);
+                });
+            });
+          });
+
           const removeHashtag = db.Hashtag.destroy({
             where: { postId: post.dataValues.id },
           });
@@ -233,26 +277,30 @@ router.post("/remove", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       // console.log("remove proccessiong", data);
+      const notification = db.Notification.destroy({
+        where: { postId: data.postId },
+      });
+      console.log("remove notification 🐳\n", await notification);
       const hashtag = db.Hashtag.destroy({
         where: { postId: data.postId },
       });
-      console.log("remove hashtag 🐳🐳🐳🐳\n", await hashtag);
+      console.log("remove hashtag 🐳\n", await hashtag);
       const searchtag = db.Searchtag.destroy({
         where: { postId: data.postId },
       });
-      console.log("remove searchtag 🐳🐳🐳🐳\n", await searchtag);
+      console.log("remove searchtag 🐳\n", await searchtag);
       const comment = db.Comment.destroy({
         where: { postId: data.postId },
       });
-      console.log("remove comment 🐳🐳🐳🐳\n", await comment);
+      console.log("remove comment 🐳\n", await comment);
       const image = db.Image.destroy({
         where: { postId: data.postId },
       });
-      console.log("remove image 🐳🐳🐳🐳\n", await image);
+      console.log("remove image 🐳\n", await image);
       const post = db.Post.destroy({
         where: { userId: data.userId, id: data.postId },
       });
-      console.log("remove post 🐳🐳🐳🐳\n", await post);
+      console.log("remove post 🐳\n", await post);
 
       if (await post) {
         return res.status(201).send("Post Remove Complete! 🐳");
@@ -380,6 +428,27 @@ router.get("/searchtag", async (req, res, next) => {
       console.error("😡 ", error);
       next(error);
     });
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const data = req.params;
+
+    return db.Post.findOne({
+      where: { id: data.id },
+      ...findAllPostElement(),
+    })
+      .then((post) => {
+        return res.json(post);
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+    // console.log("response post data", await posts);
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
 });
 
 module.exports = router;

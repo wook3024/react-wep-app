@@ -31,6 +31,7 @@ router.post("/add", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       // console.log("commnet add query check", req.query);
+      const user = req.user.dataValues;
       const data = req.query;
       console.log("data check", data);
 
@@ -71,6 +72,27 @@ router.post("/add", async (req, res, next) => {
       });
       // console.log("commnet add check", await post);
       if (await post) {
+        db.Following.findAll({
+          where: { targetUserId: user.id },
+        }).then((followers) => {
+          console.log("followers 😱😡", followers);
+          followers.forEach((follower) => {
+            db.Notification.create({
+              userId: follower.dataValues.userId,
+              postId: data.postId,
+              username: user.username,
+              state: "addReply",
+              message: data.comment,
+            })
+              .then((res) => {
+                console.log("create notification", res);
+              })
+              .catch((error) => {
+                console.error("😡 ", error);
+              });
+          });
+        });
+
         const commentGroup = db.Comment.findAll({
           where: { group: data.group },
           include: [
@@ -118,10 +140,40 @@ router.post("/like", async (req, res, next) => {
           commentId: data.commentId,
         });
 
+        db.Following.findAll({
+          where: { targetUserId: userInfo.id },
+        }).then((followers) => {
+          console.log("followers 😱😡", followers);
+          followers.forEach((follower) => {
+            db.Notification.create({
+              userId: follower.dataValues.userId,
+              postId: data.postId,
+              commentId: data.commentId,
+              username: userInfo.username,
+              state: "like",
+              message: data.title,
+            })
+              .then((res) => {
+                console.log("create notification", res);
+              })
+              .catch((error) => {
+                console.error("😡 ", error);
+              });
+          });
+        });
+
         return res.status(201).send("like");
       }
       db.Like.destroy({
         where: { userId: userInfo.id, commentId: data.commentId },
+      });
+      db.Notification.destroy({
+        where: {
+          username: userInfo.username,
+          state: "like",
+          postId: data.postId,
+          commentId: data.commentId,
+        },
       });
       return res.status(201).send("unLike");
     }
@@ -171,10 +223,41 @@ router.post("/dislike", async (req, res, next) => {
           userId: userInfo.id,
           commentId: data.commentId,
         });
+
+        db.Following.findAll({
+          where: { targetUserId: userInfo.id },
+        }).then((followers) => {
+          console.log("followers 😱😡", followers);
+          followers.forEach((follower) => {
+            db.Notification.create({
+              userId: follower.dataValues.userId,
+              postId: data.postId,
+              commentId: data.commentId,
+              username: userInfo.username,
+              state: "dislike",
+              message: data.title,
+            })
+              .then((res) => {
+                console.log("create notification", res);
+              })
+              .catch((error) => {
+                console.error("😡 ", error);
+              });
+          });
+        });
+
         return res.status(201).send("like");
       }
       db.Dislike.destroy({
         where: { userId: userInfo.id, commentId: data.commentId },
+      });
+      db.Notification.destroy({
+        where: {
+          username: userInfo.username,
+          state: "dislike",
+          postId: data.postId,
+          commentId: data.commentId,
+        },
       });
       return res.status(201).send("unLike");
     }
@@ -275,6 +358,27 @@ router.post("/change", async (req, res, next) => {
           "It's not your comment! or The comment has already been updated.😱"
         );
       }
+      db.Following.findAll({
+        where: { targetUserId: userInfo.id },
+      }).then((followers) => {
+        console.log("followers 😱😡", followers);
+        followers.forEach((follower) => {
+          db.Notification.create({
+            userId: follower.dataValues.userId,
+            postId: data.postId,
+            username: userInfo.username,
+            state: "addReply",
+            message: data.comment,
+          })
+            .then((res) => {
+              console.log("create notification", res);
+            })
+            .catch((error) => {
+              console.error("😡 ", error);
+            });
+        });
+      });
+
       return res.status(201).send("Update comment success! 🐳");
     }
     res.send("Login Please! 😱");

@@ -1,23 +1,32 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { Menu, Button, message, Popover } from "antd";
+import { Link, useHistory } from "react-router-dom";
+import { Menu, Button, message, Popover, Tag } from "antd";
 import {
   AppstoreOutlined,
   SettingOutlined,
   ArrowUpOutlined,
   MessageOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 
-import { USER_INFO_REFRESH_ACTION, LOG_OUT_ACTION } from "../reducers/actions";
+import {
+  USER_INFO_REFRESH_ACTION,
+  LOG_OUT_ACTION,
+  GET_NOTIFICATION_DATA_ACTION,
+  POST_LIST_REMOVE_ACTION,
+  GET_POST_DATA_ACTION,
+  REMOVE_NOTIFICATION_DATA_ACTION,
+} from "../reducers/actions";
 
 const { SubMenu } = Menu;
 
 const Navigation = () => {
-  const { userInfo } = useSelector((state) => state);
+  const { userInfo, notification } = useSelector((state) => state);
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     console.log("reload check");
@@ -36,8 +45,25 @@ const Navigation = () => {
       .catch((error) => {
         console.error("😡 ", error);
       });
+
+    axios({
+      method: "get",
+      url: "/user/notification",
+      withCredentials: true,
+    })
+      .then((res) => {
+        console.log("get notification data", res);
+        dispatch({
+          type: GET_NOTIFICATION_DATA_ACTION,
+          payload: { notification: res },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+    window.scrollTo(0, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, userInfo && userInfo.id]);
+  }, [dispatch, userInfo && userInfo.id, notification && notification.length]);
 
   const logOut = () => {
     axios({
@@ -58,6 +84,51 @@ const Navigation = () => {
 
   const handleClick = (e) => {
     // console.log("click ", e);
+  };
+
+  const deleteMessage = (id) => {
+    console.log("deleteMessage element id", id);
+    axios({
+      method: "post",
+      url: "post/user/notification/delete",
+      withCredentials: true,
+      params: { id: id },
+    })
+      .then((res) => {
+        console.log("deleteMessage result", res);
+        dispatch({
+          type: REMOVE_NOTIFICATION_DATA_ACTION,
+          payload: { id: id },
+        });
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
+  };
+
+  const movePostPage = (id) => {
+    console.log("movePostPage Post id", id);
+    axios({
+      method: "get",
+      url: `post/${id}`,
+      withCredentials: true,
+      params: { id: id },
+    })
+      .then((res) => {
+        console.log("movePostPage Post result", res);
+        dispatch({
+          type: POST_LIST_REMOVE_ACTION,
+        });
+        dispatch({
+          type: GET_POST_DATA_ACTION,
+          payload: { post: [res.data] },
+        });
+        window.scrollTo(0, 0);
+        history.push("/lookuppost");
+      })
+      .catch((error) => {
+        console.error("😡 ", error);
+      });
   };
 
   return (
@@ -130,17 +201,52 @@ const Navigation = () => {
 
       <Popover
         content={
-          <div>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-            <p>content</p>
-          </div>
+          <>
+            {Array.isArray(notification.data) &&
+              notification.data.map((data) => {
+                return (
+                  <>
+                    <div
+                      onClick={() => {
+                        movePostPage(data.postId);
+                      }}
+                      style={{ fontWeight: "bold", cursor: "pointer" }}
+                    >
+                      <Tag color="magenta">username</Tag>
+                      <Tag color="default">{data.username}</Tag> <br />
+                      <Tag color="red">state</Tag>
+                      <Tag color="default">{data.state}</Tag> <br />
+                      <Tag style={{ cursor: "pointer" }} color="volcano">
+                        postId
+                      </Tag>
+                      <Tag style={{ cursor: "pointer" }} color="default">
+                        {data.postId}
+                      </Tag>{" "}
+                      <br />
+                      {data.commentId !== null && (
+                        <>
+                          <Tag color="orange">commentId</Tag>
+                          <Tag color="default">{data.commentId}</Tag>
+                          <br />
+                        </>
+                      )}
+                    </div>
+                    <Tag
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        deleteMessage(data.id);
+                      }}
+                      icon={<DeleteOutlined />}
+                      color="#cd201f"
+                    >
+                      delete
+                    </Tag>{" "}
+                    <br />
+                    <br />
+                  </>
+                );
+              })}
+          </>
         }
         title="Notification"
         trigger="click"
@@ -153,11 +259,6 @@ const Navigation = () => {
             right: "30px",
             zIndex: 99,
             borderRadius: "50px",
-          }}
-          onClick={() => {
-            // window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
           }}
           type="primary"
           ghost
@@ -174,7 +275,7 @@ const Navigation = () => {
               color: "white",
             }}
           >
-            3
+            {Array.isArray(notification.data) ? notification.data.length : null}
           </span>
         </Button>
       </Popover>
@@ -197,6 +298,25 @@ const Navigation = () => {
       >
         <ArrowUpOutlined />
       </Button>
+      <div
+        style={{
+          display: "block",
+          position: "fixed",
+          bottom: "20px",
+          left: "30px",
+          zIndex: 99,
+          opacity: 0.7,
+        }}
+      >
+        favicon maker{" "}
+        <a href="https://www.flaticon.com/kr/authors/freepik" title="Freepik">
+          Freepik
+        </a>{" "}
+        from{" "}
+        <a href="https://www.flaticon.com/kr/" title="Flaticon">
+          www.flaticon.com
+        </a>
+      </div>
     </>
   );
 };

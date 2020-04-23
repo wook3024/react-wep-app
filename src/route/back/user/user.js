@@ -71,25 +71,54 @@ router.post("/signin", (req, res, next) => {
 });
 
 router.post("/signincheck", async (req, res, next) => {
-  if (req.isAuthenticated()) {
-    const user = req.user;
+  try {
+    if (req.isAuthenticated()) {
+      const user = req.user.dataValues;
 
-    const profileImage = await db.Image.findOne({
-      where: { userId: user.dataValues.id },
-    });
+      const profileImage = await db.Image.findOne({
+        where: { userId: user.id },
+      });
 
-    if (profileImage !== null) {
-      user.dataValues.profileImage = profileImage.dataValues.filename;
+      if (profileImage !== null) {
+        user.profileImage = profileImage.dataValues.filename;
+      }
+      return res.json(user);
     }
-    return res.json(user);
+    res.send("😡  Login is required.");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
   }
-  res.send("😡  Login is required.");
 });
 
 router.post("/logout", (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(200).send("Logout success! 🐳");
+});
+
+router.get("/notification", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const user = req.user.dataValues;
+
+      return db.Notification.findAll({
+        where: { userId: user.id },
+        order: [["created_at", "DESC"]],
+      })
+        .then((notifications) => {
+          console.log("notification data", notifications);
+          return res.json(notifications);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    }
+    res.send("😡  Login is required.");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
 });
 
 module.exports = router;

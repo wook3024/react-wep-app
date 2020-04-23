@@ -8,6 +8,7 @@ import SignUp from "../pages/signup";
 import Post from "../pages/post";
 import Hashtag from "../pages/hashtag";
 import Search from "../pages/searchtag";
+import Lookuppost from "../pages/lookuppost";
 
 const Div = styled.div``;
 
@@ -21,6 +22,7 @@ const Connecting = () => {
         <Route path="/main" component={Post} />
         <Route path="/hashtag" component={Hashtag} />
         <Route path="/searchtag" component={Search} />
+        <Route path="/lookuppost" component={Lookuppost} />
       </Suspense>
     </Switch>
   );

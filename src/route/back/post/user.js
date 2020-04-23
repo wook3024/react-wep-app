@@ -328,4 +328,21 @@ router.post("/unScrap", async (req, res, next) => {
   }
 });
 
+router.post("/notification/delete", async (req, res, next) => {
+  try {
+    if (req.isAuthenticated()) {
+      const data = req.query;
+      // console.log("remove proccessiong", data);
+      const notification = db.Notification.destroy({
+        where: { id: data.id },
+      });
+      console.log("remove notification 🐳\n", await notification);
+    }
+    return res.send("Login Please! 😱");
+  } catch (error) {
+    console.error("😡 ", error);
+    next(error);
+  }
+});
+
 module.exports = router;

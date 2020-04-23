@@ -19,6 +19,8 @@ import {
   GET_SCRAP_DATA_ACTION,
   UNFOLLOWING_ACTION,
   UNSCRAP_ACTION,
+  GET_NOTIFICATION_DATA_ACTION,
+  REMOVE_NOTIFICATION_DATA_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -29,6 +31,7 @@ const initialState = {
   searchtag: undefined,
   following: [],
   scrap: [],
+  notification: [],
   signupCheck: false,
   loginCheck: true,
 };
@@ -235,6 +238,27 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         scrap: action.payload.scrap,
+      };
+    }
+    case GET_NOTIFICATION_DATA_ACTION: {
+      console.log("get notification action", action.payload);
+      return {
+        ...state,
+        notification: action.payload.notification,
+      };
+    }
+    case REMOVE_NOTIFICATION_DATA_ACTION: {
+      console.log(
+        "remove notification action",
+        action.payload,
+        state.notification.data
+      );
+      state.notification = state.notification.data.filter((data) => {
+        return data.id !== action.payload.id;
+      });
+      console.log("notification action result", state.notification);
+      return {
+        ...state,
       };
     }
     case UNFOLLOWING_ACTION: {
