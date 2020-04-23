@@ -161,6 +161,19 @@ const SignUp = () => {
         <Input />
       </Form.Item>
       <Form.Item
+        name="age"
+        label={<span>Age&nbsp;</span>}
+        rules={[
+          {
+            required: true,
+            message: "Please input your age!",
+            whitespace: false,
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
         name="phone"
         label="Phone Number"
         rules={[{ required: true, message: "Please input your phone number!" }]}

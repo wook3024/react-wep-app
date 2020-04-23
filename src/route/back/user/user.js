@@ -20,6 +20,8 @@ router.post("/signup", async (req, res, next) => {
       username: userInfo.username,
       password: userInfo.password,
       nickname: userInfo.nickname,
+      age: userInfo.age,
+      phonenumber: userInfo.phone,
     });
     res.status(200).send("Sign Up Success! 🐳");
   } catch (error) {
@@ -51,6 +53,7 @@ router.post("/signin", (req, res, next) => {
             "nickname",
             "id",
             "description",
+            "age",
             "created_at",
           ],
         });

@@ -71,7 +71,7 @@ const findAllPostElement = () => {
             model: db.Image,
           },
         ],
-        attributes: ["username", "id"],
+        attributes: ["username", "id", "age"],
       },
     ],
   };

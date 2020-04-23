@@ -50,7 +50,7 @@ const Profile = () => {
           followingData.push({
             key: followingUser.user.id,
             name: followingUser.user.nickname,
-            age: followingUser.user.age ? followingUser.user.age : null,
+            age: followingUser.user.age,
             created_at: followingUser.user.created_at,
             description: followingUser.user.description,
           });
