@@ -108,28 +108,6 @@ router.post("/uploadProfileImage", (req, res, next) => {
               const imageFiles = (await req).files[0].filename;
               return res.json(imageFiles);
             });
-
-            // const imageCheck = db.Image.findOne({
-            //   where: { userId: data.userId },
-            // });
-            // console.log("imageCheck", await imageCheck);
-            // if ((await imageCheck) === null) {
-            //   db.Image.create({
-            //     postId: data.postId ? data.postId : null,
-            //     filename: (await req).files[0].filename,
-            //     userId: data.userId ? data.userId : null,
-            //   });
-            // } else {
-            //   db.Image.update(
-            //     {
-            //       filename: (await req).files[0].filename,
-            //     },
-            //     {
-            //       where: { userId: req.query.userId ? req.query.userId : null },
-            //     }
-            //   );
-            // }
-            // return res.json((await req).files[0].filename);
           })();
         });
       } catch (error) {

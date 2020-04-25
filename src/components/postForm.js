@@ -187,8 +187,13 @@ const PostForm = ({ post = {} }) => {
                 },
               },
             });
-            // inputTitle.current.state.value = null;
-            // inputContent.current.state.value = null;
+          })
+          .then(() => {
+            inputTitle.current.state.value = null;
+            inputContent.current.state.value = null;
+            setTitle("");
+            setContent("");
+            setFileList([]);
           })
           .catch((error) => {
             console.error("😡 ", error);
@@ -259,6 +264,8 @@ const PostForm = ({ post = {} }) => {
       .then(() => {
         inputTitle.current.state.value = null;
         inputContent.current.state.value = null;
+        setTitle("");
+        setContent("");
         setFileList([]);
       })
       .catch((error) => {

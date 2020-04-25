@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Form, Input, Tooltip, Select, Checkbox, Button, message } from "antd";
+import {
+  Form,
+  Input,
+  Tooltip,
+  Select,
+  Checkbox,
+  Button,
+  message,
+  InputNumber,
+} from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -165,13 +174,16 @@ const SignUp = () => {
         label={<span>Age&nbsp;</span>}
         rules={[
           {
+            type: "number",
+            min: 0,
+            max: 99,
             required: true,
-            message: "Please input your age!",
-            whitespace: false,
+            // message: "Please input your age!",
+            // whitespace: false,
           },
         ]}
       >
-        <Input />
+        <InputNumber />
       </Form.Item>
       <Form.Item
         name="phone"

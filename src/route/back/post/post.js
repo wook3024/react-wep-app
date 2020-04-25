@@ -120,26 +120,7 @@ router.post("/publish", async (req, res, next) => {
           },
         })
           .then((post) => {
-            db.Following.findAll({
-              where: { targetUserId: user.id },
-            }).then((followers) => {
-              console.log("followers 😱😡", followers);
-              followers.forEach((follower) => {
-                db.Notification.create({
-                  userId: follower.dataValues.userId,
-                  postId: post.dataValues.id,
-                  username: user.nickname,
-                  state: "publish",
-                  message: data.title,
-                })
-                  .then((res) => {
-                    console.log("create notification", res);
-                  })
-                  .catch((error) => {
-                    console.error("😡 ", error);
-                  });
-              });
-            });
+            setPersonalMessage(user, data);
 
             const hashtag = data.title.split(" ");
             hashtag.forEach(async (tag) => {
@@ -209,26 +190,8 @@ router.post("/update", async (req, res, next) => {
           },
         }).then((post) => {
           console.log("update post data 🐳", post);
-          db.Following.findAll({
-            where: { targetUserId: user.id },
-          }).then((followers) => {
-            console.log("followers 😱😡", followers);
-            followers.forEach((follower) => {
-              db.Notification.create({
-                userId: follower.dataValues.userId,
-                postId: post.dataValues.id,
-                username: user.nickname,
-                state: "update",
-                message: data.title,
-              })
-                .then((res) => {
-                  console.log("create notification", res);
-                })
-                .catch((error) => {
-                  console.error("😡 ", error);
-                });
-            });
-          });
+
+          setPersonalMessage(user, data);
 
           const removeHashtag = db.Hashtag.destroy({
             where: { postId: post.dataValues.id },
@@ -281,6 +244,9 @@ router.post("/remove", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const data = req.query;
       // console.log("remove proccessiong", data);
+
+      removeLocalImage("postId", data.postId);
+
       const notification = db.Notification.destroy({
         where: { postId: data.postId },
       });

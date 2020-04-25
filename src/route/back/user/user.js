@@ -1,6 +1,8 @@
 const express = require("express");
 const passport = require("passport");
+const bcyrpy = require("bcrypt");
 
+const saltRounds = 12;
 const db = require("../../../models");
 
 const router = express.Router();
@@ -16,14 +18,21 @@ router.post("/signup", async (req, res, next) => {
     if ((await user) !== null) {
       return res.send(user);
     }
-    db.User.create({
-      username: userInfo.username,
-      password: userInfo.password,
-      nickname: userInfo.nickname,
-      age: userInfo.age,
-      phonenumber: userInfo.phone,
+
+    return bcyrpy.hash(userInfo.password, saltRounds, (error, hash) => {
+      if (error) {
+        console.error("😡 ", error);
+        return res.send("Sign Up failes! 😱");
+      }
+      db.User.create({
+        username: userInfo.username,
+        password: hash,
+        nickname: userInfo.nickname,
+        age: userInfo.age,
+        phonenumber: userInfo.phone,
+      });
+      res.status(200).send("Sign Up Success! 🐳");
     });
-    res.status(200).send("Sign Up Success! 🐳");
   } catch (error) {
     console.error("😡 ", error);
     next(error);

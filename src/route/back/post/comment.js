@@ -73,26 +73,6 @@ router.post("/add", async (req, res, next) => {
       // console.log("commnet add check", await post);
       if (await post) {
         setPersonalMessage(user, data);
-        // db.Following.findAll({
-        //   where: { targetUserId: user.id },
-        // }).then((followers) => {
-        //   console.log("followers 😱😡", followers);
-        //   followers.forEach((follower) => {
-        //     db.Notification.create({
-        //       userId: follower.dataValues.userId,
-        //       postId: data.postId,
-        //       username: user.nickname,
-        //       state: "addReply",
-        //       message: data.comment,
-        //     })
-        //       .then((res) => {
-        //         console.log("create notification", res);
-        //       })
-        //       .catch((error) => {
-        //         console.error("😡 ", error);
-        //       });
-        //   });
-        // });
 
         const commentGroup = db.Comment.findAll({
           where: { group: data.group },
@@ -143,27 +123,6 @@ router.post("/like", async (req, res, next) => {
 
         console.log("like data 😱😡", data);
         setPersonalMessage(user, data);
-        // db.Following.findAll({
-        //   where: { targetUserId: user.id },
-        // }).then((followers) => {
-        //   console.log("followers 😱😡", followers);
-        //   followers.forEach((follower) => {
-        //     db.Notification.create({
-        //       userId: follower.dataValues.userId,
-        //       postId: data.postId,
-        //       commentId: data.commentId,
-        //       username: user.nickname,
-        //       state: "like",
-        //       message: data.title,
-        //     })
-        //       .then((res) => {
-        //         console.log("create notification", res);
-        //       })
-        //       .catch((error) => {
-        //         console.error("😡 ", error);
-        //       });
-        //   });
-        // });
 
         return res.status(201).send("like");
       }
@@ -229,27 +188,6 @@ router.post("/dislike", async (req, res, next) => {
         });
 
         setPersonalMessage(user, data);
-        // db.Following.findAll({
-        //   where: { targetUserId: user.id },
-        // }).then((followers) => {
-        //   console.log("followers 😱😡", followers);
-        //   followers.forEach((follower) => {
-        //     db.Notification.create({
-        //       userId: follower.dataValues.userId,
-        //       postId: data.postId,
-        //       commentId: data.commentId,
-        //       username: user.nickname,
-        //       state: "dislike",
-        //       message: data.title,
-        //     })
-        //       .then((res) => {
-        //         console.log("create notification", res);
-        //       })
-        //       .catch((error) => {
-        //         console.error("😡 ", error);
-        //       });
-        //   });
-        // });
 
         return res.status(201).send("like");
       }
@@ -365,26 +303,6 @@ router.post("/change", async (req, res, next) => {
       }
 
       setPersonalMessage(user, data);
-      // db.Following.findAll({
-      //   where: { targetUserId: user.id },
-      // }).then((followers) => {
-      //   console.log("followers 😱😡", followers);
-      //   followers.forEach((follower) => {
-      //     db.Notification.create({
-      //       userId: follower.dataValues.userId,
-      //       postId: data.postId,
-      //       username: user.nickname,
-      //       state: "addReply",
-      //       message: data.comment,
-      //     })
-      //       .then((res) => {
-      //         console.log("create notification", res);
-      //       })
-      //       .catch((error) => {
-      //         console.error("😡 ", error);
-      //       });
-      //   });
-      // });
 
       return res.status(201).send("Update comment success! 🐳");
     }
