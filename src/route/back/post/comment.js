@@ -2,7 +2,7 @@ const express = require("express");
 const Sequelize = require("sequelize");
 
 const db = require("../../../models");
-const { findAllCommentElement } = require("../middleware");
+const { findAllCommentElement, setPersonalMessage } = require("../middleware");
 
 const router = express.Router();
 const sequlize = db.sequelize;
@@ -72,26 +72,27 @@ router.post("/add", async (req, res, next) => {
       });
       // console.log("commnet add check", await post);
       if (await post) {
-        db.Following.findAll({
-          where: { targetUserId: user.id },
-        }).then((followers) => {
-          console.log("followers 😱😡", followers);
-          followers.forEach((follower) => {
-            db.Notification.create({
-              userId: follower.dataValues.userId,
-              postId: data.postId,
-              username: user.username,
-              state: "addReply",
-              message: data.comment,
-            })
-              .then((res) => {
-                console.log("create notification", res);
-              })
-              .catch((error) => {
-                console.error("😡 ", error);
-              });
-          });
-        });
+        setPersonalMessage(user, data);
+        // db.Following.findAll({
+        //   where: { targetUserId: user.id },
+        // }).then((followers) => {
+        //   console.log("followers 😱😡", followers);
+        //   followers.forEach((follower) => {
+        //     db.Notification.create({
+        //       userId: follower.dataValues.userId,
+        //       postId: data.postId,
+        //       username: user.nickname,
+        //       state: "addReply",
+        //       message: data.comment,
+        //     })
+        //       .then((res) => {
+        //         console.log("create notification", res);
+        //       })
+        //       .catch((error) => {
+        //         console.error("😡 ", error);
+        //       });
+        //   });
+        // });
 
         const commentGroup = db.Comment.findAll({
           where: { group: data.group },
@@ -126,50 +127,52 @@ router.post("/like", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      const userInfo = req.user.dataValues;
+      const user = req.user.dataValues;
 
-      // console.log("Like post", userInfo);
+      // console.log("Like data", data);
       const checkStatus = db.Like.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
 
       console.log("Like post user check", await checkStatus);
       if ((await checkStatus) === null) {
         db.Like.create({
-          userId: userInfo.id,
+          userId: user.id,
           commentId: data.commentId,
         });
 
-        db.Following.findAll({
-          where: { targetUserId: userInfo.id },
-        }).then((followers) => {
-          console.log("followers 😱😡", followers);
-          followers.forEach((follower) => {
-            db.Notification.create({
-              userId: follower.dataValues.userId,
-              postId: data.postId,
-              commentId: data.commentId,
-              username: userInfo.username,
-              state: "like",
-              message: data.title,
-            })
-              .then((res) => {
-                console.log("create notification", res);
-              })
-              .catch((error) => {
-                console.error("😡 ", error);
-              });
-          });
-        });
+        console.log("like data 😱😡", data);
+        setPersonalMessage(user, data);
+        // db.Following.findAll({
+        //   where: { targetUserId: user.id },
+        // }).then((followers) => {
+        //   console.log("followers 😱😡", followers);
+        //   followers.forEach((follower) => {
+        //     db.Notification.create({
+        //       userId: follower.dataValues.userId,
+        //       postId: data.postId,
+        //       commentId: data.commentId,
+        //       username: user.nickname,
+        //       state: "like",
+        //       message: data.title,
+        //     })
+        //       .then((res) => {
+        //         console.log("create notification", res);
+        //       })
+        //       .catch((error) => {
+        //         console.error("😡 ", error);
+        //       });
+        //   });
+        // });
 
         return res.status(201).send("like");
       }
       db.Like.destroy({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
       db.Notification.destroy({
         where: {
-          username: userInfo.username,
+          username: user.username,
           state: "like",
           postId: data.postId,
           commentId: data.commentId,
@@ -190,9 +193,9 @@ router.post("/likeState", async (req, res, next) => {
       const data = req.query;
       if (!data.commentId) return res.status(201).send("false");
       console.log("data Info! 😱", data);
-      const userInfo = req.user.dataValues;
+      const user = req.user.dataValues;
       const checkStatus = db.Like.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
 
       // console.log("Like post user check", await checkStatus);
@@ -212,48 +215,50 @@ router.post("/dislike", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      const userInfo = req.user.dataValues;
-      // console.log("Dislike post", userInfo);
+      const user = req.user.dataValues;
+
+      console.log("Dislike post  data", data);
       const checkStatus = db.Dislike.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
 
       if ((await checkStatus) === null) {
         db.Dislike.create({
-          userId: userInfo.id,
+          userId: user.id,
           commentId: data.commentId,
         });
 
-        db.Following.findAll({
-          where: { targetUserId: userInfo.id },
-        }).then((followers) => {
-          console.log("followers 😱😡", followers);
-          followers.forEach((follower) => {
-            db.Notification.create({
-              userId: follower.dataValues.userId,
-              postId: data.postId,
-              commentId: data.commentId,
-              username: userInfo.username,
-              state: "dislike",
-              message: data.title,
-            })
-              .then((res) => {
-                console.log("create notification", res);
-              })
-              .catch((error) => {
-                console.error("😡 ", error);
-              });
-          });
-        });
+        setPersonalMessage(user, data);
+        // db.Following.findAll({
+        //   where: { targetUserId: user.id },
+        // }).then((followers) => {
+        //   console.log("followers 😱😡", followers);
+        //   followers.forEach((follower) => {
+        //     db.Notification.create({
+        //       userId: follower.dataValues.userId,
+        //       postId: data.postId,
+        //       commentId: data.commentId,
+        //       username: user.nickname,
+        //       state: "dislike",
+        //       message: data.title,
+        //     })
+        //       .then((res) => {
+        //         console.log("create notification", res);
+        //       })
+        //       .catch((error) => {
+        //         console.error("😡 ", error);
+        //       });
+        //   });
+        // });
 
         return res.status(201).send("like");
       }
       db.Dislike.destroy({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
       db.Notification.destroy({
         where: {
-          username: userInfo.username,
+          username: user.username,
           state: "dislike",
           postId: data.postId,
           commentId: data.commentId,
@@ -272,10 +277,10 @@ router.post("/dislikeState", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      const userInfo = req.user.dataValues;
+      const user = req.user.dataValues;
       if (!data.commentId) return res.status(201).send("false");
       const checkStatus = db.Dislike.findOne({
-        where: { userId: userInfo.id, commentId: data.commentId },
+        where: { userId: user.id, commentId: data.commentId },
       });
       if ((await checkStatus) === null) {
         return res.status(201).send("false");
@@ -293,14 +298,14 @@ router.post("/remove", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      const userInfo = req.user.dataValues;
+      const user = req.user.dataValues;
 
       if (!data.commentId) return res.send("not found! 😱");
 
       let removeStatus = null;
       if (!data.force) {
         removeStatus = db.Comment.destroy({
-          where: { userId: userInfo.id, id: data.commentId },
+          where: { userId: user.id, id: data.commentId },
         });
       } else if (data.force) {
         removeStatus = db.Comment.destroy({
@@ -342,14 +347,14 @@ router.post("/change", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const data = req.query;
-      const userInfo = req.user.dataValues;
+      const user = req.user.dataValues;
 
       if (!data.commentId) return res.send("not found! 😱");
 
-      console.log("check data", userInfo.id, data.commentId, data.comment);
+      console.log("check data", user.id, data.commentId, data.comment);
       const updateStatus = db.Comment.update(
         { comment: data.comment },
-        { where: { userId: userInfo.id, id: data.commentId } }
+        { where: { userId: user.id, id: data.commentId } }
       );
       console.log("updateStatus", await updateStatus);
 
@@ -358,26 +363,28 @@ router.post("/change", async (req, res, next) => {
           "It's not your comment! or The comment has already been updated.😱"
         );
       }
-      db.Following.findAll({
-        where: { targetUserId: userInfo.id },
-      }).then((followers) => {
-        console.log("followers 😱😡", followers);
-        followers.forEach((follower) => {
-          db.Notification.create({
-            userId: follower.dataValues.userId,
-            postId: data.postId,
-            username: userInfo.username,
-            state: "addReply",
-            message: data.comment,
-          })
-            .then((res) => {
-              console.log("create notification", res);
-            })
-            .catch((error) => {
-              console.error("😡 ", error);
-            });
-        });
-      });
+
+      setPersonalMessage(user, data);
+      // db.Following.findAll({
+      //   where: { targetUserId: user.id },
+      // }).then((followers) => {
+      //   console.log("followers 😱😡", followers);
+      //   followers.forEach((follower) => {
+      //     db.Notification.create({
+      //       userId: follower.dataValues.userId,
+      //       postId: data.postId,
+      //       username: user.nickname,
+      //       state: "addReply",
+      //       message: data.comment,
+      //     })
+      //       .then((res) => {
+      //         console.log("create notification", res);
+      //       })
+      //       .catch((error) => {
+      //         console.error("😡 ", error);
+      //       });
+      //   });
+      // });
 
       return res.status(201).send("Update comment success! 🐳");
     }

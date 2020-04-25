@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Input } from "antd";
@@ -16,20 +16,24 @@ const Searchform = () => {
 
   const inputSearch = useRef(null);
 
-  const onSearch = (value) => {
-    console.log("onSearch", value);
-    dispatch({
-      type: POST_LIST_REMOVE_ACTION,
-    });
-    dispatch({
-      type: SET_SEARCHTAG_ACTION,
-      payload: { searchtag: value },
-    });
-    console.log("input search", inputSearch);
-    inputSearch.current.input.state.value = null;
-    // history.push("/main");
-    history.push("/searchtag");
-  };
+  const onSearch = useCallback(
+    (value) => {
+      console.log("onSearch", value);
+      dispatch({
+        type: POST_LIST_REMOVE_ACTION,
+      });
+      dispatch({
+        type: SET_SEARCHTAG_ACTION,
+        payload: { searchtag: value },
+      });
+      console.log("input search", inputSearch);
+      inputSearch.current.input.state.value = null;
+      // history.push("/main");
+      history.push("/searchtag");
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <Search

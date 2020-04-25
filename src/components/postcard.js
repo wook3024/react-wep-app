@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Card, Avatar, Button, Popover, message, Tooltip } from "antd";
+import { Card, Avatar, Button, Popover, message } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -50,18 +50,22 @@ const Postcard = ({ post }) => {
     post.data.updated_at,
   ]);
 
-  const searchHashtag = (hashtag) => {
-    console.log("hashtag: ", hashtag);
-    dispatch({
-      type: POST_LIST_REMOVE_ACTION,
-    });
-    dispatch({
-      type: SET_HASHTAG_ACTION,
-      payload: { hashtag: hashtag },
-    });
-    window.scrollTo(0, 0);
-    history.push("/hashtag");
-  };
+  const searchHashtag = useCallback(
+    (hashtag) => {
+      console.log("hashtag: ", hashtag);
+      dispatch({
+        type: POST_LIST_REMOVE_ACTION,
+      });
+      dispatch({
+        type: SET_HASHTAG_ACTION,
+        payload: { hashtag: hashtag },
+      });
+      window.scrollTo(0, 0);
+      history.push("/hashtag");
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const loginCheck = useCallback(() => {
     if (!(userInfo && userInfo.username)) {
@@ -113,7 +117,7 @@ const Postcard = ({ post }) => {
     setAddComment(addComment === true ? false : true);
   }, [addComment, loginCheck]);
 
-  const onFollowing = () => {
+  const onFollowing = useCallback(() => {
     // console.log("insert follwoing data check", userInfo, post.data);
     axios({
       method: "post",
@@ -132,9 +136,9 @@ const Postcard = ({ post }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [post.data.userId, userInfo.id]);
 
-  const onScrap = () => {
+  const onScrap = useCallback(() => {
     axios({
       method: "post",
       url: "/post/user/scrap",
@@ -152,7 +156,7 @@ const Postcard = ({ post }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [post.data.id, userInfo.id]);
 
   return (
     <Card

@@ -97,8 +97,33 @@ const findAllCommentElement = () => {
     ],
   };
 };
+
+const setPersonalMessage = (user, data) => {
+  return db.Following.findAll({
+    where: { targetUserId: user.id },
+  }).then((followers) => {
+    console.log("followers 😱😡", followers);
+    followers.forEach((follower) => {
+      db.Notification.create({
+        userId: follower.dataValues.userId,
+        postId: data.postId,
+        username: user.nickname,
+        state: "addReply",
+        message: data.comment,
+      })
+        .then((res) => {
+          console.log("create notification", res);
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    });
+  });
+};
+
 module.exports = {
   removeLocalImage,
   findAllPostElement,
   findAllCommentElement,
+  setPersonalMessage,
 };

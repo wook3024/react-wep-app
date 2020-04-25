@@ -85,33 +85,51 @@ router.post("/uploadProfileImage", (req, res, next) => {
 
           const data = req.query;
 
-          removeLocalImage("userId", data.userId);
-
           return (async () => {
             if (!(await req).files[0]) {
               return res.send("Upload failed! 😡");
             }
-            const imageCheck = db.Image.findOne({
+
+            removeLocalImage("userId", data.userId);
+
+            return db.Image.destroy({
               where: { userId: data.userId },
-            });
-            console.log("imageCheck", await imageCheck);
-            if ((await imageCheck) === null) {
-              db.Image.create({
-                postId: data.postId ? data.postId : null,
-                filename: (await req).files[0].filename,
-                userId: data.userId ? data.userId : null,
-              });
-            } else {
-              db.Image.update(
-                {
+            }).then(async (destroyResult) => {
+              console.log("Image destroy state", destroyResult);
+              (await req).files.forEach(async (file) => {
+                console.log("file info", file.filename);
+                // console.log("file.path", file);
+                db.Image.create({
+                  postId: data.postId ? data.postId : null,
                   filename: (await req).files[0].filename,
-                },
-                {
-                  where: { userId: req.query.userId ? req.query.userId : null },
-                }
-              );
-            }
-            return res.json((await req).files[0].filename);
+                  userId: data.userId ? data.userId : null,
+                });
+              });
+              const imageFiles = (await req).files[0].filename;
+              return res.json(imageFiles);
+            });
+
+            // const imageCheck = db.Image.findOne({
+            //   where: { userId: data.userId },
+            // });
+            // console.log("imageCheck", await imageCheck);
+            // if ((await imageCheck) === null) {
+            //   db.Image.create({
+            //     postId: data.postId ? data.postId : null,
+            //     filename: (await req).files[0].filename,
+            //     userId: data.userId ? data.userId : null,
+            //   });
+            // } else {
+            //   db.Image.update(
+            //     {
+            //       filename: (await req).files[0].filename,
+            //     },
+            //     {
+            //       where: { userId: req.query.userId ? req.query.userId : null },
+            //     }
+            //   );
+            // }
+            // return res.json((await req).files[0].filename);
           })();
         });
       } catch (error) {

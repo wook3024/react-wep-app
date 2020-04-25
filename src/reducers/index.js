@@ -21,6 +21,7 @@ import {
   UNSCRAP_ACTION,
   GET_NOTIFICATION_DATA_ACTION,
   REMOVE_NOTIFICATION_DATA_ACTION,
+  SET_LIKE_STATE_ACTION,
 } from "./actions";
 import moment from "moment";
 
@@ -32,6 +33,8 @@ const initialState = {
   following: [],
   scrap: [],
   notification: [],
+  likeState: undefined,
+  disLikeState: undefined,
   signupCheck: false,
   loginCheck: true,
 };
@@ -276,6 +279,16 @@ const reducer = (state = initialState, action) => {
         console.log("unscrap action check", data.key, action.payload.key);
         return data.key !== action.payload.key;
       });
+      return {
+        ...state,
+      };
+    }
+    case SET_LIKE_STATE_ACTION: {
+      if (action.payload.type === "dislike") {
+        state.disLikeState = action.payload.state;
+      } else {
+        state.likeState = action.payload.state;
+      }
       return {
         ...state,
       };

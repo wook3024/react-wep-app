@@ -93,95 +93,109 @@ const Profile = () => {
 
   console.log("profile userinfo check", userInfo);
 
-  const followingColumns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Age", dataIndex: "age", key: "age" },
-    { title: "Created_at", dataIndex: "created_at", key: "address" },
-    {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
-      render: (data) => (
-        <Link
-          onClick={() => {
-            unFollowing(data);
-          }}
-        >
-          Delete
-        </Link>
-      ),
-    },
-  ];
+  const followingColumns = useCallback(
+    () => [
+      { title: "Name", dataIndex: "name", key: "name" },
+      { title: "Age", dataIndex: "age", key: "age" },
+      { title: "Created_at", dataIndex: "created_at", key: "address" },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (data) => (
+          <Link
+            onClick={() => {
+              unFollowing(data);
+            }}
+          >
+            Delete
+          </Link>
+        ),
+      },
+    ],
+    [unFollowing]
+  );
 
-  const scrapColumns = [
-    { title: "Title", dataIndex: "title", key: "title" },
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Created_at", dataIndex: "created_at", key: "address" },
-    {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
-      render: (data) => (
-        <Link
-          onClick={() => {
-            unScrap(data);
-          }}
-        >
-          Delete
-        </Link>
-      ),
-    },
-  ];
+  const scrapColumns = useCallback(
+    () => [
+      { title: "Title", dataIndex: "title", key: "title" },
+      { title: "Name", dataIndex: "name", key: "name" },
+      { title: "Created_at", dataIndex: "created_at", key: "address" },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (data) => (
+          <Link
+            onClick={() => {
+              unScrap(data);
+            }}
+          >
+            Delete
+          </Link>
+        ),
+      },
+    ],
+    [unScrap]
+  );
 
-  const unFollowing = (data) => {
-    axios({
-      method: "post",
-      url: "/post/user/unfollowing",
-      withCredentials: true,
-      params: { userId: data.key },
-    })
-      .then((res) => {
-        console.log("unFollowing response", res);
-        if (res.status === 201) {
-          message.success(res.data);
-        } else {
-          message.warning(res.data);
-        }
-
-        dispatch({
-          type: UNFOLLOWING_ACTION,
-          payload: { key: data.key },
-        });
+  const unFollowing = useCallback(
+    (data) => {
+      axios({
+        method: "post",
+        url: "/post/user/unfollowing",
+        withCredentials: true,
+        params: { userId: data.key },
       })
-      .catch((error) => {
-        console.error("😡 ", error);
-      });
-  };
+        .then((res) => {
+          console.log("unFollowing response", res);
+          if (res.status === 201) {
+            message.success(res.data);
+          } else {
+            message.warning(res.data);
+          }
 
-  const unScrap = (data) => {
-    axios({
-      method: "post",
-      url: "/post/user/unscrap",
-      withCredentials: true,
-      params: { userId: data.key, postId: data.key },
-    })
-      .then((res) => {
-        console.log("unScrap response", res);
-        if (res.status === 201) {
-          message.success(res.data);
-        } else {
-          message.warning(res.data);
-        }
-
-        dispatch({
-          type: UNSCRAP_ACTION,
-          payload: { key: data.key },
+          dispatch({
+            type: UNFOLLOWING_ACTION,
+            payload: { key: data.key },
+          });
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
         });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const unScrap = useCallback(
+    (data) => {
+      axios({
+        method: "post",
+        url: "/post/user/unscrap",
+        withCredentials: true,
+        params: { userId: data.key, postId: data.key },
       })
-      .catch((error) => {
-        console.error("😡 ", error);
-      });
-  };
+        .then((res) => {
+          console.log("unScrap response", res);
+          if (res.status === 201) {
+            message.success(res.data);
+          } else {
+            message.warning(res.data);
+          }
+
+          dispatch({
+            type: UNSCRAP_ACTION,
+            payload: { key: data.key },
+          });
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const onChangeNickname = useCallback((e) => {
     setChangeToNickname(e.target.value);
@@ -191,7 +205,7 @@ const Profile = () => {
     setChangeToDescription(e.target.value);
   }, []);
 
-  const changeDescription = () => {
+  const changeDescription = useCallback(() => {
     axios({
       method: "post",
       url: "/post/user/descriptionChange",
@@ -216,9 +230,9 @@ const Profile = () => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [changeToDescription, dispatch, userInfo.id]);
 
-  const changeNickname = () => {
+  const changeNickname = useCallback(() => {
     axios({
       method: "post",
       url: "/post/user/nicknamechange",
@@ -244,9 +258,9 @@ const Profile = () => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+  }, [changeToNickname, dispatch, userInfo.id, userInfo.nickname]);
 
-  const handlePost = () => {
+  const handlePost = useCallback(() => {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
@@ -280,26 +294,28 @@ const Profile = () => {
         message.warning("Upload failed");
         console.error("😡 ", error);
       });
-  };
+  }, [dispatch, selectedFile, userInfo]);
 
-  const props = {
-    name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        setSelectedFile(info.file.originFileObj);
-        console.log(info.file.originFileObj);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
+  const props = useCallback(() => {
+    return {
+      name: "file",
+      action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+      headers: {
+        authorization: "authorization-text",
+      },
+      onChange(info) {
+        if (info.file.status !== "uploading") {
+          setSelectedFile(info.file.originFileObj);
+          console.log(info.file.originFileObj);
+        }
+        if (info.file.status === "done") {
+          message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === "error") {
+          message.error(`${info.file.name} file upload failed.`);
+        }
+      },
+    };
+  }, []);
 
   return (
     <>
@@ -360,7 +376,7 @@ const Profile = () => {
           label={
             <div>
               ProfileImage&nbsp;
-              <Upload {...props}>
+              <Upload {...props()}>
                 <Button type="primary" ghost size={"small"}>
                   select
                 </Button>
@@ -435,7 +451,7 @@ const Profile = () => {
       <div style={{ margin: "0 auto", maxWidth: 600 }}>
         <h3>Following</h3>
         <Table
-          columns={followingColumns}
+          columns={followingColumns()}
           expandable={{
             expandedRowRender: (record) => (
               <p style={{ margin: 0 }}>{record.description}</p>
@@ -448,7 +464,7 @@ const Profile = () => {
       <div style={{ margin: "5rem auto", maxWidth: 600 }}>
         <h3>Scrap</h3>
         <Table
-          columns={scrapColumns}
+          columns={scrapColumns()}
           expandable={{
             expandedRowRender: (record) => (
               <p style={{ margin: 0 }}>{record.description}</p>

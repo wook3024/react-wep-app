@@ -1,4 +1,8 @@
-const { removeLocalImage, findAllPostElement } = require("../middleware");
+const {
+  removeLocalImage,
+  findAllPostElement,
+  setPersonalMessage,
+} = require("../middleware");
 
 const express = require("express");
 const multer = require("multer");
@@ -124,7 +128,7 @@ router.post("/publish", async (req, res, next) => {
                 db.Notification.create({
                   userId: follower.dataValues.userId,
                   postId: post.dataValues.id,
-                  username: user.username,
+                  username: user.nickname,
                   state: "publish",
                   message: data.title,
                 })
@@ -213,7 +217,7 @@ router.post("/update", async (req, res, next) => {
               db.Notification.create({
                 userId: follower.dataValues.userId,
                 postId: post.dataValues.id,
-                username: user.username,
+                username: user.nickname,
                 state: "update",
                 message: data.title,
               })

@@ -95,6 +95,7 @@ const Reply = ({ post, comment }) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const likeCheck = (res) => {
+    console.log("likeCheck", res);
     if (res.status !== 201) {
       message.warning(res.data);
       return false;
@@ -105,18 +106,22 @@ const Reply = ({ post, comment }) => {
     return true;
   };
 
-  const searchHashtag = (hashtag) => {
-    console.log("hashtag: ", hashtag);
-    dispatch({
-      type: POST_LIST_REMOVE_ACTION,
-    });
-    dispatch({
-      type: SET_HASHTAG_ACTION,
-      payload: { hashtag: hashtag },
-    });
-    window.scrollTo(0, 0);
-    history.push("/hashtag");
-  };
+  const searchHashtag = useCallback(
+    (hashtag) => {
+      console.log("hashtag: ", hashtag);
+      dispatch({
+        type: POST_LIST_REMOVE_ACTION,
+      });
+      dispatch({
+        type: SET_HASHTAG_ACTION,
+        payload: { hashtag: hashtag },
+      });
+      window.scrollTo(0, 0);
+      history.push("/hashtag");
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const like = useCallback(() => {
     axios({
@@ -140,7 +145,7 @@ const Reply = ({ post, comment }) => {
     axios({
       method: "post",
       url: "/post/comment/dislike",
-      params: { commentId: comment.id },
+      params: { commentId: comment.id, postId: post.id },
       withCredentials: true,
     })
       .then((res) => {
@@ -152,7 +157,14 @@ const Reply = ({ post, comment }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [comment.id, dislikeState, dislikeVal, likeCheck, pluelikeOrUnlikeVal]);
+  }, [
+    comment.id,
+    dislikeState,
+    dislikeVal,
+    likeCheck,
+    pluelikeOrUnlikeVal,
+    post.id,
+  ]);
 
   const commentRemove = useCallback(() => {
     console.log("comment Set check", comment);
@@ -233,10 +245,13 @@ const Reply = ({ post, comment }) => {
       });
   }, [comment, dispatch, post.id]);
 
-  const commentValueChange = (e) => {
-    setCommentValue(e.target.value);
-    console.log("commentValeu", commentValue);
-  };
+  const commentValueChange = useCallback(
+    (e) => {
+      setCommentValue(e.target.value);
+      console.log("commentValue", commentValue);
+    },
+    [commentValue]
+  );
 
   const commentChangeSubmit = useCallback(() => {
     setChangeState(false);
@@ -276,47 +291,62 @@ const Reply = ({ post, comment }) => {
       });
   }, [comment.id, comment.postId, commentValue, dispatch, post.id]);
 
-  const actions = [
-    <span key="comment-basic-like">
-      <Tooltip title="Like">
-        {createElement(likeState === true ? LikeFilled : LikeOutlined, {
-          onClick: like,
-        })}
-      </Tooltip>
-      <span className="comment-action">{likeCount}</span>
-    </span>,
-    <span key=' key="comment-basic-dislike"'>
-      <Tooltip title="Dislike">
-        {React.createElement(
-          dislikeState === true ? DislikeFilled : DislikeOutlined,
-          {
-            onClick: dislike,
-          }
-        )}
-      </Tooltip>
-      <span className="comment-action">{dislikeCount}</span>
-    </span>,
-    <span
-      key="comment-basic-reply-to"
-      onClick={() => setReplyCommentState(replyCommentState ? false : true)}
-    >
-      {userInfo && userInfo.id ? "Reply to" : ""}
-    </span>,
-    <span
-      key="comment-basic-change"
-      onClick={() => setChangeState(changeState ? false : true)}
-    >
-      {userInfo && userInfo.id === comment.user.id ? "Change" : ""}
-    </span>,
-    <span key="comment-basic-remove" onClick={commentRemove}>
-      {userInfo && userInfo.id === comment.user.id ? "Remove" : ""}
-    </span>,
-  ];
+  const actions = useCallback(
+    () => [
+      <span key="comment-basic-like">
+        <Tooltip title="Like">
+          {createElement(likeState === true ? LikeFilled : LikeOutlined, {
+            onClick: like,
+          })}
+        </Tooltip>
+        <span className="comment-action">{likeCount}</span>
+      </span>,
+      <span key=' key="comment-basic-dislike"'>
+        <Tooltip title="Dislike">
+          {React.createElement(
+            dislikeState === true ? DislikeFilled : DislikeOutlined,
+            {
+              onClick: dislike,
+            }
+          )}
+        </Tooltip>
+        <span className="comment-action">{dislikeCount}</span>
+      </span>,
+      <span
+        key="comment-basic-reply-to"
+        onClick={() => setReplyCommentState(replyCommentState ? false : true)}
+      >
+        {userInfo && userInfo.id ? "Reply to" : ""}
+      </span>,
+      <span
+        key="comment-basic-change"
+        onClick={() => setChangeState(changeState ? false : true)}
+      >
+        {userInfo && userInfo.id === comment.user.id ? "Change" : ""}
+      </span>,
+      <span key="comment-basic-remove" onClick={commentRemove}>
+        {userInfo && userInfo.id === comment.user.id ? "Remove" : ""}
+      </span>,
+    ],
+    [
+      changeState,
+      comment.user.id,
+      commentRemove,
+      dislike,
+      dislikeCount,
+      dislikeState,
+      like,
+      likeCount,
+      likeState,
+      replyCommentState,
+      userInfo,
+    ]
+  );
 
   return (
     <Comment
       style={{ width: "300px", margin: "0 auto" }}
-      actions={actions}
+      actions={actions()}
       author={comment.user ? comment.user.nickname : "not found"}
       avatar={
         comment.user.images[0] &&

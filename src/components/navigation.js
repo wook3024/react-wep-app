@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { Menu, Button, message, Popover, Tag } from "antd";
@@ -65,7 +65,7 @@ const Navigation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, userInfo && userInfo.id, notification && notification.length]);
 
-  const logOut = () => {
+  const logOut = useCallback(() => {
     axios({
       method: "post",
       url: "/user/logout",
@@ -80,56 +80,61 @@ const Navigation = () => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleClick = (e) => {
-    // console.log("click ", e);
-  };
-
-  const deleteMessage = (id) => {
-    console.log("deleteMessage element id", id);
-    axios({
-      method: "post",
-      url: "post/user/notification/delete",
-      withCredentials: true,
-      params: { id: id },
-    })
-      .then((res) => {
-        console.log("deleteMessage result", res);
-        dispatch({
-          type: REMOVE_NOTIFICATION_DATA_ACTION,
-          payload: { id: id },
-        });
+  const deleteMessage = useCallback(
+    (id) => {
+      console.log("deleteMessage element id", id);
+      axios({
+        method: "post",
+        url: "post/user/notification/delete",
+        withCredentials: true,
+        params: { id: id },
       })
-      .catch((error) => {
-        console.error("😡 ", error);
-      });
-  };
+        .then((res) => {
+          console.log("deleteMessage result", res);
+          dispatch({
+            type: REMOVE_NOTIFICATION_DATA_ACTION,
+            payload: { id: id },
+          });
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
-  const movePostPage = (id) => {
-    console.log("movePostPage Post id", id);
-    axios({
-      method: "get",
-      url: `post/${id}`,
-      withCredentials: true,
-      params: { id: id },
-    })
-      .then((res) => {
-        console.log("movePostPage Post result", res);
-        dispatch({
-          type: POST_LIST_REMOVE_ACTION,
-        });
-        dispatch({
-          type: GET_POST_DATA_ACTION,
-          payload: { post: [res.data] },
-        });
-        window.scrollTo(0, 0);
-        history.push("/lookuppost");
+  const movePostPage = useCallback(
+    (id) => {
+      console.log("movePostPage Post id", id);
+      axios({
+        method: "get",
+        url: `post/${id}`,
+        withCredentials: true,
+        params: { id: id },
       })
-      .catch((error) => {
-        console.error("😡 ", error);
-      });
-  };
+        .then((res) => {
+          console.log("movePostPage Post result", res);
+          dispatch({
+            type: POST_LIST_REMOVE_ACTION,
+          });
+          dispatch({
+            type: GET_POST_DATA_ACTION,
+            payload: { post: [res.data] },
+          });
+          window.scrollTo(0, 0);
+          history.push("/lookuppost");
+        })
+        .catch((error) => {
+          console.error("😡 ", error);
+        });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <>
@@ -141,7 +146,6 @@ const Navigation = () => {
           alignItems: "center",
           justifyContent: "center",
         }}
-        onClick={handleClick}
         mode="horizontal"
       >
         <SubMenu
