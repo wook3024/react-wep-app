@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Form,
-  Input,
-  Tooltip,
-  Select,
-  Checkbox,
-  Button,
-  message,
-  InputNumber,
-} from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
+
+import Tooltip from "antd/lib/tooltip";
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Form from "antd/lib/form";
+import Button from "antd/lib/button";
+import Checkbox from "antd/lib/checkbox";
+import Select from "antd/lib/select";
+import InputNumber from "antd/lib/input-number";
 
 const { Option } = Select;
 

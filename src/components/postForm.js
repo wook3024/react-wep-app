@@ -1,11 +1,16 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Button, Form, message, Upload, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import PropTypes from "prop-types";
 
 import { PUBLISH_POST_ACTION, UPDATE_POST_ACTION } from "../reducers/actions";
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Form from "antd/lib/form";
+import Button from "antd/lib/button";
+import Upload from "antd/lib/upload";
+import Modal from "antd/lib/modal";
 
 const moment = require("moment");
 const { now } = moment;

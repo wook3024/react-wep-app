@@ -1,12 +1,12 @@
 import React, { useRef, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Input } from "antd";
 
 import {
   POST_LIST_REMOVE_ACTION,
   SET_SEARCHTAG_ACTION,
 } from "../reducers/actions";
+import Input from "antd/lib/input";
 
 const { Search } = Input;
 

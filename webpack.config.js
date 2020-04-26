@@ -1,6 +1,10 @@
 const path = require("path");
+const webpack = require("webpack");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
 module.exports = {
   entry: {
@@ -10,12 +14,19 @@ module.exports = {
     path: path.resolve(__dirname, "dist/"),
     publicPath: "/",
   },
-  devServer: {
-    inline: true,
-    port: 3000,
-    watchOptions: {
-      ignored: [path.resolve(__dirname, "path/to/images")],
-    },
+  // devServer: {
+  //   inline: true,
+  //   port: 3000,
+  //   watchOptions: {
+  //     ignored: [path.resolve(__dirname, "path/to/images")],
+  //   },
+  //   historyApiFallback: true,
+  // },
+  mode: "production",
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
   module: {
     rules: [
@@ -66,5 +77,10 @@ module.exports = {
       template: "./public/index.html",
       filename: "index.html",
     }),
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
+    // new BundleAnalyzerPlugin({
+    //   analyzerHost: "127.0.0.1",
+    //   analyzerPort: 8080,
+    // }),
   ],
 };

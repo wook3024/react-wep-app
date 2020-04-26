@@ -4,10 +4,10 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  lazy,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Comment, Tooltip, Avatar, message, Input, Form, Button } from "antd";
 import moment from "moment";
 import {
   DislikeOutlined,
@@ -19,8 +19,6 @@ import {
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
 import PropTypes from "prop-types";
-
-import Commentform from "./commentform";
 import {
   COMMENT_REMOVE_ACTION,
   COMMENT_UPDATE_ACTION,
@@ -28,6 +26,15 @@ import {
   POST_LIST_REMOVE_ACTION,
   GET_COMMENT_ACTION,
 } from "../reducers/actions";
+import Comment from "antd/lib/comment";
+import Tooltip from "antd/lib/tooltip";
+import Avatar from "antd/lib/avatar";
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Form from "antd/lib/form";
+import Button from "antd/lib/button";
+
+const Commentform = lazy(() => import("./commentform"));
 
 const { TextArea } = Input;
 

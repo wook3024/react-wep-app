@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, Link } from "react-router-dom";
-import { Input, Button, Form, Checkbox, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 import { LOG_IN_ACTION } from "../reducers/actions";
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Form from "antd/lib/form";
+import Button from "antd/lib/button";
+import Checkbox from "antd/lib/checkbox";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -116,6 +120,22 @@ const LoginForm = () => {
         Or <Link to="/signup">register now!</Link>
       </Form.Item>
     </Form>
+    //   <div
+    //   style={{
+    //     backgroundColor: "#87CEEB",
+    //     width: 400,
+    //     height: 70,
+    //     color: "#FFFFFF",
+    //     fontSize: 50,
+    //     margin: "0 auto",
+    //     textAlign: "center",
+    //     lineHeight: "70px",
+    //   }}
+    // >
+    //   <a href="http://localhost:8080/auth/facebook" onClick={facebookLogin}>
+    //     facebook login
+    //   </a>
+    // </div>
   );
 };
 

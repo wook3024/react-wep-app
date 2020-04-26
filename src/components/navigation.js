@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { Menu, Button, message, Popover, Tag } from "antd";
 import {
   AppstoreOutlined,
   SettingOutlined,
@@ -19,6 +18,11 @@ import {
   GET_POST_DATA_ACTION,
   REMOVE_NOTIFICATION_DATA_ACTION,
 } from "../reducers/actions";
+import message from "antd/lib/message";
+import Button from "antd/lib/button";
+import Menu from "antd/lib/menu";
+import Popover from "antd/lib/popover";
+import Tag from "antd/lib/tag";
 
 const { SubMenu } = Menu;
 

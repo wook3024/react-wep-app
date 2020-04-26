@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, lazy } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Card, Avatar, Button, Popover, message } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -19,9 +18,15 @@ import {
   SET_HASHTAG_ACTION,
   POST_LIST_REMOVE_ACTION,
 } from "../reducers/actions";
-import PostForm from "./postForm";
-import Commentform from "./commentform";
-import Comment from "./comment";
+import Avatar from "antd/lib/avatar";
+import message from "antd/lib/message";
+import Button from "antd/lib/button";
+import Popover from "antd/lib/popover";
+import Card from "antd/lib/card";
+
+const PostForm = lazy(() => import("./postForm"));
+const Commentform = lazy(() => import("./commentform"));
+const Comment = lazy(() => import("./comment"));
 
 const { Meta } = Card;
 

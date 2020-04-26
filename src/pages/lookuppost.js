@@ -1,9 +1,10 @@
-import React from "react";
+import React, { lazy } from "react";
 import { useSelector } from "react-redux";
 
-import Postcard from "../components/postcard";
-import Searchform from "../components/searchform";
 import "./App.css";
+
+const Postcard = lazy(() => import("../components/postcard"));
+const Searchform = lazy(() => import("../components/searchform"));
 
 const Profile = () => {
   const { post } = useSelector((state) => state);

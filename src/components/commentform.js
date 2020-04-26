@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Form, Button, message } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 
 import { GET_COMMENT_ACTION } from "../reducers/actions";
+
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Form from "antd/lib/form";
+import Button from "antd/lib/button";
 
 const moment = require("moment");
 const { now } = moment;

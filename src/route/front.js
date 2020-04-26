@@ -1,14 +1,14 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 
-import SignIn from "../pages/signin";
-import Profile from "../pages/profile";
-import SignUp from "../pages/signup";
-import Post from "../pages/post";
-import Hashtag from "../pages/hashtag";
-import Search from "../pages/searchtag";
-import Lookuppost from "../pages/lookuppost";
+const SignIn = lazy(() => import("../pages/signin"));
+const Profile = lazy(() => import("../pages/profile"));
+const SignUp = lazy(() => import("../pages/signup"));
+const Post = lazy(() => import("../pages/post"));
+const Hashtag = lazy(() => import("../pages/hashtag"));
+const Search = lazy(() => import("../pages/searchtag"));
+const Lookuppost = lazy(() => import("../pages/lookuppost"));
 
 const Div = styled.div``;
 

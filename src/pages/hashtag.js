@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, lazy } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { message } from "antd";
 
 import {
   GET_POST_DATA_ACTION,
   GET_MORE_POST_ACTION,
   POST_LIST_REMOVE_ACTION,
 } from "../reducers/actions";
-import Postcard from "../components/postcard";
-import Searchform from "../components/searchform";
+import message from "antd/lib/message";
+
 import "./App.css";
+
+const Postcard = lazy(() => import("../components/postcard"));
+const Searchform = lazy(() => import("../components/searchform"));
 
 const Profile = () => {
   const { post, hashtag } = useSelector((state) => state);

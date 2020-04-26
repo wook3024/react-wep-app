@@ -1,8 +1,11 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+// const FacebookStrategy = require("passport-facebook").Strategy;
 const bcrypt = require("bcrypt");
 
 const db = require("../models");
+const facebookCredencials = require("../config/passport-facebook.json");
+console.log("facebookCrerdencials", facebookCredencials);
 
 module.exports = () => {
   passport.serializeUser(async (user, done) => {
@@ -21,6 +24,7 @@ module.exports = () => {
       return done(e);
     }
   });
+
   passport.use(
     new LocalStrategy(
       {
@@ -47,4 +51,19 @@ module.exports = () => {
       }
     )
   );
+
+  // passport.use(
+  //   new FacebookStrategy({facebookCredencials}, function (
+  //     accessToken,
+  //     refreshToken,
+  //     profile,
+  //     cb
+  //   ) {
+  //     console.log("facebook auth", accessToken, refreshToken, profile);
+  //     // console.log("profile.emage", profile.emails);
+  //     //   User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+  //     //     return cb(err, user);
+  //     //   });
+  //   })
+  // );
 };

@@ -1,15 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  Descriptions,
-  Button,
-  Input,
-  Avatar,
-  Upload,
-  message,
-  Table,
-} from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Lightbox from "react-image-lightbox";
@@ -22,6 +13,13 @@ import {
   UNFOLLOWING_ACTION,
   UNSCRAP_ACTION,
 } from "../reducers/actions";
+import Avatar from "antd/lib/avatar";
+import message from "antd/lib/message";
+import Input from "antd/lib/input";
+import Button from "antd/lib/button";
+import Upload from "antd/lib/upload";
+import Table from "antd/lib/table";
+import Descriptions from "antd/lib/descriptions";
 
 const { TextArea } = Input;
 
