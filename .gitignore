@@ -29,6 +29,11 @@ yarn-error.log*
 .cookieSecret.json
 .sequelize.json
 .react-web-app.pem
+keepCode.txt
+package-lock.json
+passport-facebook.json
+cookieSecret.json
+sequelize.json
 react-web-app.pem
 config/
 
