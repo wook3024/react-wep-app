@@ -5,5 +5,10 @@
         { "targets": { "browsers": ["last 2 versions", ">= 5% in KR"] } }
       ],
       "@babel/react"
+    ],
+    "plugins": [
+      ["import", { "libraryName": "antd", "libraryDirectory": "lib"}, "antd"],
+      ["import", { "libraryName": "antd-mobile", "libraryDirectory": "lib"}, "antd-mobile"]
     ]
+    
   }

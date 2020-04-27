@@ -1,10 +1,11 @@
 const path = require("path");
 const webpack = require("webpack");
 
+const compressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+//   .BundleAnalyzerPlugin;
 
 module.exports = {
   entry: {
@@ -14,6 +15,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist/"),
     publicPath: "/",
   },
+  optimization: { minimize: true },
   // devServer: {
   //   inline: true,
   //   port: 3000,
@@ -78,6 +80,7 @@ module.exports = {
       filename: "index.html",
     }),
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
+    new compressionPlugin(),
     // new BundleAnalyzerPlugin({
     //   analyzerHost: "127.0.0.1",
     //   analyzerPort: 8080,

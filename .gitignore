@@ -21,3 +21,11 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.keepCode.txt
+.package-lock.json
+.passport-facebook.json
+.cookieSecret.json
+.sequelize.json
+config/
+
