@@ -18,7 +18,7 @@ module.exports = {
   optimization: { minimize: true },
   // devServer: {
   //   inline: true,
-  //   port: 3000,
+  //   port: 80,
   //   watchOptions: {
   //     ignored: [path.resolve(__dirname, "path/to/images")],
   //   },
