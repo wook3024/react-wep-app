@@ -16,14 +16,14 @@ module.exports = {
     publicPath: "/",
   },
   optimization: { minimize: true },
-  // devServer: {
-  //   inline: true,
-  //   port: 80,
-  //   watchOptions: {
-  //     ignored: [path.resolve(__dirname, "path/to/images")],
-  //   },
-  //   historyApiFallback: true,
-  // },
+  devServer: {
+    inline: true,
+    port: 80,
+    watchOptions: {
+      ignored: [path.resolve(__dirname, "path/to/images")],
+    },
+    historyApiFallback: true,
+  },
   mode: "production",
   performance: {
     hints: false,
