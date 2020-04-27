@@ -6,7 +6,7 @@ const config = require(path.join(
   __dirname,
   "..",
   "config",
-  "mysqlsequelize.json"
+  "postgressequelize.json"
 ))[env];
 const db = {};
 
