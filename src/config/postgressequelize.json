@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "swook",
+    "password": 30243024,
+    "database": "react-web-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "swook",
+    "password": 30243024,
+    "database": "react-web-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "swook",
+    "password": 30243024,
+    "database": "react-web-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  }
+}

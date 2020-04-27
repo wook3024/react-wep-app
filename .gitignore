@@ -24,18 +24,13 @@ yarn-debug.log*
 yarn-error.log*
 
 .keepCode.txt
+keepCode.txt
 .package-lock.json
-.passport-facebook.json
-.cookieSecret.json
-.sequelize.json
-.react-web-app.pem
+package-lock.json
 .test.html
 test.html
-keepCode.txt
-package-lock.json
-passport-facebook.json
-cookieSecret.json
-sequelize.json
+
 react-web-app.pem
-config/
+.react-web-app.pem
+
 
