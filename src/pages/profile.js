@@ -21,6 +21,14 @@ import Upload from "antd/lib/upload";
 import Table from "antd/lib/table";
 import Descriptions from "antd/lib/descriptions";
 
+import "antd/lib/avatar/style/css";
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/upload/style/css";
+import "antd/lib/table/style/css";
+import "antd/lib/descriptions/style/css";
+
 const { TextArea } = Input;
 
 const Profile = () => {

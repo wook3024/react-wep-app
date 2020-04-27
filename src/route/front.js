@@ -1,6 +1,5 @@
 import React, { Suspense, lazy } from "react";
 import { Route, Switch } from "react-router-dom";
-import styled from "styled-components";
 
 const SignIn = lazy(() => import("../pages/signin"));
 const Profile = lazy(() => import("../pages/profile"));
@@ -10,12 +9,10 @@ const Hashtag = lazy(() => import("../pages/hashtag"));
 const Search = lazy(() => import("../pages/searchtag"));
 const Lookuppost = lazy(() => import("../pages/lookuppost"));
 
-const Div = styled.div``;
-
 const Connecting = () => {
   return (
     <Switch>
-      <Suspense fallback={<Div>Loading...</Div>}>
+      <Suspense fallback={<div>Loading...</div>}>
         <Route path="/signin" component={SignIn} />
         <Route path="/profile" component={Profile} />
         <Route path="/signUp" component={SignUp} />

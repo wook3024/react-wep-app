@@ -12,6 +12,12 @@ import Button from "antd/lib/button";
 import Upload from "antd/lib/upload";
 import Modal from "antd/lib/modal";
 
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/upload/style/css";
+import "antd/lib/modal/style/css";
+
 const moment = require("moment");
 const { now } = moment;
 

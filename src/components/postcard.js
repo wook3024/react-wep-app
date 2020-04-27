@@ -24,6 +24,12 @@ import Button from "antd/lib/button";
 import Popover from "antd/lib/popover";
 import Card from "antd/lib/card";
 
+import "antd/lib/avatar/style/css";
+import "antd/lib/message/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/popover/style/css";
+import "antd/lib/card/style/css";
+
 const PostForm = lazy(() => import("./postForm"));
 const Commentform = lazy(() => import("./commentform"));
 const Comment = lazy(() => import("./comment"));

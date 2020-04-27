@@ -8,6 +8,8 @@ import {
 } from "../reducers/actions";
 import Input from "antd/lib/input";
 
+import "antd/lib/input/style/css";
+
 const { Search } = Input;
 
 const Searchform = () => {

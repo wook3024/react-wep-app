@@ -11,6 +11,12 @@ import Form from "antd/lib/form";
 import Button from "antd/lib/button";
 import Checkbox from "antd/lib/checkbox";
 
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/form/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/checkbox/style/css";
+
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [loginState, setLoginState] = useState(true);

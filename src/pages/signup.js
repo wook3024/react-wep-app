@@ -12,6 +12,15 @@ import Checkbox from "antd/lib/checkbox";
 import Select from "antd/lib/select";
 import InputNumber from "antd/lib/input-number";
 
+import "antd/lib/tooltip/style/css";
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/form/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/checkbox/style/css";
+import "antd/lib/select/style/css";
+import "antd/lib/input-number/style/css";
+
 const { Option } = Select;
 
 const formItemLayout = {

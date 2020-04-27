@@ -9,6 +9,8 @@ import {
 } from "../reducers/actions";
 import message from "antd/lib/message";
 
+import "antd/lib/message/style/css";
+
 import "./App.css";
 
 const Postcard = lazy(() => import("../components/postcard"));

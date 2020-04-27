@@ -10,6 +10,11 @@ import Input from "antd/lib/input";
 import Form from "antd/lib/form";
 import Button from "antd/lib/button";
 
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/form/style/css";
+import "antd/lib/button/style/css";
+
 const moment = require("moment");
 const { now } = moment;
 

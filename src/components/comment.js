@@ -34,6 +34,14 @@ import Input from "antd/lib/input";
 import Form from "antd/lib/form";
 import Button from "antd/lib/button";
 
+import "antd/lib/comment/style/css";
+import "antd/lib/tooltip/style/css";
+import "antd/lib/avatar/style/css";
+import "antd/lib/message/style/css";
+import "antd/lib/input/style/css";
+import "antd/lib/form/style/css";
+import "antd/lib/button/style/css";
+
 const Commentform = lazy(() => import("./commentform"));
 
 const { TextArea } = Input;

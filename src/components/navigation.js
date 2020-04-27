@@ -24,6 +24,12 @@ import Menu from "antd/lib/menu";
 import Popover from "antd/lib/popover";
 import Tag from "antd/lib/tag";
 
+import "antd/lib/message/style/css";
+import "antd/lib/button/style/css";
+import "antd/lib/menu/style/css";
+import "antd/lib/popover/style/css";
+import "antd/lib/tag/style/css";
+
 const { SubMenu } = Menu;
 
 const Navigation = () => {

@@ -10,6 +10,8 @@ import {
 import "./App.css";
 import message from "antd/lib/message";
 
+import "antd/lib/message/style/css";
+
 const Postcard = lazy(() => import("../components/postcard"));
 const Searchform = lazy(() => import("../components/searchform"));
 const PostForm = lazy(() => import("../components/postForm"));
