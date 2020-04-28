@@ -31,12 +31,12 @@ sequelize
 
 passportConfig();
 
-app.use(hpp());
-app.use(helmet());
-app.use(logger("combined"));
+// app.use(hpp());
+// app.use(helmet());
+app.use(logger("dev"));
 app.use(
   cors({
-    origin: "http://swook.ml",
+    origin: true,
     credentials: true,
   })
 );
