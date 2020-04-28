@@ -214,9 +214,9 @@ const PostForm = ({ post = {} }) => {
   }, [content, dispatch, fileList, formData, post, title]);
 
   const onSubmit = useCallback(async () => {
-    if (!(userInfo && userInfo.username)) {
-      return message.warning("Login Please! 😱");
-    }
+    // if (!(userInfo && userInfo.username)) {
+    //   return message.warning("Login Please! 😱");
+    // }
     if (title.trim() === "") {
       return message.warning("Please include the titles.! 😱");
     }
@@ -280,36 +280,27 @@ const PostForm = ({ post = {} }) => {
       .catch((error) => {
         console.error("😡 ", error);
       });
-  }, [
-    content,
-    dispatch,
-    fileList,
-    formData,
-    post,
-    title,
-    updatePost,
-    userInfo,
-  ]);
+  }, [content, dispatch, fileList, formData, post, title, updatePost]);
 
   return (
     <>
-      {!postingState && !post.id && (
-        <Button
-          type="primary"
-          ghost
-          block
-          style={{
-            display: "block",
-            margin: "0.5rem auto 0",
-            width: 400,
-          }}
-          onClick={() => {
-            setPostingState(postingState ? false : true);
-          }}
-        >
-          Posting
-        </Button>
-      )}
+      {/* {!postingState && !post.id && ( */}
+      <Button
+        type="primary"
+        ghost
+        block
+        style={{
+          display: "block",
+          margin: "0.5rem auto 0",
+          width: 400,
+        }}
+        onClick={() => {
+          setPostingState(postingState ? false : true);
+        }}
+      >
+        Posting
+      </Button>
+      {/* )} */}
       {(postingState || post.id) && (
         <Form
           style={{
