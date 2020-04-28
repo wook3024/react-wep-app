@@ -19,6 +19,7 @@ module.exports = {
   devServer: {
     inline: true,
     port: 80,
+    disableHostCheck: true,
     watchOptions: {
       ignored: [path.resolve(__dirname, "path/to/images")],
     },
