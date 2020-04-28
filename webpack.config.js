@@ -19,7 +19,7 @@ module.exports = {
   devServer: {
     inline: true,
     contentBase: ".",
-    host: "3.16.103.11",
+    host: "0.0.0.0",
     port: 80,
     disableHostCheck: true,
     watchOptions: {
