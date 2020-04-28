@@ -96,12 +96,12 @@ router.post("/signincheck", async (req, res, next) => {
       const profileImage = await db.Image.findOne({
         where: { userId: user.id },
       });
-
       if (profileImage !== null) {
         user.dataValues.images = [profileImage.dataValues.location];
       }
 
       console.log("userInfo", user);
+      return res.json(user);
     }
     res.send("😡  Login is required.");
   } catch (error) {
