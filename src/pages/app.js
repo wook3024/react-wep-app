@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import Connection from "../route/front";
 import Navigation from "../components/navigation";
 
-axios.defaults.baseURL = "http://13.125.86.13:80";
+axios.defaults.baseURL = "http://api.swook.ml";
 
 let store = createStore(reducer);
 
