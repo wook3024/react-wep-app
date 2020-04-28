@@ -25,12 +25,12 @@ const LoginForm = () => {
   let history = useHistory();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (userInfo.username) {
-      message.success("Log In Complete. Go to the main page");
-      return history.push("/main");
-    }
-  }, [history, userInfo.username]);
+  // useEffect(() => {
+  //   if (userInfo.username) {
+  //     message.success("Log In Complete. Go to the main page");
+  //     return history.push("/main");
+  //   }
+  // }, [history, userInfo.username]);
 
   const onFinish = async (values) => {
     setLoading(true);
