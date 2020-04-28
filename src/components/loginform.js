@@ -26,11 +26,11 @@ const LoginForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("userInfo check", userInfo);
     if (userInfo.username) {
       message.success("Log In Complete. Go to the main page");
       return history.push("/main");
     }
-    console.log("userInfo check", userInfo);
   }, [history, userInfo, userInfo.username]);
 
   const onFinish = async (values) => {
