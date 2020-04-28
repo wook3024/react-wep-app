@@ -71,13 +71,7 @@ router.post("/signin", (req, res, next) => {
             },
           ],
         });
-        const profileImage = await db.Image.findOne({
-          where: { userId: user.id },
-        });
 
-        if (profileImage !== null) {
-          user.dataValues.images = [profileImage.dataValues.location];
-        }
         console.log("userInfo", user);
         return res.json(fullUser);
       } catch (error) {
@@ -93,15 +87,31 @@ router.post("/signincheck", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const user = req.user.dataValues;
 
+      const fullUser = await db.User.findOne({
+        where: { username: user.username },
+        attributes: [
+          "username",
+          "nickname",
+          "id",
+          "description",
+          "age",
+          "created_at",
+        ],
+        include: [
+          {
+            model: db.Image,
+          },
+        ],
+      });
       const profileImage = await db.Image.findOne({
         where: { userId: user.id },
       });
+
       if (profileImage !== null) {
         user.dataValues.images = [profileImage.dataValues.location];
       }
-
       console.log("userInfo", user);
-      return res.json(user);
+      return res.json(fullUser);
     }
     res.send("😡  Login is required.");
   } catch (error) {
