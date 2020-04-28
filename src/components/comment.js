@@ -368,7 +368,7 @@ const Reply = ({ post, comment }) => {
         comment.user.images[0].filename !== undefined ? (
           <>
             <Avatar
-              src={`../../public/images/${comment.user.images[0].filename}`}
+              src={comment.user.images[0].filename}
               alt="Han Solo"
               onClick={() => setIsOpenUserImage(true)}
             />
@@ -379,7 +379,7 @@ const Reply = ({ post, comment }) => {
                   overlay: {},
                   content: {},
                 }}
-                mainSrc={`./images/${comment.user.images[0].filename}`}
+                mainSrc={comment.user.images[0].filename}
                 onCloseRequest={() => setIsOpenUserImage(false)}
               />
             )}

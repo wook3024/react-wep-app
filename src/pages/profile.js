@@ -403,12 +403,12 @@ const Profile = () => {
           {userInfo && userInfo.profileImage ? (
             <>
               <Avatar
-                src={`../../public/images/${userInfo.profileImage}`}
+                src={userInfo.profileImage}
                 onClick={() => setVisible(visible ? false : true)}
               />
               {visible && (
                 <Lightbox
-                  mainSrc={`../../public/images/${userInfo.profileImage}`}
+                  mainSrc={userInfo.profileImage}
                   onCloseRequest={() => setVisible(false)}
                 />
               )}

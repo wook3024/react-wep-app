@@ -74,7 +74,7 @@ router.post("/uploadPostImage", (req, res, next) => {
               // console.log("file.path", file);
               db.Image.create({
                 postId: data.postId ? data.postId : null,
-                filename: file.filename,
+                filename: file.location,
                 userId: data.userId ? data.userId : null,
               });
             });
