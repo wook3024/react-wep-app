@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   return sequelize.define(
     "image",
     {
-      filename: {
+      location: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
