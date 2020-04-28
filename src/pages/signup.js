@@ -60,7 +60,7 @@ const SignUp = () => {
 
     await axios({
       method: "post",
-      url: "http://localhost:8080/user/signup",
+      url: "/user/signup",
       params: formUserInfo,
     })
       .then((res) => {
