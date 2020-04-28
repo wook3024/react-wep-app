@@ -97,15 +97,15 @@ router.post("/uploadProfileImage", (req, res, next) => {
             }).then(async (destroyResult) => {
               console.log("Image destroy state", destroyResult);
               (await req).files.forEach(async (file) => {
-                console.log("file info", file.filename);
+                console.log("file info", file.location);
                 // console.log("file.path", file);
                 db.Image.create({
                   postId: data.postId ? data.postId : null,
-                  filename: (await req).files[0].filename,
+                  filename: (await req).files[0].location,
                   userId: data.userId ? data.userId : null,
                 });
               });
-              const imageFiles = (await req).files[0].filename;
+              const imageFiles = (await req).files[0].location;
               return res.json(imageFiles);
             });
           })();

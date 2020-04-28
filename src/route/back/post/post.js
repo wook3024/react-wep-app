@@ -70,11 +70,11 @@ router.post("/uploadPostImage", (req, res, next) => {
               return res.send("Upload Complete! 🐳");
             }
             (await req).files.forEach((file) => {
-              console.log("file info", file.filename);
+              console.log("file info", file.location);
               // console.log("file.path", file);
               db.Image.create({
                 postId: data.postId ? data.postId : null,
-                filename: file.filename,
+                filename: file.location,
                 userId: data.userId ? data.userId : null,
               });
             });
