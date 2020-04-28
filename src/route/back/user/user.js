@@ -4,6 +4,7 @@ const bcyrpy = require("bcrypt");
 
 const saltRounds = 12;
 const db = require("../../../models");
+const { getUserInfo } = require("../middleware");
 
 const router = express.Router();
 
@@ -50,30 +51,14 @@ router.post("/signin", (req, res, next) => {
       return res.json(message);
     }
     return req.login(user, async (loginError) => {
+      console.log("userInfo", user);
       try {
         if (loginError) {
           return next(loginError);
         }
 
-        const fullUser = await db.User.findOne({
-          where: { username: user.username },
-          attributes: [
-            "username",
-            "nickname",
-            "id",
-            "description",
-            "age",
-            "created_at",
-          ],
-          include: [
-            {
-              model: db.Image,
-            },
-          ],
-        });
-
-        console.log("userInfo", user);
-        return res.json(fullUser);
+        const userInfo = await getUserInfo();
+        return res.json(userInfo);
       } catch (error) {
         console.error(error);
         next(error);
@@ -86,32 +71,10 @@ router.post("/signincheck", async (req, res, next) => {
   try {
     if (req.isAuthenticated()) {
       const user = req.user.dataValues;
-
-      const fullUser = await db.User.findOne({
-        where: { username: user.username },
-        attributes: [
-          "username",
-          "nickname",
-          "id",
-          "description",
-          "age",
-          "created_at",
-        ],
-        include: [
-          {
-            model: db.Image,
-          },
-        ],
-      });
-      const profileImage = await db.Image.findOne({
-        where: { userId: user.id },
-      });
-
-      if (profileImage !== null) {
-        user.dataValues.images = [profileImage.dataValues.location];
-      }
       console.log("userInfo", user);
-      return res.json(fullUser);
+
+      const userInfo = await getUserInfo();
+      return res.json(userInfo);
     }
     res.send("😡  Login is required.");
   } catch (error) {

@@ -31,18 +31,17 @@ sequelize
 
 passportConfig();
 
-// app.use(hpp());
-// app.use(helmet());
-app.use(logger("dev"));
+app.use(hpp());
+app.use(helmet());
+app.use(logger("combined"));
 app.use(
   cors({
-    origin: true,
+    origin: "swook.ml",
     credentials: true,
   })
 );
 
 app.use(express.static("public"));
-
 app.use(express.static("images"));
 app.use(cookieParser(cookieSecret.secret));
 app.use(

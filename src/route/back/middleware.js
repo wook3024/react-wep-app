@@ -121,9 +121,29 @@ const setPersonalMessage = (user, data) => {
   });
 };
 
+const getUserInfo = (user) => {
+  db.User.findOne({
+    where: { username: user.username },
+    attributes: [
+      "username",
+      "nickname",
+      "id",
+      "description",
+      "age",
+      "created_at",
+    ],
+    include: [
+      {
+        model: db.Image,
+      },
+    ],
+  });
+};
+
 module.exports = {
   removeLocalImage,
   findAllPostElement,
   findAllCommentElement,
   setPersonalMessage,
+  getUserInfo,
 };
