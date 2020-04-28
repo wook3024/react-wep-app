@@ -46,27 +46,27 @@ const PostForm = ({ post = {} }) => {
     const imageList = [];
     if (post && post.images && post.images[0]) {
       post.images.forEach((image, index) => {
-        let fileName = undefined;
-        const imageName = [...image.filename];
+        let location = undefined;
+        const imageName = [...image.location];
         for (const [i, c] of imageName.entries()) {
           console.log("i, i", i, c, c === "_");
           if (c === "_") {
-            fileName = image.filename.slice(i + 1);
-            console.log("filename", fileName);
+            location = image.location.slice(i + 1);
+            console.log("location", location);
             break;
           }
         }
-        //if(fileName 안넣으면 비동기로 인해 fileName이 섞인다.
-        if (fileName) {
-          toDataURL(image.filename, function (dataUrl) {
+        //if(location 안넣으면 비동기로 인해 fileName이 섞인다.
+        if (location) {
+          toDataURL(image.location, function (dataUrl) {
             // console.log("RESULT:", dataUrl);
-            var file = dataURLtoFile(dataUrl, fileName);
+            var file = dataURLtoFile(dataUrl, location);
             imageList.push({
               uid: index - 3,
               status: "done",
-              name: fileName,
+              name: location,
               originFileObj: file,
-              url: image.filename,
+              url: image.location,
             });
             if (imageList.length === post.images.length) {
               console.log("imageList check", imageList);
@@ -95,7 +95,7 @@ const PostForm = ({ post = {} }) => {
     xhr.send();
   };
 
-  const dataURLtoFile = (dataurl, filename) => {
+  const dataURLtoFile = (dataurl, location) => {
     var arr = dataurl.split(","),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
@@ -104,7 +104,7 @@ const PostForm = ({ post = {} }) => {
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
-    return new File([u8arr], filename, { type: mime });
+    return new File([u8arr], location, { type: mime });
   };
 
   const getBase64 = useCallback((file) => {

@@ -184,11 +184,11 @@ const Postcard = ({ post }) => {
           post.data.images[0] && (
             <>
               {post.data.images.map((image) => {
-                images.push(image.filename);
+                images.push(image.location);
                 return (
                   // eslint-disable-next-line jsx-a11y/alt-text
                   <img
-                    src={image.filename}
+                    src={image.location}
                     onClick={openImagebox}
                     alt={images.length - 1}
                   />
@@ -270,10 +270,10 @@ const Postcard = ({ post }) => {
         <Meta
           avatar={
             post.data.user.images[0] &&
-            post.data.user.images[0].filename !== undefined ? (
+            post.data.user.images[0].location !== undefined ? (
               <>
                 <Avatar
-                  src={post.data.user.images[0].filename}
+                  src={post.data.user.images[0].location}
                   alt="Han Solo"
                   onClick={() => setIsOpenUserImage(true)}
                 />
@@ -284,7 +284,7 @@ const Postcard = ({ post }) => {
                       overlay: {},
                       content: {},
                     }}
-                    mainSrc={post.data.user.images[0].filename}
+                    mainSrc={post.data.user.images[0].location}
                     onCloseRequest={() => setIsOpenUserImage(false)}
                   />
                 )}

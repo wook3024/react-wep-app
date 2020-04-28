@@ -254,7 +254,7 @@ const Profile = () => {
         }
         dispatch({
           type: USER_INFO_REFRESH_ACTION,
-          payload: { ...res.data, profileImage: res.data.images[0].filename },
+          payload: { ...res.data, profileImage: res.data.images[0].location },
         });
       })
       .then(() => {

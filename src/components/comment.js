@@ -365,10 +365,10 @@ const Reply = ({ post, comment }) => {
       author={comment.user ? comment.user.nickname : "not found"}
       avatar={
         comment.user.images[0] &&
-        comment.user.images[0].filename !== undefined ? (
+        comment.user.images[0].location !== undefined ? (
           <>
             <Avatar
-              src={comment.user.images[0].filename}
+              src={comment.user.images[0].location}
               alt="Han Solo"
               onClick={() => setIsOpenUserImage(true)}
             />
@@ -379,7 +379,7 @@ const Reply = ({ post, comment }) => {
                   overlay: {},
                   content: {},
                 }}
-                mainSrc={comment.user.images[0].filename}
+                mainSrc={comment.user.images[0].location}
                 onCloseRequest={() => setIsOpenUserImage(false)}
               />
             )}

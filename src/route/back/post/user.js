@@ -101,7 +101,7 @@ router.post("/uploadProfileImage", (req, res, next) => {
                 // console.log("file.path", file);
                 db.Image.create({
                   postId: data.postId ? data.postId : null,
-                  filename: (await req).files[0].location,
+                  location: (await req).files[0].location,
                   userId: data.userId ? data.userId : null,
                 });
               });
