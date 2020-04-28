@@ -4,6 +4,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const session = require("express-session");
+const hpp = require("hpp");
+const helmet = require("helmet");
 
 const db = require("../models");
 const passportConfig = require("../passport/index");
@@ -28,15 +30,19 @@ sequelize
   });
 
 passportConfig();
+
+app.use(hpp());
+app.use(helmet());
+app.use(logger("combined"));
 app.use(
   cors({
-    origin: true,
+    origin: "http://swook.ml",
     credentials: true,
   })
 );
 
 app.use(express.static("public"));
-app.use(logger("dev"));
+
 app.use(express.static("images"));
 app.use(cookieParser(cookieSecret.secret));
 app.use(
@@ -47,6 +53,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false,
+      domain: ".swook.ml",
     },
     name: "whynot?",
   })
