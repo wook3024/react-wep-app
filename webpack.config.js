@@ -11,11 +11,11 @@ module.exports = {
   entry: {
     "js/app": ["./src/index.js"],
   },
-  output: {
-    path: path.resolve(__dirname, "dist/"),
-    publicPath: "/",
-  },
-  optimization: { minimize: true },
+  // output: {
+  //   path: path.resolve(__dirname, "dist/"),
+  //   publicPath: "/",
+  // },
+  // optimization: { minimize: true },
   devServer: {
     inline: true,
     contentBase: ".",
@@ -83,7 +83,7 @@ module.exports = {
       filename: "index.html",
     }),
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
-    new compressionPlugin(),
+    // new compressionPlugin(),
     // new BundleAnalyzerPlugin({
     //   analyzerHost: "127.0.0.1",
     //   analyzerPort: 8080,
