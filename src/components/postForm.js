@@ -58,9 +58,7 @@ const PostForm = ({ post = {} }) => {
         }
         //if(fileName 안넣으면 비동기로 인해 fileName이 섞인다.
         if (fileName) {
-          toDataURL(`../../public/images/${image.filename}`, function (
-            dataUrl
-          ) {
+          toDataURL(image.filename, function (dataUrl) {
             // console.log("RESULT:", dataUrl);
             var file = dataURLtoFile(dataUrl, fileName);
             imageList.push({
@@ -68,7 +66,7 @@ const PostForm = ({ post = {} }) => {
               status: "done",
               name: fileName,
               originFileObj: file,
-              url: `../../public/images/${image.filename}`,
+              url: image.filename,
             });
             if (imageList.length === post.images.length) {
               console.log("imageList check", imageList);
