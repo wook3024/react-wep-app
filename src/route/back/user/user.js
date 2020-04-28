@@ -71,14 +71,14 @@ router.post("/signin", (req, res, next) => {
             },
           ],
         });
-        // const profileImage = await db.Image.findOne({
-        //   where: { userId: user.id },
-        // });
+        const profileImage = await db.Image.findOne({
+          where: { userId: user.id },
+        });
 
-        // if (profileImage !== null) {
-        //   fullUser.dataValues.profileImage = profileImage.dataValues.filename;
-        // }
-        console.log("userInfo", await fullUser);
+        if (profileImage !== null) {
+          user.dataValues.profileImage = profileImage.dataValues.filename;
+        }
+        console.log("userInfo", user);
         return res.json(fullUser);
       } catch (error) {
         console.error(error);
