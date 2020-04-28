@@ -254,7 +254,7 @@ const Profile = () => {
         }
         dispatch({
           type: USER_INFO_REFRESH_ACTION,
-          payload: { ...res.data, profileImage: res.data.images[0].location },
+          payload: { ...res.data, images: [res.data.images[0].location] },
         });
       })
       .then(() => {
@@ -292,7 +292,7 @@ const Profile = () => {
 
         dispatch({
           type: USER_INFO_REFRESH_ACTION,
-          payload: { userInfo: { ...userInfo, profileImage: res.data } },
+          payload: { userInfo: { ...userInfo, images: [res.data] } },
         });
         setSelectedFile(null);
       })
@@ -400,15 +400,15 @@ const Profile = () => {
             </div>
           }
         >
-          {userInfo && userInfo.profileImage ? (
+          {userInfo && userInfo.images[0] && userInfo.images[0].location ? (
             <>
               <Avatar
-                src={userInfo.profileImage}
+                src={userInfo.images[0].location}
                 onClick={() => setVisible(visible ? false : true)}
               />
               {visible && (
                 <Lightbox
-                  mainSrc={userInfo.profileImage}
+                  mainSrc={userInfo.images[0].location}
                   onCloseRequest={() => setVisible(false)}
                 />
               )}

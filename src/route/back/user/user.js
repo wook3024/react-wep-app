@@ -65,14 +65,20 @@ router.post("/signin", (req, res, next) => {
             "age",
             "created_at",
           ],
+          include: [
+            {
+              model: db.Image,
+            },
+          ],
         });
-        const profileImage = await db.Image.findOne({
-          where: { userId: user.id },
-        });
+        // const profileImage = await db.Image.findOne({
+        //   where: { userId: user.id },
+        // });
 
-        if (profileImage !== null) {
-          fullUser.dataValues.profileImage = profileImage.dataValues.filename;
-        }
+        // if (profileImage !== null) {
+        //   fullUser.dataValues.profileImage = profileImage.dataValues.filename;
+        // }
+        console.log("userInfo", await fullUser);
         return res.json(fullUser);
       } catch (error) {
         console.error(error);
