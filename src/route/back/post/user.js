@@ -56,7 +56,21 @@ router.post("/descriptionChange", async (req, res, next) => {
         { where: { id: req.query.id } }
       )
         .then(async () => {
-          const user = await db.User.findOne({ where: { id: req.query.id } });
+          const user = await db.User.findOne({
+            where: { id: req.query.id },
+            attributes: [
+              "username",
+              "id",
+              "nickname",
+              "description",
+              "created_at",
+            ],
+            include: [
+              {
+                model: db.Image,
+              },
+            ],
+          });
           return res.json(user);
         })
         .catch((error) => {

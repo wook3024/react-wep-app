@@ -93,14 +93,24 @@ router.post("/signincheck", async (req, res, next) => {
     if (req.isAuthenticated()) {
       const user = req.user.dataValues;
 
-      const profileImage = await db.Image.findOne({
-        where: { userId: user.id },
+      const fullUser = await db.User.findOne({
+        where: { username: user.username },
+        attributes: [
+          "username",
+          "nickname",
+          "id",
+          "description",
+          "age",
+          "created_at",
+        ],
+        include: [
+          {
+            model: db.Image,
+          },
+        ],
       });
 
-      if (profileImage !== null) {
-        user.profileImage = profileImage.dataValues.filename;
-      }
-      return res.json(user);
+      console.log("userInfo", await fullUser);
     }
     res.send("😡  Login is required.");
   } catch (error) {

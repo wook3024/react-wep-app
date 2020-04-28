@@ -52,6 +52,7 @@ const LoginForm = () => {
       withCredentials: true,
     })
       .then((res) => {
+        console.log("longin info", res);
         if (res.data.username) {
           return dispatch({
             type: LOG_IN_ACTION,
