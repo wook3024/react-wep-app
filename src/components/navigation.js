@@ -47,10 +47,12 @@ const Navigation = () => {
     })
       .then((res) => {
         console.log("login check", res);
-        // return dispatch({
-        //   type: USER_INFO_REFRESH_ACTION,
-        //   payload: res.data.id ? res.data : null,
-        // });
+        if (!userInfo.id) {
+          return dispatch({
+            type: USER_INFO_REFRESH_ACTION,
+            payload: res.data.id ? res.data : null,
+          });
+        }
       })
       .catch((error) => {
         console.error("😡 ", error);
