@@ -8,8 +8,7 @@ import { Provider } from "react-redux";
 import Connection from "../route/front";
 import Navigation from "../components/navigation";
 
-axios.defaults.baseURL = "http://18.189.68.3:80";
-// axios.defaults.baseURL = "http://localhost:6060";
+axios.defaults.baseURL = "http://13.125.86.13:80";
 
 let store = createStore(reducer);
 
