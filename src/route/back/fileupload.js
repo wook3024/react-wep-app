@@ -25,6 +25,6 @@ const upload = multerS3({
   key(req, file, cb) {
     cb(null, `original/${+new Date()}${path.basename(file.originalname)}`);
   },
-}).array("file");
+});
 
 module.exports = upload;
