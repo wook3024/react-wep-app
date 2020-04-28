@@ -23,6 +23,7 @@ const storage = multerS3({
 
 const upload = multer({
   storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 },
 }).array("file");
 
 module.exports = upload;
