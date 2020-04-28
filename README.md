@@ -33,3 +33,8 @@
 17.webpack development, production 구별하고 기능 이해 필요
 18.inline style 이용하는 태그는 styled component 이용하는 방법도 좋아 보임
 19.타 플랫폼에서 앱을 실행할 때 권한 문제 발생이 가능하다 => sudo npm install --unsafe-perm 해결
+20.port 80 연결 시 permission denined 에러 발생 => sudo 권한 부여
+21.aws에서 webpack으로 프론트서버 구동시 접근불가 현상 발생 => debServer에 host와 disableHostCheck추가함으로써 해결
+22.suspend 이용해서 로딩 화면 처리 필요
+23.개발과 배포단계 분리 필요
+24.aws에서 이미지 업로드시 정상적으로 작동 불가
