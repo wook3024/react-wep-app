@@ -57,7 +57,7 @@ router.post("/signin", (req, res, next) => {
           return next(loginError);
         }
 
-        const userInfo = await getUserInfo();
+        const userInfo = await getUserInfo(user);
         return res.json(userInfo);
       } catch (error) {
         console.error(error);
@@ -73,7 +73,7 @@ router.post("/signincheck", async (req, res, next) => {
       const user = req.user.dataValues;
       console.log("userInfo", user);
 
-      const userInfo = await getUserInfo();
+      const userInfo = await getUserInfo(user);
       return res.json(userInfo);
     }
     res.send("😡  Login is required.");
