@@ -198,8 +198,8 @@ const PostForm = ({ post = {} }) => {
             });
           })
           .then(() => {
-            inputTitle.current.state.value = null;
-            inputContent.current.state.value = null;
+            // inputTitle.current.state.value = null;
+            // inputContent.current.state.value = null;
             setTitle("");
             setContent("");
             setFileList([]);
@@ -271,8 +271,8 @@ const PostForm = ({ post = {} }) => {
           });
       })
       .then(() => {
-        inputTitle.current.state.value = null;
-        inputContent.current.state.value = null;
+        // inputTitle.current.state.value = null;
+        // inputContent.current.state.value = null;
         setTitle("");
         setContent("");
         setFileList([]);
