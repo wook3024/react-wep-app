@@ -25,7 +25,7 @@ const removeLocalImage = (target, value) => {
   })()
     .then((res) => {
       res.forEach((image) => {
-        console.log("find image 🐳🐳", image.dataValues.filename);
+        console.log("find image 🐳🐳", image);
         // fs.unlink(
         //   path.join(
         //     __dirname,
@@ -42,11 +42,13 @@ const removeLocalImage = (target, value) => {
         s3.deleteObject(
           {
             Bucket: "swook-react-web-app",
-            Key: image.dataValues.location,
+            Delete: {
+              Object: [{ Key: image.dataValues.location }],
+            },
           },
           function (error, data) {
             if (error) {
-              console.error("😡 ", error);
+              console.error("😡 ", error, error.stack);
             }
             console.log("delete s3 data", data);
           }

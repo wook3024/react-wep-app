@@ -402,6 +402,7 @@ const Profile = () => {
             </div>
           }
         >
+          // prettier-ignore
           {userInfo &&
           userInfo.images &&
           userInfo.images[0] &&
