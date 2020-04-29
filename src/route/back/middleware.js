@@ -1,6 +1,13 @@
 const db = require("../../models");
 const fs = require("fs");
 const path = require("path");
+const AWS = require("aws-sdk");
+
+const s3 = AWS.S3({
+  accessKeyId: "",
+  secretAccessKey: "",
+  region: "ap-northeast-2",
+});
 
 const removeLocalImage = (target, value) => {
   (() => {
