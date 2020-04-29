@@ -33,7 +33,7 @@ passportConfig();
 
 app.use(hpp());
 app.use(helmet());
-app.use(logger("combined"));
+app.use(logger("dev"));
 app.use(
   cors({
     origin: "swook.ml",
@@ -52,6 +52,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false,
+      maxAge: 60000,
       domain: ".swook.ml",
     },
     name: "whynot?",

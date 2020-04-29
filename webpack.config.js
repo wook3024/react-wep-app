@@ -1,7 +1,7 @@
 const path = require("path");
-const webpack = require("webpack");
+// const webpack = require("webpack");
 
-const compressionPlugin = require("compression-webpack-plugin");
+// const compressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
@@ -11,11 +11,11 @@ module.exports = {
   entry: {
     "js/app": ["./src/index.js"],
   },
-  output: {
-    path: path.resolve(__dirname, "dist/"),
-    publicPath: "/",
-  },
-  optimization: { minimize: true },
+  // output: {
+  //   path: path.resolve(__dirname, "dist/"),
+  //   publicPath: "/",
+  // },
+  // optimization: { minimize: true },
   devServer: {
     inline: true,
     contentBase: ".",
@@ -28,11 +28,11 @@ module.exports = {
     historyApiFallback: true,
   },
   mode: "production",
-  performance: {
-    hints: false,
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000,
-  },
+  // performance: {
+  //   hints: false,
+  //   maxEntrypointSize: 512000,
+  //   maxAssetSize: 512000,
+  // },
   module: {
     rules: [
       {
@@ -82,8 +82,8 @@ module.exports = {
       template: "./public/index.html",
       filename: "index.html",
     }),
-    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
-    new compressionPlugin(),
+    // new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
+    // new compressionPlugin(),
     // new BundleAnalyzerPlugin({
     //   analyzerHost: "127.0.0.1",
     //   analyzerPort: 8080,

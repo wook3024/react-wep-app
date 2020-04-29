@@ -58,6 +58,7 @@ router.post("/signin", (req, res, next) => {
         }
 
         const userInfo = await getUserInfo(user);
+        console.log("userInfo check", await userInfo);
         return res.json(userInfo);
       } catch (error) {
         console.error(error);
