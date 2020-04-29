@@ -477,7 +477,7 @@ const Reply = ({ post, comment }) => {
         //댓글이 최신순으로 정렬되어있어 오랜된 댓글부터 보기위해 뒤집어준다.
         subCommentStore.reverse().map((comment) => {
           // console.log("subCommentCheck", comment);
-          return <Reply post={post} comment={comment} />;
+          return <Reply key={comment.id} post={post} comment={comment} />;
         })}
     </Comment>
   );
