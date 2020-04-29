@@ -186,13 +186,15 @@ const PostForm = ({ post = {} }) => {
             } else {
               message.success("Upload post success!. 🐳");
             }
+            if (!res.data.comments[0]) {
+              res.data.comments = [];
+            }
             dispatch({
               type: UPDATE_POST_ACTION,
               payload: {
                 post: {
                   ...res.data,
                   images: images.data instanceof Array ? images.data : [],
-                  comments: res.data.comments[0] ? res.data.comments : [],
                 },
               },
             });
