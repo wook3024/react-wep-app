@@ -1,9 +1,9 @@
 const db = require("../../models");
-const fs = require("fs");
-const path = require("path");
-const AWS = require("aws-sdk");
+// const fs = require("fs");
+// const path = require("path");
+const aws = require("aws-sdk");
 
-const s3 = AWS.S3({
+const s3 = new aws.S3({
   accessKeyId: "",
   secretAccessKey: "",
   region: "ap-northeast-2",
@@ -26,17 +26,29 @@ const removeLocalImage = (target, value) => {
     .then((res) => {
       res.forEach((image) => {
         console.log("find image 🐳🐳", image.dataValues.filename);
-        fs.unlink(
-          path.join(
-            __dirname,
-            `../../../public/images/${image.dataValues.filename}`
-          ),
-          (error) => {
+        // fs.unlink(
+        //   path.join(
+        //     __dirname,
+        //     `../../../public/images/${image.dataValues.filename}`
+        //   ),
+        //   (error) => {
+        //     if (error) {
+        //       console.error("😡 ", error);
+        //       return;
+        //     }
+        //     console.log("File deleted! 🐳", image.dataValues.filename);
+        //   }
+        // );
+        s3.deleteObject(
+          {
+            Bucket: "swook-react-web-app",
+            Key: image.dataValues.location,
+          },
+          function (error, data) {
             if (error) {
               console.error("😡 ", error);
-              return;
             }
-            console.log("File deleted! 🐳", image.dataValues.filename);
+            console.log("delete s3 data", data);
           }
         );
       });
