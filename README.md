@@ -70,3 +70,5 @@
 26.chmod 400 "react-web-app-seoul .pem" 이상하게 띄어쓰기 되어있다...
 <br />
 27.cors의 origin 값에 도메인주소를 넣으니 작동되지 않는다. (처음엔 작동했던거 같은데)
+<br />
+28.aws s3 이미지 삭제를 위해 deleteobject 사용하려 했으나 작동하지 않음

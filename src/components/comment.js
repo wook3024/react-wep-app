@@ -314,7 +314,9 @@ const Reply = ({ post, comment }) => {
             onClick: like,
           })}
         </Tooltip>
-        <span className="comment-action">{likeCount}</span>
+        <span key="comment-like-count" className="comment-action">
+          {likeCount}
+        </span>
       </span>,
       <span key=' key="comment-basic-dislike"'>
         <Tooltip title="Dislike">
@@ -325,7 +327,9 @@ const Reply = ({ post, comment }) => {
             }
           )}
         </Tooltip>
-        <span className="comment-action">{dislikeCount}</span>
+        <span key="comment-dislike-count" className="comment-action">
+          {dislikeCount}
+        </span>
       </span>,
       <span
         key="comment-basic-reply-to"
