@@ -49,7 +49,7 @@ const PostForm = ({ post = {} }) => {
         let location = undefined;
         const imageName = [...image.location];
         for (const [i, c] of imageName.entries()) {
-          console.log("i, i", i, c, c === "_");
+          // console.log("i, i", i, c, c === "_");
           if (c === "_") {
             location = image.location.slice(i + 1);
             console.log("location", location);

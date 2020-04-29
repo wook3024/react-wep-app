@@ -67,7 +67,7 @@ const Profile = () => {
         });
       })
       .catch((error) => {
-        console.error("😡 ", error);
+        console.error("😡 axios getFollowingData", error);
       });
 
     axios({
@@ -92,7 +92,7 @@ const Profile = () => {
         });
       })
       .catch((error) => {
-        console.error("😡 ", error);
+        console.error("😡 axios getScrapData", error);
       });
     console.log("inset date check", followingData, scrapData);
   }, [dispatch, followingData, scrapData]);
@@ -167,7 +167,7 @@ const Profile = () => {
           });
         })
         .catch((error) => {
-          console.error("😡 ", error);
+          console.error("😡 unFollowing", error);
         });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -262,7 +262,7 @@ const Profile = () => {
         setNicknameButtonToggle(false);
       })
       .catch((error) => {
-        console.error("😡 ", error);
+        console.error("😡 changeNockname", error);
       });
   }, [changeToNickname, dispatch, userInfo.id, userInfo.nickname]);
 
@@ -283,6 +283,12 @@ const Profile = () => {
       .then((res) => {
         console.log("upload", res);
         if (res.data) {
+          dispatch({
+            type: USER_INFO_REFRESH_ACTION,
+            payload: {
+              userInfo: { ...userInfo, images: [{ location: res.data }] },
+            },
+          });
           message.success("Update Complete With Images! 🐳");
         } else if (res.status === 200) {
           message.warning(res.data);
@@ -290,15 +296,11 @@ const Profile = () => {
           message.warning("Update failed! 😱");
         }
 
-        dispatch({
-          type: USER_INFO_REFRESH_ACTION,
-          payload: { userInfo: { ...userInfo, images: [res.data] } },
-        });
         setSelectedFile(null);
       })
       .catch((error) => {
         message.warning("Upload failed");
-        console.error("😡 ", error);
+        console.error("😡 handlePost", error);
       });
   }, [dispatch, selectedFile, userInfo]);
 
