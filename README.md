@@ -68,3 +68,5 @@
 25.배포단게에서 왜 쿠기가 생성이 안되지... => expressSession의 cookie 옵션에서 domain을 추가해야함
 <br />
 26.chmod 400 "react-web-app-seoul .pem" 이상하게 띄어쓰기 되어있다...
+<br />
+27.cors의 origin 값에 도메인주소를 넣으니 작동되지 않는다. (처음엔 작동했던거 같은데)

@@ -36,7 +36,7 @@ app.use(helmet());
 app.use(logger("dev"));
 app.use(
   cors({
-    origin: "swook.ml",
+    origin: true,
     credentials: true,
   })
 );
