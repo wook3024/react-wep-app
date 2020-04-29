@@ -43,7 +43,7 @@ const removeLocalImage = (target, value) => {
           {
             Bucket: "swook-react-web-app",
             Delete: {
-              Object: [{ Key: image.dataValues.location }],
+              Objects: [{ Key: image.dataValues.location }],
             },
           },
           function (error, data) {

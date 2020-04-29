@@ -61,7 +61,10 @@ const reducer = (state = initialState, action) => {
         ...state,
         userInfo: {
           ...action.payload,
-          created_at: moment(action.payload.created_at).format("LL"),
+          created_at:
+            action.payload.created_at === null
+              ? moment(action.payload.created_at).format("LL")
+              : null,
         },
       };
     }

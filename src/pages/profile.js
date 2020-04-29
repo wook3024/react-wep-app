@@ -50,9 +50,13 @@ const Profile = () => {
       url: "/post/user/getFollowingData",
       withCredentials: true,
     })
-      .then((getFollowindData) => {
-        console.log("getFollowindData", getFollowindData);
-        getFollowindData.data.forEach((followingUser) => {
+      .then((getFollowingData) => {
+        console.log("getFollowingData", getFollowingData);
+        if (!getFollowingData.data[0]) {
+          return;
+        }
+
+        getFollowingData.data.forEach((followingUser) => {
           followingData.push({
             key: followingUser.user.id,
             name: followingUser.user.nickname,
@@ -77,6 +81,9 @@ const Profile = () => {
     })
       .then((getScrapData) => {
         // console.log("getScrapData", getScrapData);
+        if (!getScrapData.data[0]) {
+          return;
+        }
         getScrapData.data.forEach((scrapUser) => {
           scrapData.push({
             key: scrapUser.post.id,
@@ -402,7 +409,6 @@ const Profile = () => {
             </div>
           }
         >
-          // prettier-ignore
           {userInfo &&
           userInfo.images &&
           userInfo.images[0] &&
