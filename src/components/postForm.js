@@ -192,7 +192,7 @@ const PostForm = ({ post = {} }) => {
                 post: {
                   ...res.data,
                   images: images.data instanceof Array ? images.data : [],
-                  comments: [],
+                  comments: res.data.comments[0] ? res.data.comments : [],
                 },
               },
             });

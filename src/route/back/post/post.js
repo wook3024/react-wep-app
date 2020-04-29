@@ -181,13 +181,7 @@ router.post("/update", async (req, res, next) => {
       if (await post) {
         return db.Post.findOne({
           where: { id: data.id },
-          include: {
-            model: db.User,
-            include: {
-              model: db.Image,
-            },
-            attributes: ["username", "id"],
-          },
+          ...findAllPostElement(),
         }).then((post) => {
           console.log("update post data 🐳", post);
 

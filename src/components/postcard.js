@@ -406,7 +406,9 @@ const Postcard = ({ post }) => {
       {post.data.comments[0] &&
         commentStore.map((comment) => {
           // console.log("comment deptg", comment, commentStore.length);
-          return <Comment post={post.data} comment={comment} />;
+          return (
+            <Comment key={comment.id} post={post.data} comment={comment} />
+          );
         })}
     </Card>
   );
