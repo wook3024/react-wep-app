@@ -402,7 +402,10 @@ const Profile = () => {
             </div>
           }
         >
-          {userInfo && userInfo.images[0] && userInfo.images[0].location ? (
+          {userInfo &&
+          userInfo.images &&
+          userInfo.images[0] &&
+          userInfo.images[0].location ? (
             <>
               <Avatar
                 src={userInfo.images[0].location}
