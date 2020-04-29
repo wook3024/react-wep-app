@@ -122,7 +122,7 @@ const setPersonalMessage = (user, data) => {
 };
 
 const getUserInfo = (user) => {
-  db.User.findOne({
+  return db.User.findOne({
     where: { username: user.username },
     attributes: [
       "username",
