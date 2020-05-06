@@ -18,7 +18,7 @@ const cookieSecret = require("../config/cookieSecret.json");
 
 const sequelize = db.sequelize;
 const app = express();
-const port = 443;
+const port = 80;
 
 sequelize
   .sync()
