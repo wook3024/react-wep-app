@@ -22,7 +22,9 @@ module.exports = {
     contentBase: path.join(__dirname, "src"),
     https: true,
     hot: true,
-    watch: true,
+    watchOptions: {
+      ignored: [path.resolve(__dirname, "path/to/images")],
+    },
     host: "0.0.0.0",
     port: 80,
     disableHostCheck: true,
