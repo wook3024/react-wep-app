@@ -18,7 +18,7 @@ const cookieSecret = require("../config/cookieSecret.json");
 
 const sequelize = db.sequelize;
 const app = express();
-const port = 80;
+const port = 443;
 
 sequelize
   .sync()
@@ -51,7 +51,7 @@ app.use(
     secret: cookieSecret.secret,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false,
       // maxAge: 60000,
       domain: ".swook.ml",
     },
