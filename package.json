@@ -48,7 +48,7 @@
     "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "start": "webpack-dev-server --mode development --watch",
+    "start": "webpack-dev-server",
     "prebuild": "rimraf dist",
     "build": "webpack --progress --mode production",
     "test": "react-scripts test",
