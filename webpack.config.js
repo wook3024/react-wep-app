@@ -17,18 +17,17 @@ module.exports = {
     publicPath: "http://swook.ml/",
   },
   optimization: { minimize: true },
-  // devServer: {
-  //   inline: true,
-  //   contentBase: ".",
-  //   https: true,
-  //   host: "0.0.0.0",
-  //   port: 80,
-  //   disableHostCheck: true,
-  //   watchOptions: {
-  //     ignored: [path.resolve(__dirname, "path/to/images")],
-  //   },
-  //   historyApiFallback: true,
-  // },
+  devServer: {
+    inline: true,
+    contentBase: path.join(__dirname, "src"),
+    https: true,
+    hot: true,
+    watch: true,
+    host: "0.0.0.0",
+    port: 80,
+    disableHostCheck: true,
+    historyApiFallback: true,
+  },
   mode: "production",
   // performance: {
   //   hints: false,
@@ -84,9 +83,9 @@ module.exports = {
       template: "./public/index.html",
       filename: "index.html",
     }),
-    new AppCachePlugin({
-      explude: [".htaccess"],
-    }),
+    // new AppCachePlugin({
+    //   explude: [".htaccess"],
+    // }),
     // new webpack.config.optimization.minimize(),
     // new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
     // new compressionPlugin(),
