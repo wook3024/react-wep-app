@@ -42,7 +42,7 @@ const removeLocalImage = (target, value) => {
         s3.deleteObject(
           {
             Bucket: "swook-react-web-app",
-            Delete: { Objects: [image.dataValues.location] },
+            Key: image.dataValues.location,
           },
           function (error, data) {
             if (error) {

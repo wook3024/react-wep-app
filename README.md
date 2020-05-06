@@ -79,7 +79,7 @@ $ cd react-web-app
 * 배포단게에서 왜 쿠기가 생성이 안되지... => expressSession의 cookie 옵션에서 domain을 추가해야함
 * chmod 400 "react-web-app-seoul .pem" 이상하게 띄어쓰기 되어있다...
 * cors의 origin 값에 도메인주소를 넣으니 작동되지 않는다. (처음엔 작동했던거 같은데)
-* aws s3 이미지 삭제를 위해 deleteobject 사용하려 했으나 작동하지 않음
+* aws s3 이미지 삭제를 위해 deleteobject 사용하려 했으나 작동하지 않음 => https 폴더 타고 들어가면 삭제마커 표시된 이미지가 생성됨 (어떻게 이용하는거지?)
 * aws s3에서 cors구성했는데도 한번씩 access 에러 발생
 
 
