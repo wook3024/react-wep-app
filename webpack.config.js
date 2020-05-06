@@ -1,8 +1,9 @@
 const path = require("path");
 // const webpack = require("webpack");
-
+const webpack = require("webpack");
 // const compressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const AppCachePlugin = require("appcache-webpack-plugin");
 
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 //   .BundleAnalyzerPlugin;
@@ -11,23 +12,23 @@ module.exports = {
   entry: {
     "js/app": ["./src/index.js"],
   },
-  // output: {
-  //   path: path.resolve(__dirname, "dist/"),
-  //   publicPath: "/",
-  // },
-  // optimization: { minimize: true },
-  devServer: {
-    inline: true,
-    contentBase: ".",
-    https: true,
-    host: "0.0.0.0",
-    port: 80,
-    disableHostCheck: true,
-    watchOptions: {
-      ignored: [path.resolve(__dirname, "path/to/images")],
-    },
-    historyApiFallback: true,
+  output: {
+    path: path.resolve(__dirname, "/public/"),
+    publicPath: "http://swook.ml/",
   },
+  optimization: { minimize: true },
+  // devServer: {
+  //   inline: true,
+  //   contentBase: ".",
+  //   https: true,
+  //   host: "0.0.0.0",
+  //   port: 80,
+  //   disableHostCheck: true,
+  //   watchOptions: {
+  //     ignored: [path.resolve(__dirname, "path/to/images")],
+  //   },
+  //   historyApiFallback: true,
+  // },
   mode: "production",
   // performance: {
   //   hints: false,
@@ -83,6 +84,10 @@ module.exports = {
       template: "./public/index.html",
       filename: "index.html",
     }),
+    new AppCachePlugin({
+      explude: [".htaccess"],
+    }),
+    // new webpack.config.optimization.minimize(),
     // new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru/),
     // new compressionPlugin(),
     // new BundleAnalyzerPlugin({
