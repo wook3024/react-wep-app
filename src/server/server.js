@@ -51,9 +51,9 @@ app.use(
     secret: cookieSecret.secret,
     cookie: {
       httpOnly: true,
-      secure: true,
+      // secure: true,
       // maxAge: 60000,
-      domain: ".swook.ml",
+      // domain: ".swook.ml",
     },
     name: "whynot?",
   })

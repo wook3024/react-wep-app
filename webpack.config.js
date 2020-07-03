@@ -12,10 +12,10 @@ module.exports = {
   entry: {
     "js/app": ["./src/index.js"],
   },
-  output: {
-    path: path.resolve(__dirname, "/public/"),
-    publicPath: "http://swook.ml/",
-  },
+  // output: {
+  //   path: path.resolve(__dirname, "/public/"),
+  //   publicPath: "http://swook.ml/",
+  // },
   optimization: { minimize: true },
   devServer: {
     inline: true,

@@ -30,7 +30,8 @@ package-lock.json
 .test.html
 test.html
 
-react-web-app.pem
-.react-web-app.pem
+educate_instance.pem
+.educate_instance.pem
+
 seoul-region.pem
 .seoul-region.pem
