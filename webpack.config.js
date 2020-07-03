@@ -20,7 +20,7 @@ module.exports = {
   devServer: {
     inline: true,
     contentBase: path.join(__dirname, "src"),
-    https: true,
+    // https: true,
     hot: true,
     watchOptions: {
       ignored: [path.resolve(__dirname, "path/to/images")],
