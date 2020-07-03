@@ -31,7 +31,13 @@ $ git clone https://github.com/wook3024/react-web-app.git
 #### 2. Move react-web-app folder
 $ cd react-web-app
 
-#### 3. Install package
+### 3. Install Node
+1. sudo apt-get update
+2. curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+3. sudo apt-get install -y nodejs
+
+
+#### 4. Install package
 1. postgres install in ubuntu-18-04 - https://linuxize.com/post/how-to-install-postgresql-on-ubuntu-18-04/
  (Requires create database and change confige of sequelize)
 2. npm install (use sudo npm install --unsafe-perm when a privilege error occurs)
@@ -83,6 +89,7 @@ $ cd react-web-app
 * aws s3에서 cors구성했는데도 한번씩 access 에러 발생
 * https 연결을 위해 포트 443을 이용했는데 에러 발생 => 80번 포트로 연결해 http로 연결되면 자동으로 리다이렉션 되면서 https사용 가능한거 같아...
 * 프론트엔드 부분 https로 연결 못함 - 배포방법 배우고 다른 방법 찾아보자 나중에...
+* s3 이용할 때 key 오류가 난다면 access token을 추가해볼 것
 
 
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />

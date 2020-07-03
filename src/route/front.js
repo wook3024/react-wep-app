@@ -12,7 +12,21 @@ const Lookuppost = lazy(() => import("../pages/lookuppost"));
 const Connecting = () => {
   return (
     <Switch>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <h2
+            style={{
+              margin: "0 auto",
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            기다려
+          </h2>
+        }
+      >
         <Route path="/signin" component={SignIn} />
         <Route path="/profile" component={Profile} />
         <Route path="/signUp" component={SignUp} />
