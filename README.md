@@ -15,8 +15,7 @@
 
 # Technologies
 * 사용: React-Hooks, Redux, NodeJS, Postgresql, Sequelize, AWS
-* 예정: Redux-Saga, React-Native 
-* 관심: Typescript, GraphQL, Apollo, Prisma, JWT
+* 예정: Redux-Saga, React-Native, Typescript, GraphQL, Apollo, Prisma, JWT
 
 <br />
 <br />
